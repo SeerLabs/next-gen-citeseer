@@ -9,7 +9,6 @@
 </template>
 
 <script>
-// import Logo from '~/components/Logo.vue'
 import Navbar from '~/components/Navbar.vue'
 import SearchBox from '~/components/SearchBox.vue'
 export default {
