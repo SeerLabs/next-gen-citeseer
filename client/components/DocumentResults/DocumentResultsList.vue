@@ -19,7 +19,7 @@
 </template>
 
 <script>
-    import SearchResultsContainer from "./SearchResultsContainer.vue";
+    import SearchResultsContainer from "./DocumentResultsContainer.vue";
     export default {
         name: "SearchResultsList",
         components: {

@@ -1,25 +1,33 @@
 <template>
   <b-container id="search-result-external-links">
-    <BaseCardHeader>Try your query at</BaseCardHeader>
-    <b-row>
-      External Links
-    </b-row>
+    <base-card :title="filter_title">
+        <b-row>
+          <b-col cols="12">
+            LINKS
+          </b-col>
+        </b-row>
+
+    </base-card>
   </b-container>
 </template>
 
 <script>
-    import BaseCardHeader from "../Base/BaseCardHeader.vue";
+    import BaseCard from "../Base/BaseCard.vue";
 
-    const card_header = new Vue({
-      template: ''
-    })
     export default {
         name: "SearchResultsExternalLinks",
         components: {
-          BaseCardHeader
+          BaseCard
+      },
+
+      data() {
+          return {
+            filter_title: "Try your query at",
+          }
       }
     }
 </script>
 
 <style scoped>
+
 </style>
