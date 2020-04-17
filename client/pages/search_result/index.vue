@@ -1,14 +1,16 @@
 <template>
   <div>
-    <navbar/>
+    <SearchResults />
   </div>
 </template>
 
 <script>
 import Navbar from '~/components/Navbar.vue'
+import SearchResults from "../../components/SearchResults/SearchResults.vue";
+
 export default {
   components: {
-    Navbar
+    SearchResults
   }
 }
 </script>
