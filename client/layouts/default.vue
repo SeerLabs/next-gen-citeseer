@@ -1,8 +1,278 @@
 <template>
   <div>
-    <nuxt />
+
+  	<!-- Imports -->
+
+    <b-navbar toggleable="lg" type="dark" variant="dark">
+    <b-navbar-brand href="#">CiteSeerX</b-navbar-brand>
+
+    <b-navbar-toggle target="nav-collapse"></b-navbar-toggle>
+
+    <b-collapse id="nav-collapse" is-nav>
+      <b-navbar-nav>
+        <b-nav-item href="#">Link</b-nav-item>
+        <b-nav-item href="#" disabled>Disabled</b-nav-item>
+      </b-navbar-nav>
+
+      <!-- Right aligned nav items -->
+      <b-navbar-nav class="ml-auto">
+        <!--<b-nav-form>
+           <b-form-input size="sm" class="mr-sm-2" placeholder="Search"></b-form-input> 
+          <b-button size="sm" class="my-2 my-sm-0" type="submit">Search</b-button>
+        </b-nav-form> -->
+
+        <b-nav-item-dropdown text="Lang" right>
+          <b-dropdown-item href="#">EN</b-dropdown-item>
+          <b-dropdown-item href="#">ES</b-dropdown-item>
+          <b-dropdown-item href="#">RU</b-dropdown-item>
+          <b-dropdown-item href="#">FA</b-dropdown-item>
+        </b-nav-item-dropdown>
+
+        <b-nav-item-dropdown right>
+          <!-- Using 'button-content' slot -->
+          <template v-slot:button-content>
+            <em>User</em>
+          </template>
+          <b-dropdown-item href="#">Profile</b-dropdown-item>
+          <b-dropdown-item href="#">Sign Out</b-dropdown-item>
+        </b-nav-item-dropdown>
+      </b-navbar-nav>
+    </b-collapse>
+  </b-navbar>
+
+    <!-- This is where the content of the page goes-->
+    <nuxt/>
+
+
+    <footer class="footer-distributed">
+	            <div class="footer-left">
+	                <img id="psu_logo" src="https://raw.githubusercontent.com/jasonchhay/CovidSeer/master/seer/static/img/psu_logo.png" width="250vw">
+		            <div class="elasticsearch">
+			            <a href="https://www.elastic.co/enterprise-search">
+				            <img src="https://raw.githubusercontent.com/jasonchhay/CovidSeer/95f76ed85448bd26628bbc854102b616c478e5ab/seer/static/img/svg/logo-elasticsearch-64-color-reverse.svg" width="50vw" style="display: inline-block;">
+				            <p style="color: white; display: inline-block;">Powered by ElasticSearch</p>
+			            </a>
+		            </div>
+		            <p class="footer-links">
+	                    <a href="https://csxstatic.ist.psu.edu/privacy-policy/">Privacy Policy</a>
+	                    ·
+	                    <a href="https://csxstatic.ist.psu.edu/help/">Help</a>
+	                    ·
+	                    <a href="https://csxstatic.ist.psu.edu/contact/">Contact Us</a>
+	                </p>
+	                <p class="footer-company-name">Developed at and hosted by <a href="http://ist.psu.edu/">The College of Information Sciences and Technology</a></p><br>
+	                <p class="footer-company-name"><a href="https://www.psu.edu/">Pennsylvania State University</a> © 2020</p>
+	            </div>
+	            <div class="footer-center">
+	                <div>
+			    <div>
+	                        <i class="fa fa-map-marker"></i>
+	                        <p><span>Westgate Building</span>
+				   Pennsylvania State University
+				   <br>University Park, PA 16802
+				</p>
+			    </div>
+	                    <div>
+	                        <i class="fa fa-phone"></i>
+	                        <p>+(814) 865 7884</p>
+	                    </div>
+	                </div>
+	        </div>
+	</footer>
+
+
   </div>
 </template>
 
+
+<script>
+
+</script>
+
+
+
 <style>
+.footer-distributed{
+	background-color: #1B263C;
+	box-shadow: 0 1px 1px 0 rgba(0, 0, 0, 0.12);
+	box-sizing: border-box;
+	width: 100%;
+    height: inherit;
+	text-align: left;
+	font: bold 16px sans-serif;
+	padding: 50px 40px;
+
+}
+
+.footer-distributed .footer-left,
+.footer-distributed .footer-center,
+.footer-distributed .footer-right{
+	display: inline-block;
+	vertical-align: top;
+}
+
+/* Footer left */
+
+.footer-distributed .footer-left{
+	width: 40%;
+    margin-left: 20px;
+    margin-right: 20%;
+}
+
+/* The company logo */
+
+.footer-distributed h3{
+	color:  #ffffff;
+	font: normal 36px 'Cookie', cursive;
+	margin: 0;
+}
+
+.footer-distributed h3 span{
+	color:  #5383d3;
+}
+
+/* Footer links */
+
+.footer-distributed .footer-links{
+	color:  #ffffff;
+    margin: 5vh 0 1.5vh;
+    padding: 0;
+}
+
+.footer-distributed .footer-links a{
+	display:inline-block;
+	line-height: 1.8;
+	text-decoration: none;
+	color:  inherit;
+}
+
+.footer-links a:hover {
+    border-bottom: 2px solid;
+    margin-bottom: -2px;
+    color: white;
+}
+.footer-distributed .footer-company-name{
+	color:  #8f9296;
+	font-size: 14px;
+	font-weight: normal;
+	margin: 0;
+}
+
+/* Footer Center */
+
+.footer-distributed .footer-center{
+	width: 35%;
+    margin-left: 0px;
+}
+
+.footer-distributed .footer-center i{
+	background-color:  #33383b;
+	color: #ffffff;
+	font-size: 25px;
+	width: 38px;
+	height: 38px;
+	border-radius: 50%;
+	text-align: center;
+	line-height: 42px;
+	margin: 10px 15px;
+	vertical-align: middle;
+}
+
+.footer-distributed .footer-center i.fa-envelope{
+	font-size: 17px;
+	line-height: 38px;
+}
+
+.footer-distributed .footer-center p{
+	display: inline-block;
+	color: #ffffff;
+	vertical-align: middle;
+	margin:0;
+}
+
+.footer-distributed .footer-center p span{
+	display:block;
+	font-weight: normal;
+	font-size:14px;
+	line-height:2;
+}
+
+.footer-distributed .footer-center p a{
+	color:  #5383d3;
+	text-decoration: none;;
+}
+
+
+/* Footer Right */
+
+.footer-distributed .footer-right{
+	width: 20%;
+    margin-left: -75px;
+    float: right;
+}
+
+.footer-distributed .footer-company-about{
+	line-height: 20px;
+	color:  #92999f;
+	font-size: 13px;
+	font-weight: normal;
+	margin: 0;
+}
+
+.footer-distributed .footer-company-about span{
+	display: block;
+	color:  #ffffff;
+	font-size: 14px;
+	font-weight: bold;
+	margin-bottom: 20px;
+}
+
+.footer-distributed .footer-icons{
+	margin-top: 25px;
+}
+
+.footer-distributed .footer-icons a{
+
+	display: inline-block;
+	width: 35px;
+	height: 35px;
+	cursor: pointer;
+	background-color:  #33383b;
+	border-radius: 2px;
+
+	font-size: 20px;
+	color: #ffffff;
+	text-align: center;
+	line-height: 35px;
+
+	margin-right: 3px;
+	margin-bottom: 5px;
+}
+
+/* If you don't want the footer to be responsive, remove these media queries */
+
+@media (max-width: 880px) {
+
+	.footer-distributed{
+		font: bold 14px sans-serif;
+	}
+
+	.footer-distributed .footer-left,
+	.footer-distributed .footer-center,
+	.footer-distributed .footer-right{
+		display: block;
+		width: 100%;
+		margin-bottom: 40px;
+		text-align: center;
+	}
+
+	.footer-distributed .footer-center i{
+		margin-left: 0;
+	}
+
+}
+
+#psu_logo {
+    margin-bottom: 3vh;
+}
 </style>

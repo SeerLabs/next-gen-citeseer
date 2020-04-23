@@ -1,6 +1,5 @@
 <template>
   <div>
-    <navbar/>
     <div id = app>
       <h1>Search Engine</h1>
       <search-box/>
@@ -9,12 +8,15 @@
 </template>
 
 <script>
-import Navbar from '~/components/Navbar.vue'
+//import Navbar from '~/components/Navbar.vue'
 import SearchBox from '~/components/SearchBox.vue'
+//import default from '~/layouts/default.vue'
 export default {
   components: {
-    Navbar,
+   // Navbar,
+    //default,
     SearchBox
+
   }
 }
 </script>
@@ -29,5 +31,6 @@ export default {
   margin-top: 10%;
   margin-left: 25%;
   margin-right: 25%;
+  margin-bottom: 10%;
 }
 </style>
