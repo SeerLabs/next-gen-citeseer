@@ -1,41 +1,106 @@
 <template>
-  <b-container class="search-result-list">
-    <b-row class="search-results-header">
-      <b-col sm="6">Results 1 - 10 of #####</b-col>
+  <b-container class="document-result-list">
+    <b-row class="document-results-header">
+      <b-col sm="6">Results {{currentPageLocation}} - {{currentPageLocation + pageSize - 1}} of {{totalPageResults}}</b-col>
       <b-col sm="6">
-        <div class="search-results-sorting">
-          Sort by Relevance
+        <div class="document-results-sorting">
+          Sort by
+          <b-dropdown
+            variant="primary"
+            class="m-2 results-dropdown">
+
+              <template v-slot:button-content>
+                {{ sortByDisplay }}
+              </template>
+              
+              <ul>
+                <li v-for="(item, key) in sortDropdown" :key="key">
+                    <b-dropdown-item
+                    :name="key"
+                    v-on:click="sortResults">
+                      {{ item.displayName }}
+                    </b-dropdown-item>
+                </li>
+              </ul>
+
+          </b-dropdown>
         </div>
       </b-col>
     </b-row>
 
-    <SearchResultsContainer/>
+    <document-results-container :documents="documents" :sortByKey="sortByKey"/>
 
-    <b-row class="search-results-pagination">
-      <b-col sm="6">Page 1 of 2</b-col>
-    </b-row>
-
+    <b-pagination
+      :total-rows="totalPageResults" 
+      v-model="currentPage"
+      :per-page="pageSize"
+      v-on:click: getPage
+    />
+    
   </b-container>
 </template>
 
 <script>
-    import SearchResultsContainer from "./DocumentResultsContainer.vue";
+    import Vue from 'vue';
+    import DocumentResultsContainer from "./DocumentResultsContainer.vue";
+
     export default {
-        name: "SearchResultsList",
+        name: "DocumentResultsList",
         components: {
-          SearchResultsContainer
-      }
+          DocumentResultsContainer
+        },
+        props: {
+          documents: Array,
+          totalPageResults: Number
+        },
+        data() {
+          return {
+            currentPage: 1,
+            pageSize: 10,
+            sortByDisplay: 'Relevance',
+            sortDropdown: {
+              'sort-relevance': {'displayName': 'Relevance', 'sortByKey': ''},
+              'sort-citations': {'displayName': 'Citations', 'sortByKey': 'numCitations'},
+              'sort-year': {'displayName': 'Year', 'sortByKey': 'year'},
+            },
+            sortByKey: ''
+          }
+        },
+        computed: {
+          currentPageLocation: function() {
+            return this.pageSize * (this.currentPage-1) + 1;
+          }
+        },
+        methods: {
+          sortResults: function(event) {
+            console.log(event);
+            const dropdownItem = event.target.name;
+            this.sortByDisplay = event.target.text;
+            this.sortByKey = this.sortDropdown[dropdownItem].sortByKey;
+          },
+          
+          getPage: function(event) {
+            // IMPLEMENT WITH REST API
+          }
+        }
     }
 </script>
 
 <style scoped>
-  .search-result-list {
+  .document-result-list {
     background-color: lightgrey;
     padding: .5em;
   }
 
-  .search-results-sorting {
+  .document-results-sorting {
     text-align: right;
   }
 
+  .results-dropdown li {
+    list-style: none;
+  }
+
+  .results-dropdown ul {
+    padding: 0;
+  }
 </style>
