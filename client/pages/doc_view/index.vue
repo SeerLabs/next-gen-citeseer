@@ -2,8 +2,9 @@
     <div id="doc-view-layout">
         
         <navbar/>
+        
         <b-container fluid>
-            
+            <vue-toc target="abstract" class="toc"/> 
             <!-- Search Box Row -->
             <b-row align-h="center">
                 <b-col  cols="7"> 
@@ -69,16 +70,31 @@
             <!-- Citations Row -->
             <b-row id="citation-card" align-h="center">
                 <b-col cols="8">
-                    <citation-card id="citation-card" title="Citations" ncitation="ncitation"/>
+                    <citation-card id="citation-card" title="Citations" ncitation="23 citiatons"/>
                 </b-col>
             </b-row>
             
             <!-- Similar Articles Row -->
             <b-row id="citation-card" align-h="center">
                 <b-col cols="8">
-                    <citation-card id="citation-card" title="Similar Articles" ncitation="ncitation"/>
+                    <citation-card id="citation-card" title="Similar Articles" ncitation="18 similar articles"/>
                 </b-col>
             </b-row>
+
+            <!-- Similar Articles Row -->
+            <b-row id="citation-card" align-h="center">
+                <b-col cols="8">
+                    <version-history-card title="Version History"/>
+                </b-col>
+            </b-row>
+           
+            <!-- Similar Articles Row -->
+            <b-row id="citation-card" align-h="center">
+                <b-col cols="8">
+                    <document-results-list :documents="documents" :totalPageResults="totalPageResults"/>
+                </b-col>
+            </b-row>
+
             <!--             
             <div id = "summary">
                 <div id = "summary-text">
@@ -109,12 +125,18 @@
     import CitationCard from '~/components/CitationCard.vue'
     import BaseCard from '~/components/Base/BaseCard.vue'
     import DocViewService from "~/api/DocViewService"
+    import DocumentResultsList from "~/components/DocumentResults/DocumentResultsList.vue"
+    import VersionHistoryCard from "~/components/VersionHistoryCard.vue"
+    import VueToc from "vue-toc"
     export default {
         components: {
             Navbar,
             SearchBox,
             CitationCard,
-            BaseCard
+            BaseCard,
+            DocumentResultsList,
+            VersionHistoryCard,
+            VueToc
         },
         methods: {
             toggleReadMore : function(){
@@ -127,7 +149,17 @@
                 year: "",
                 authors: [],
                 abstract: "",
-                readMoreToggle: false
+                readMoreToggle: false,
+
+                 documents: [
+              {'title': 'Document Title', 'type': 'DOCUMENT', 'authors': 'Abcdefg Lastname',
+              'year': '2018', 'abstract': 'Lorem ipsum', 'numCitations': 20},
+              {'title': 'ABCDEFG', 'type': 'DOCUMENT', 'authors': 'Hijklmno Pqrstuv',
+              'year': '2020', 'abstract': 'Lorem ipsum', 'numCitations': 3},
+              {'title': 'EFGHIJK', 'type': 'CITATION', 'authors': 'Firstname Lastname',
+              'year': '2021', 'abstract': 'Lorem ipsum', 'numCitations': 30}
+            ],
+            totalPageResults: 1000
             }
         },
         mounted() {
@@ -173,5 +205,8 @@
     outline: transparent;
     border-color: transparent;
 }
-
+.toc {
+  width: 300px;
+  padding: 0 30px;
+}
 </style>
