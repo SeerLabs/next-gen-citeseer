@@ -4,7 +4,6 @@
         <navbar/>
         
         <b-container fluid>
-            <vue-toc target="abstract" class="toc"/> 
             <!-- Search Box Row -->
             <b-row align-h="center">
                 <b-col  cols="7"> 
@@ -127,7 +126,6 @@
     import DocViewService from "~/api/DocViewService"
     import DocumentResultsList from "~/components/DocumentResults/DocumentResultsList.vue"
     import VersionHistoryCard from "~/components/VersionHistoryCard.vue"
-    import VueToc from "vue-toc"
     export default {
         components: {
             Navbar,
@@ -136,7 +134,6 @@
             BaseCard,
             DocumentResultsList,
             VersionHistoryCard,
-            VueToc
         },
         methods: {
             toggleReadMore : function(){
