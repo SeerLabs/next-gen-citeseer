@@ -1,4 +1,5 @@
 # next-gen-citeseer
+<<<<<<< HEAD
 This is the Django-Vue-Elasticsearch new version of CiteSeer!
 
 ## Project Setup
@@ -26,3 +27,5 @@ Set up proper architecture as needed - service layer, repository layer, etc.
 Persist data from Elasticsearch and other db, remove the sqlite db if not needed
 
 Unit Tests
+=======
+>>>>>>> b3c5a09f7c0bf4d500e9c943f766d151e0ee6499
