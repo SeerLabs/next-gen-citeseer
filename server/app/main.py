@@ -3,11 +3,16 @@ from fastapi.middleware.cors import CORSMiddleware
 
 app = FastAPI()
 
-app.add_middleware(CORSMiddleware,
-                       allow_origin_regex="http://localhost:*",
-                       allow_credentials=True,
-                       allow_headers=['*'])
-
+origins = [
+    "http://localhost:3000",
+]
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=origins,
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 @app.get("/ping")
 def pong():
