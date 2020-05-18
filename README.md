@@ -1,14 +1,14 @@
 # next-gen-citeseer
-<<<<<<< HEAD
-This is the Django-Vue-Elasticsearch new version of CiteSeer!
+This is the FastAPI-Vue-Elasticsearch new version of CiteSeer!
 
-## Project Setup
+## local development environment
 
 ```
 Source the virtual environment [pipenv shell]
 Install the dependencies [pipenv install]
-Navigate into the backend directory [cd api]
-Start the backend server [python manage.py runserver]
+Navigate into the backend directory [cd server]
+install necessary python requirements [pip install -r requirements.txt]
+Start the backend server [uvicorn app.main:app --port=8000]
 ```
 For frontend setup, read client/README.md
 
@@ -27,5 +27,3 @@ Set up proper architecture as needed - service layer, repository layer, etc.
 Persist data from Elasticsearch and other db, remove the sqlite db if not needed
 
 Unit Tests
-=======
->>>>>>> b3c5a09f7c0bf4d500e9c943f766d151e0ee6499
