@@ -25,8 +25,8 @@ $ npm run generate
 `Client development server:` http://localhost:3000/
 
 ### Backend Setup
-``Navigate into the backend directory [cd server]```
+``Navigate into the backend directory [cd server]
 Start the backend server by [python main.py]
-or running [uvicorn app.main:app --port=8000]
+or running [uvicorn app.main:app --port=8000]```
 
 `Backend Core Api:` http://localhost:8000/api/v1/
