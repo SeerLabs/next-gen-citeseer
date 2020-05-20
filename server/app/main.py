@@ -17,7 +17,7 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-app.include_router(document_routes.router, tags=['document_routes'])
+app.include_router(document_routes.router, tags=['document_routes'], prefix="/api/v1")
 
 
 @app.get("/ping")
