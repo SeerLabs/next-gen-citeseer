@@ -1,8 +1,7 @@
 import uvicorn as uvicorn
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-
-from app.routers import document_routes
+from routers import document_routes, elastic_routes
 
 app = FastAPI()
 
@@ -18,7 +17,7 @@ app.add_middleware(
 )
 
 app.include_router(document_routes.router, tags=['document_routes'], prefix="/api/v1")
-
+app.include_router(elastic_routes.router, tags=['elastic_routes'], prefix="/api/v2")
 
 @app.get("/ping")
 def pong():

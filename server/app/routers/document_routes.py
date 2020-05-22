@@ -4,7 +4,7 @@ from fastapi import APIRouter
 from starlette.responses import FileResponse
 from fastapi.responses import StreamingResponse
 
-from app.services.repository_service import RepositoryService
+from services.repository_service import RepositoryService
 
 router = APIRouter()
 
