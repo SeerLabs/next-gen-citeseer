@@ -1,15 +1,13 @@
 <template>
-  <b-container>
     <b-row>
-      <b-col cols="8">
+      <b-col md="8" id="search-results-list">
         <document-results-list :documents="documents" :totalPageResults="totalPageResults"/>
       </b-col>
-      <b-col cols="4">
+      <b-col md="4" id="search-results-cards">
         <search-results-filter/>
         <search-results-external-links/>
       </b-col>
     </b-row>
-  </b-container>
 </template>
 
 <script>
@@ -46,4 +44,7 @@
   margin-bottom: .5em;
 }
 
+#search-results-list {
+  margin-bottom: 1em;
+}
 </style>
