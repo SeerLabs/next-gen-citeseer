@@ -1,5 +1,5 @@
 <template>
-  <b-container id="search-result-external-links">
+  <div id="search-result-external-links">
     <base-card :title="filter_title">
         <b-row>
           <b-col cols="1">
@@ -18,7 +18,7 @@
         </b-row>
 
     </base-card>
-  </b-container>
+  </div>
 </template>
 
 <script>
