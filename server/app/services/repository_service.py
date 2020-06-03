@@ -4,7 +4,7 @@ from pathlib import Path
 
 class RepositoryService:
     def __init__(self):
-        #TODO: create a service endpoint that can be configured.
+        # TODO: create a service endpoint that can be configured.
         self.repository_endpoint = None
 
     def get_document(self, doi, file_type, repid):

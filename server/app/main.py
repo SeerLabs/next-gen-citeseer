@@ -16,13 +16,13 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-app.include_router(document_routes.router, tags=['document_routes'], prefix="/api/v1")
-app.include_router(elastic_routes.router, tags=['elastic_routes'], prefix="/api/v2")
+app.include_router(document_routes.router, tags=['document_routes'], prefix="/api")
+app.include_router(elastic_routes.router, tags=['elastic_routes'], prefix="/api")
 
-@app.get("/ping")
+@app.get("/")
 def pong():
     return {"ping": "pong!"}
 
 
 if __name__ == "__main__":
-    uvicorn.run(app, host="0.0.0.0", port=8000)
+    uvicorn.run(app, host="localhost", port=8000)

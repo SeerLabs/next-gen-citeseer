@@ -30,10 +30,31 @@ class Elastic:
 
         body = {
                 "from": 0,
-                "size": 2,
+                "size": 5,
                 "query": {
                     "multi_match": {
                         "query": q,
+                        "fields": fields_to_search
+                    }
+                }
+        }
+
+        if source:
+            body["_source"] = source
+
+        response = self.connection.search(index=index, body=body)
+        self.print_response(response)
+        return response
+
+    # Search with Pagination
+    def paginated_search(self, index, query, page, pageSize, fields_to_search, source=None):
+
+        body = {
+                "from": (page-1)*pageSize,
+                "size": pageSize,
+                "query": {
+                    "multi_match": {
+                        "query": query,
                         "fields": fields_to_search
                     }
                 }

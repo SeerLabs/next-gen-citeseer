@@ -29,5 +29,4 @@ $ npm run generate
 Start the backend server by [python main.py]
 or running [uvicorn app.main:app --port=8000]
 ```
-
-`Backend Core Api:` http://localhost:8000/api/v1/
+`Backend Core Api:` http://localhost:8000/docs
