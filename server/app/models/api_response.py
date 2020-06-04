@@ -11,4 +11,4 @@ class SearchQueryResponse(BaseModel):
 
 class PaperDetailResponse(BaseModel):
     query_id: str
-    response: Paper
+    paper: Paper

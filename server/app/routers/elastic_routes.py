@@ -25,7 +25,7 @@ def perform_search(searchQuery: SearchQuery):
 def paper_info(id: str):
     docs_response = ES.get_paper_info(id)
     paper_entity_response = build_paper_entity(docs_response['hits']['hits'][0]['_source'])
-    return PaperDetailResponse(query_id=str(uuid4()), response=paper_entity_response)
+    return PaperDetailResponse(query_id=str(uuid4()), paper=paper_entity_response)
 
 @router.get('/citations')
 def citations(paperID: str = ""):
