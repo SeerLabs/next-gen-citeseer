@@ -28,7 +28,7 @@
                 <b-col cols="6">
                     <h1>{{ title }}</h1>
                     <h5>{{ authors.join(', ')}}</h5>
-                    <h5>Venue - {{ year }}</h5>
+                    <h5>{{ venue }} - {{ year }}</h5>
                     <br>
                     <p v-if="!readMoreToggle">
                         {{abstract.slice(0, 700)}} 
@@ -190,6 +190,7 @@
                 title: "",
                 year: "",
                 authors: [],
+                venue: "",
                 abstract: "",
                 readMoreToggle: false,
 
@@ -205,12 +206,13 @@
             }
         },
         mounted() {
-            DocViewService.getPaperEntity("10.1.1.170.7725")
+            DocViewService.getPaperEntity(this.$route.params.id)
                 .then(response => (
                     this.title = response.data.response.title, 
                     this.year = response.data.response.year,
                     this.authors = response.data.response.authors,
-                    this.abstract = response.data.response.abstract 
+                    this.venue = response.data.response.venue,
+                    this.abstract = response.data.response.abstract
                     ))
         }
         

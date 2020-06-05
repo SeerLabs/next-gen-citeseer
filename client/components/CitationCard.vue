@@ -3,9 +3,39 @@
         <b-card 
             v-bind:title="title" 
             v-bind:sub-title="ncitation">
-            
-            <citation-list v-bind:type="title"/>
+            <b-row>
+                <b-col>
+                    <div class="document-results-sorting">
+                        Sort by
+                        <b-dropdown
+                            variant="primary"
+                            class="m-2 results-dropdown">
 
+                            <template v-slot:button-content>
+                                {{ sortByDisplay }}
+                            </template>
+                            
+                            <ul>
+                                <li v-for="(item, key) in sortDropdown" :key="key">
+                                    <b-dropdown-item
+                                    :name="key"
+                                    v-on:click="sortResults">
+                                    {{ item.displayName }}
+                                    </b-dropdown-item>
+                                </li>
+                            </ul>
+
+                        </b-dropdown>
+                    </div>
+                </b-col>
+            </b-row>
+             <b-row>
+                <b-col>
+                    <citation-list v-bind:type="title"/>
+                </b-col>
+            </b-row>
+            
+            
             <!-- <b-card-text>
             Some quick example text to build on the <em>card title</em> and make up the bulk of the card's
             content.
@@ -26,10 +56,38 @@
         components: {
             CitationList
         },
-        props: ['title', 'card_type','ncitation']
+        props: ['title', 'card_type','ncitation'],
+        data () {
+            return {
+                sortByDisplay: 'Co-Citation',
+                sortDropdown: {
+                    'sort-co-citation': {'displayName': 'Co-Citation', 'sortByKey': 'co-citation'},
+                    'sort-active-bibliography': {'displayName': 'Active Bibliography', 'sortByKey': 'active-bibliography'},
+                },
+                sortByKey: 'co-citation'
+            }
+        },
+        methods: {
+            sortResults: function(event) {
+                console.log(event);
+                const dropdownItem = event.target.name;
+                this.sortByDisplay = event.target.text;
+                this.sortByKey = this.sortDropdown[dropdownItem].sortByKey;
+            },
+        }
     }
 </script>
 
-<style>
-    
+<style scoped>
+  .document-results-sorting {
+    text-align: right;
+  }
+
+  .results-dropdown li {
+    list-style: none;
+  }
+
+  .results-dropdown ul {
+    padding: 0;
+  }
 </style>

@@ -6,7 +6,7 @@
     </b-row>
 
     <b-row>
-      <b-col class="result-info"><h6>{{ authors }} - {{ year }}</h6></b-col>
+      <b-col class="result-info"><h6>{{ authors }} - Venue - {{ year }}</h6></b-col>
     </b-row>
 
     <b-row>
@@ -42,7 +42,7 @@
         props: {
           title: String,
           type: String,
-          authors: [String],
+          authors: Array,
           year: String,
           abstract: String,
           numCitations: Number
