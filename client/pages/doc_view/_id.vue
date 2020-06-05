@@ -1,7 +1,6 @@
 <template>
     <div id="doc-view-layout">
         
-        <navbar/>
         <b-card id="toc">
             <b-row>
                 <b-col><h6 v-on:click="scroll('citation-card')" >Citation</h6></b-col>
@@ -19,13 +18,13 @@
         <b-container fluid>
             <!-- Search Box Row -->
             <b-row align-h="center">
-                <b-col  cols="7"> 
+                <b-col  cols="12"> 
                     <search-box/>
                 </b-col>
             </b-row>
             <!-- Main Info Row -->
             <b-row id="abstract" align-h="center">
-                <b-col cols="6">
+                <b-col cols="9">
                     <h1>{{ title }}</h1>
                     <h5>{{ authors.join(', ')}}</h5>
                     <h5>{{ venue }} - {{ year }}</h5>
@@ -40,7 +39,7 @@
                         <!-- <span v-show="readMoreToggle" v-html="abstract"></span> -->
                     </p>
                 </b-col>
-                <b-col cols="2">
+                <b-col cols="3">
                     <b-card>
                         <!-- PDF Button -->
                         <b-row>
@@ -82,21 +81,21 @@
 
             <!-- Citations Row -->
             <b-row id ="citation-card" class="citation-card" align-h="center">
-                <b-col cols="8">
+                <b-col cols="12">
                     <citation-card id="citation-card" title="Citations" v-bind:ncitation="nCitation"/>
                 </b-col>
             </b-row>
             
             <!-- Similar Articles Row -->
             <b-row id ="similar-article-card" class="citation-card" align-h="center">
-                <b-col cols="8">
+                <b-col cols="12">
                     <citation-card id="citation-card" title="Similar Articles" ncitation=""/>
                 </b-col>
             </b-row>
 
             <!-- Similar Articles Row -->
             <b-row id="ver-history-card" class="citation-card" align-h="center">
-                <b-col cols="8">
+                <b-col cols="12">
                     <version-history-card title="Version History"/>
                 </b-col>
             </b-row>
@@ -200,7 +199,8 @@
                     this.abstract = response.data.paper.abstract,
                     this.nCitation = response.data.paper.n_citation + this.nCitation
                     ))
-        }
+        },
+        layout: 'layout_default',
         
         
     }
@@ -211,9 +211,7 @@
     background: rgb(255, 255, 255);
 }
 #side-margine {
-    margin-left: 20%;
-    margin-right: 20%;
-  
+
 }
 #abstract {
     margin-top: 4%;
@@ -223,8 +221,6 @@
 #summary-text {
     padding-top: 2%;
     padding-bottom: 2%;
-    margin-left: 20%;
-    margin-right: 20%;
 }
 .citation-card {
     margin-top: 3%;

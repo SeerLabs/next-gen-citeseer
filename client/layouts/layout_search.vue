@@ -17,7 +17,7 @@
 
 
 <script>
-import NavBar from '~/components/Navigation/NavBar.vue';
+import NavBar from '~/components/Navigation/Navbar.vue';
 import FooterBar from '~/components/Navigation/FooterBar.vue';
 import SearchBox from '~/components/SearchBox.vue'
 
