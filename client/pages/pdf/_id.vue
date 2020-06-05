@@ -1,15 +1,29 @@
+
 <template>
-    <div>
-        <pdf src="http://localhost:8000/api/document?repid=rep1&type=pdf&doi=10.1.1.1028.1"></pdf>
-    </div>
+    <object id="fit-screen" v-bind:data="pdfURL" type="application/pdf">
+        <embed v-bind:src="pdfURL" type="application/pdf" />
+    </object>
+
 </template>
- 
+
 <script>
-import pdf from 'vue-pdf'
- 
+
 export default {
-  components: {
-    pdf
-  }
+    data(){
+        return{
+            pdfURL: "http://localhost:8000/api/document?repid=rep1&type=pdf&doi="
+        }
+    },
+    mounted(){
+        this.pdfURL += this.$route.params.id
+    }
 }
 </script>
+
+<style>
+#fit-screen {
+   margin: 0px;
+   height: 100vh;
+   width: 100%;
+}
+</style>

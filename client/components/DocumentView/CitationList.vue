@@ -40,8 +40,8 @@
 </template>
 
 <script>
-    import DocumentResultsItem from "./DocumentResults/DocumentResultsItem.vue"
-    import docViewService from "../api/DocViewService"
+    import DocumentResultsItem from "~/components/DocumentResults/DocumentResultsItem.vue"
+    import docViewService from "~/api/DocViewService"
     import CitationItem from "./CitationItem"
     export default {
         name: 'CitationCard',

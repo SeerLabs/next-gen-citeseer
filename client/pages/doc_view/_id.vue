@@ -32,9 +32,9 @@
                     <br>
                     <p v-if="!readMoreToggle">
                         {{abstract.slice(0, 700)}} 
-                        <b-button v-if="!readMoreToggle" @click="toggleReadMore()">
+                        <a href="">
                             Read more...
-                        </b-button>
+                        </a>
                     <p v-else>
                         {{ abstract }}
                         <!-- <span v-show="readMoreToggle" v-html="abstract"></span> -->
@@ -44,10 +44,8 @@
                     <b-card>
                         <!-- PDF Button -->
                         <b-row>
-                            <b-col><b-button squared id="pdf-btn" v-on:click="getDocPDF">View PDF</b-button></b-col>
-                            <b-col>
-                                 <b-button id="pdf-btn" href="http://localhost:8000/api/v1/document?repid=rep1&type=pdf&doi=10.1.1.1028.1">View PDF</b-button>
-                            </b-col>
+                            <b-col><b-button squared id="pdf-btn" v-bind:to="pdfURL">View PDF</b-button></b-col>
+
                         </b-row>
                         
                         <!-- Download Links Drop Down -->
@@ -85,14 +83,14 @@
             <!-- Citations Row -->
             <b-row id ="citation-card" class="citation-card" align-h="center">
                 <b-col cols="8">
-                    <citation-card id="citation-card" title="Citations" ncitation="23 citiatons"/>
+                    <citation-card id="citation-card" title="Citations" v-bind:ncitation="nCitation"/>
                 </b-col>
             </b-row>
             
             <!-- Similar Articles Row -->
             <b-row id ="similar-article-card" class="citation-card" align-h="center">
                 <b-col cols="8">
-                    <citation-card id="citation-card" title="Similar Articles" ncitation="18 similar articles"/>
+                    <citation-card id="citation-card" title="Similar Articles" ncitation=""/>
                 </b-col>
             </b-row>
 
@@ -145,11 +143,11 @@
     import Navbar from '~/components/Navbar.vue'
     import TableOfContent from '~/components/DocumentView/TableOfContent.vue'
     import SearchBox from '~/components/SearchBox.vue'
-    import CitationCard from '~/components/CitationCard.vue'
+    import CitationCard from '~/components/DocumentView/CitationCard.vue'
     import BaseCard from '~/components/Base/BaseCard.vue'
     import DocViewService from "~/api/DocViewService"
     import DocumentResultsList from "~/components/DocumentResults/DocumentResultsList.vue"
-    import VersionHistoryCard from "~/components/VersionHistoryCard.vue"
+    import VersionHistoryCard from "~/components/DocumentView/VersionHistoryCard.vue"
 
     export default {
         components: {
@@ -167,31 +165,17 @@
             },
             scroll(id) {
               document.getElementById(id).scrollIntoView();
-            },
-            async getDocPDF () {
-                DocViewService.getDocPDF('10.1.1.1028.1')
-                .then(response => {
-                    var fileURL = window.URL.createObjectURL(new Blob([response.data]));
-
-                    var fileLink = document.createElement('a');                
-
-                    fileLink.href = fileURL;
-
-                    fileLink.setAttribute('download', '.10.1.1.1028.1.pdf');
-
-                    document.body.appendChild(fileLink);
-
-                    fileLink.click();
-                })
             }
         },
         data (){
             return {
+                pdfURL: "/pdf/",
                 title: "",
                 year: "",
                 authors: [],
                 venue: "",
                 abstract: "",
+                nCitation: " Citations",
                 readMoreToggle: false,
 
                  documents: [
@@ -206,13 +190,15 @@
             }
         },
         mounted() {
+            this.pdfURL += this.$route.params.id, 
             DocViewService.getPaperEntity(this.$route.params.id)
                 .then(response => (
-                    this.title = response.data.response.title, 
-                    this.year = response.data.response.year,
-                    this.authors = response.data.response.authors,
-                    this.venue = response.data.response.venue,
-                    this.abstract = response.data.response.abstract
+                    this.title = response.data.paper.title, 
+                    this.year = response.data.paper.year,
+                    this.authors = response.data.paper.authors,
+                    this.venue = response.data.paper.venue,
+                    this.abstract = response.data.paper.abstract,
+                    this.nCitation = response.data.paper.n_citation + this.nCitation
                     ))
         }
         

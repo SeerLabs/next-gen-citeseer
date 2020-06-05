@@ -50,21 +50,21 @@
 </template>
 
 <script>
-    import CitationList from './CitationList.vue'
+    import CitationList from '~/components/DocumentView/CitationList.vue'
     export default {
         name: 'CitationCard',
         components: {
             CitationList
         },
-        props: ['title', 'card_type','ncitation'],
+        props: {
+            title: String,
+            ncitation: String
+        },
         data () {
             return {
-                sortByDisplay: 'Co-Citation',
-                sortDropdown: {
-                    'sort-co-citation': {'displayName': 'Co-Citation', 'sortByKey': 'co-citation'},
-                    'sort-active-bibliography': {'displayName': 'Active Bibliography', 'sortByKey': 'active-bibliography'},
-                },
-                sortByKey: 'co-citation'
+                sortByDisplay: '',
+                sortDropdown: {},
+                sortByKey: ''
             }
         },
         methods: {
@@ -74,6 +74,26 @@
                 this.sortByDisplay = event.target.text;
                 this.sortByKey = this.sortDropdown[dropdownItem].sortByKey;
             },
+        },
+        mounted() {
+            switch(this.title) {
+                case "Citations":
+                    this.sortByDisplay = 'Relevance';
+                    this.sortDropdown =  {
+                        'sort-relevance': {'displayName': 'Relevance', 'sortByKey': 'relevance'},
+                        'sort-Recency': {'displayName': 'Recency', 'sortByKey': 'Recency'},
+                    };
+                    this.sortByKey = 'relevance';
+                    break;
+                case "Similar Articles":
+                    this.sortByDisplay = 'Co-Citation';
+                    this.sortDropdown =  {
+                        'sort-co-citation': {'displayName': 'Co-Citation', 'sortByKey': 'co-citation'},
+                        'sort-active-bibliography': {'displayName': 'Active Bibliography', 'sortByKey': 'active-bibliography'},
+                    };
+                    this.sortByKey = 'co-citation';
+                    break;
+            } 
         }
     }
 </script>
