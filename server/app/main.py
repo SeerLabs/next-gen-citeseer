@@ -1,5 +1,7 @@
+import uvicorn as uvicorn
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+from routers import document_routes, elastic_routes
 
 app = FastAPI()
 
@@ -14,16 +16,13 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-@app.get("/ping")
+app.include_router(document_routes.router, tags=['document_routes'], prefix="/api")
+app.include_router(elastic_routes.router, tags=['elastic_routes'], prefix="/api")
+
+@app.get("/")
 def pong():
     return {"ping": "pong!"}
 
 
-@app.get("/")
-def read_root():
-    return {"Hello": "World"}
-
-
-@app.get("/items/{item_id}")
-def read_item(item_id: int, q: str = None):
-    return {"item_id": item_id, "q": q}
+if __name__ == "__main__":
+    uvicorn.run(app, host="localhost", port=8000)
