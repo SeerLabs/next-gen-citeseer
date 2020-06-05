@@ -6,7 +6,6 @@
             LINKS
           </b-col>
         </b-row>
-
     </base-card>
   </div>
 </template>
