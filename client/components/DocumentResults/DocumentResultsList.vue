@@ -1,7 +1,7 @@
 <template>
   <b-container class="document-result-list">
     <b-row class="document-results-header">
-      <b-col sm="6">Results {{currentPageLocation}} - {{currentPageLocation + pageSize - 1}} of {{totalPageResults}}</b-col>
+      <b-col sm="6">Results {{(page-1)*pageSize + 1}} - {{(page-1)*pageSize + pageSize}} of {{totalPageResults}}</b-col>
       <b-col sm="6">
         <div class="document-results-sorting">
           Sort by
@@ -44,11 +44,11 @@
         },
         props: {
           documents: Array,
-          totalPageResults: Number
+          totalPageResults: Number,
+          page: Number,
         },
         data() {
           return {
-            currentPage: 1,
             pageSize: 10,
             sortByDisplay: 'Relevance',
             sortDropdown: {

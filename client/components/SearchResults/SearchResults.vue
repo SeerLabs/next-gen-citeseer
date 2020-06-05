@@ -7,8 +7,15 @@
 			</b-row>
 
       <b-row>
-        <b-col md="8" id="search-results-list">
-          <document-results-list :documents="documents" :totalPageResults="totalPageResults"/>
+        <b-col v-if="loadingState" md="8">
+            <b-spinner class="spinner" label="Loading..."></b-spinner>
+        </b-col>
+        <b-col v-else md="8" id="search-results-list">
+          <document-results-list 
+            :documents="documents"
+            :totalPageResults="totalPageResults"
+            :page="page"
+          />
           <b-pagination
             :total-rows="totalPageResults" 
             v-model="page"
@@ -45,18 +52,21 @@
             documents: [],
             totalPageResults: 0,
             pageSize: 10,
-            page: 1
+            page: 1,
+            loadingState: false
           }
         },
         methods: {
           searchQuery() {
             console.log("Query string: ", this.queryString);
+            this.loadingState = true;
             searchPaperService.searchPaper(this.queryString, this.page, this.pageSize)
             .then(response => {
               console.log("RESPONSE: " + response.data);
               this.documents = response.data.response;
               this.totalPageResults = response.data.total_results;
               console.log(this.documents);
+              this.loadingState = false;
             });
           },
         },
@@ -74,6 +84,11 @@
 
 #search-results-list {
   margin-bottom: 1em;
+}
+
+.spinner {
+  text-align: center;
+  margin: auto;
 }
 
 [v-cloak] {

@@ -1,35 +1,38 @@
 <template>
-  <div class="sui-layout-header">
-    <div class="sui-layout-header__inner">
-      <form @submit.prevent="$emit('submit', $event.target.value)">
-        <div class="sui-search-box">
-          <div class="sui-search-box__wrapper">
-            <input
-              type="text"
-              placeholder="Try searching for 'water', 'dragon' or 'ragnaros'"
-              class="sui-search-box__text-input"
-              :value="value"
-              @input="$emit('input', $event.target.value)"
-            />
-          </div>
-          <input
-            type="submit"
-            class="button sui-search-box__submit"
-            value="Search"
-          />
-        </div>
-      </form>
+    <div id="searchbox">
+        <b-form @submit.prevent="submitInput">
+            <b-input-group prepend="All Fields" class="mt-3">
+                <b-form-input v-model="searchQuery" @input="handleInput"></b-form-input>
+
+                <b-input-group-append>
+                    <b-button variant="info" type="submit">Search</b-button>
+                </b-input-group-append>
+            </b-input-group>
+        </b-form>
     </div>
-  </div>
 </template>
 
 <script>
-export default {
-  props: {
-    value: {
-      required: true,
-      type: String
+    import SearchPaperService from '../api/SearchPaperService'
+    export default {
+        name: 'SearchBox',
+        props: {
+        },
+        data() {
+            return {
+                searchQuery: ""
+            }
+        },
+        methods: {
+            handleInput() {
+                this.$emit('input', this.searchQuery);
+            },
+            submitInput() {
+                this.$emit('submit', this.searchQuery);
+            }
+        }
     }
-  }
-};
 </script>
+
+<style>
+</style>
