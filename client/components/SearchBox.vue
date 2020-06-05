@@ -1,14 +1,13 @@
 <template>
     <div id="searchbox">
-        <template>
+        <b-form @submit.prevent="$emit('submit', $event.target.value)">
             <b-input-group prepend="All Fields" class="mt-3">
-            <b-form-input></b-form-input>
+            <b-form-input v-model="queryString" required></b-form-input>
                 <b-input-group-append>
-                    <b-button variant="info" v-on:click="getPaperResults">Search</b-button>
+                    <b-button variant="info" type="submit">Search</b-button>
                 </b-input-group-append>
             </b-input-group>
-        </template>
-        {{searchResults}}
+        </b-form>
     </div>
 </template>
 
@@ -16,17 +15,11 @@
     import SearchPaperService from '../api/SearchPaperService'
     export default {
         name: 'SearchBox',
-        data () {
-                return {
-                    searchResults: null
-                }
-            },
-        methods: {
-            async getPaperResults () {
-                SearchPaperService.searchPaper()
-                .then(response => (this.searchResults = response.data))
+        data() {
+            return {
+                queryString: '',
             }
-        }
+        },
     }
 </script>
 <style>

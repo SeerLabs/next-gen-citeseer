@@ -14,6 +14,7 @@
     import DocumentResultsList from "../DocumentResults/DocumentResultsList.vue";
     import SearchResultsFilter from "./SearchResultsFilter.vue";
     import SearchResultsExternalLinks from "./SearchResultsExternalLinks";
+    import searchPaperService from "~/api/SearchPaperService";
 
     export default {
         name: "SearchResults",
@@ -24,17 +25,32 @@
         },
         data() {
           return {
-            documents: [
-              {'title': 'Document Title', 'type': 'DOCUMENT', 'authors': 'Abcdefg Lastname',
-              'year': '2018', 'abstract': 'Lorem ipsum', 'numCitations': 20},
-              {'title': 'ABCDEFG', 'type': 'DOCUMENT', 'authors': 'Hijklmno Pqrstuv',
-              'year': '2020', 'abstract': 'Lorem ipsum', 'numCitations': 3},
-              {'title': 'EFGHIJK', 'type': 'CITATION', 'authors': 'Firstname Lastname',
-              'year': '2021', 'abstract': 'Lorem ipsum', 'numCitations': 30}
-            ],
-            totalPageResults: 1000
+            queryString: '',
+            documents: [],
+            totalPageResults: 1000,
+            pageSize: 10,
+            page: 1
           }
-        }  
+        },
+        methods: {
+          searchQuery() {
+            this.queryString = "test";
+            searchPaperService.searchPaper(this.queryString, this.page, this.pageSize)
+            .then(response => {
+              console.log("RESPONSE: " + response.data);
+
+              const results = [];
+              for(var i in response.data.response) {
+                results.push(response.data.response[i]);
+              }
+              this.documents = results;
+              console.log(this.documents);
+            });
+          }
+        },
+        mounted: function() {
+          this.searchQuery();
+        }
     }
 </script>
 

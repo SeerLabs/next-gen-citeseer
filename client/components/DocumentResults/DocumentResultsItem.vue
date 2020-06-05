@@ -12,7 +12,7 @@
     <b-row>
       <b-col class="result-content">
         <p>
-          {{ abstract }}
+          {{ abstract.slice(0, 200) }}...
         </p>
       </b-col>
     </b-row>
