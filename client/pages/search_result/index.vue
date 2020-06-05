@@ -9,7 +9,7 @@ export default {
   components: {
     SearchResults
   },
-  layout: 'layout_search',
+  layout: 'layout_default',
 }
 </script>
 

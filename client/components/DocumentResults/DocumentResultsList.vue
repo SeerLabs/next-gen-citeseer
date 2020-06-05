@@ -29,13 +29,6 @@
     </b-row>
 
     <document-results-container :documents="documents" :sortByKey="sortByKey"/>
-
-    <b-pagination
-      :total-rows="totalPageResults" 
-      v-model="currentPage"
-      :per-page="pageSize"
-      v-on:click: getPage
-    />
     
   </b-container>
 </template>
@@ -78,10 +71,6 @@
             this.sortByDisplay = event.target.text;
             this.sortByKey = this.sortDropdown[dropdownItem].sortByKey;
           },
-          
-          getPage: function(event) {
-            // IMPLEMENT WITH REST API
-          }
         }
     }
 </script>

@@ -3,6 +3,7 @@
     <ul>
       <li v-for="item in orderedDocuments" :key="item.id"> 
         <document-results-item class="document-results-item"
+          :doc_id="item.id"
           :title="item.title"
           :type="item.type" 
           :authors="item.authors"

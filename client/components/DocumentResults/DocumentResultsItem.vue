@@ -1,7 +1,7 @@
 <template>
   <b-container fluid="sm" class="document-result">
     <b-row>
-      <b-col cols="6" class="result-title"><h4>{{ title }}</h4></b-col>
+      <b-col cols="6" class="result-title"><a :href="docUrl" target="_blank"><h4>{{ title }}</h4></a></b-col>
       <b-col cols="6" class="result-type">{{ type }}</b-col>
     </b-row>
 
@@ -36,13 +36,20 @@
     export default {
         name: "DocumentResultsItem",
         props: {
+          doc_id: String,
           title: String,
           type: String,
-          authors: String,
+          authors: Array,
           year: String,
           abstract: String,
           numCitations: Number
+        },
+        computed: {
+          docUrl: function() {
+            return `/doc_view/${this.doc_id}`;
+          }
         }
+
     }
 </script>
 
