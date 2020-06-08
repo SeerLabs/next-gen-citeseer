@@ -11,10 +11,13 @@
             <b-spinner class="spinner" label="Loading..."></b-spinner>
         </b-col>
         <b-col v-else md="8" id="search-results-list">
+          <h3>{{sortBy}}</h3>
           <document-results-list 
             :documents="documents"
             :totalPageResults="totalPageResults"
             :page="page"
+            :sortDropdown="sortDropdown"
+            v-model="sortBy"
           />
           <b-pagination
             :total-rows="totalPageResults" 
@@ -53,7 +56,13 @@
             totalPageResults: 0,
             pageSize: 10,
             page: 1,
-            loadingState: false
+            loadingState: false,
+            sortBy: 'relevance',
+            sortDropdown: {
+              'sort-relevance': {'displayName': 'Relevance', 'sortByKey': 'relevance'},
+              'sort-citations': {'displayName': 'Citations', 'sortByKey': 'num_citations'},
+              'sort-year': {'displayName': 'Year', 'sortByKey': 'year'},
+            },
           }
         },
         methods: {
@@ -94,5 +103,4 @@
 [v-cloak] {
   display: none;
 }
-
 </style>

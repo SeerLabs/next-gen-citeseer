@@ -46,17 +46,12 @@
           documents: Array,
           totalPageResults: Number,
           page: Number,
+          sortDropdown: Object
         },
         data() {
           return {
             pageSize: 10,
             sortByDisplay: 'Relevance',
-            sortDropdown: {
-              'sort-relevance': {'displayName': 'Relevance', 'sortByKey': ''},
-              'sort-citations': {'displayName': 'Citations', 'sortByKey': 'numCitations'},
-              'sort-year': {'displayName': 'Year', 'sortByKey': 'year'},
-            },
-            sortByKey: ''
           }
         },
         computed: {
@@ -70,6 +65,8 @@
             const dropdownItem = event.target.name;
             this.sortByDisplay = event.target.text;
             this.sortByKey = this.sortDropdown[dropdownItem].sortByKey;
+
+            this.$emit('input', this.sortByDisplay);
           },
         }
     }
