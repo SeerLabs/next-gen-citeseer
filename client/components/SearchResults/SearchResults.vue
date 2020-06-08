@@ -12,7 +12,7 @@
         </b-col>
         <b-col v-else md="8" id="search-results-list">
           <h3>{{sortBy}}</h3>
-          <document-results-list 
+          <document-results-container 
             :documents="documents"
             :totalPageResults="totalPageResults"
             :page="page"
@@ -35,7 +35,7 @@
 </template>
 
 <script>
-    import DocumentResultsList from "../DocumentResults/DocumentResultsList.vue";
+    import DocumentResultsContainer from "../DocumentResults/DocumentResultsContainer.vue";
     import SearchResultsFilter from "./SearchResultsFilter.vue";
     import SearchResultsExternalLinks from "./SearchResultsExternalLinks";
     import SearchBox from '~/components/SearchBox.vue'
@@ -44,7 +44,7 @@
     export default {
         name: "SearchResults",
         components: {
-          DocumentResultsList,
+          DocumentResultsContainer,
           SearchResultsFilter,
           SearchResultsExternalLinks,
           SearchBox
@@ -67,14 +67,11 @@
         },
         methods: {
           searchQuery() {
-            console.log("Query string: ", this.queryString);
             this.loadingState = true;
             searchPaperService.searchPaper(this.queryString, this.page, this.pageSize)
             .then(response => {
-              console.log("RESPONSE: " + response.data);
               this.documents = response.data.response;
               this.totalPageResults = response.data.total_results;
-              console.log(this.documents);
               this.loadingState = false;
             });
           },
