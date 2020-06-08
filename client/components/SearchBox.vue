@@ -13,6 +13,7 @@
 </template>
 
 <script>
+    // @TODO direct search bar to the search results page
     import SearchPaperService from '../api/SearchPaperService'
     export default {
         name: 'SearchBox',
