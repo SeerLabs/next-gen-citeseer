@@ -76,12 +76,11 @@ class Elastic:
         return response
 
     # Given a paperID, return all the citations to and from the input paper
-    def get_citations(self, paperID):
-
-        # Search the citeseerx index for this specific paperID and return only citedby and cite list fields
-        response = self.refined_search('citeseerx', paperID, 'paper_id', ['citedby', 'cites'])
-        self.print_response(response)
-        return response
+    # def get_citations(self, paperID):
+    #     # Search the citeseerx index for this specific paperID and return only citedby and cite list fields
+    #     response = self.refined_search('citeseerx', paperID, 'paper_id', ['citedby', 'cites'])
+    #     self.print_response(response)
+    #     return response
 
     # Given a paperID, return a few similar or clustered documents from the cluster index
     # There is a more simple way of thinking of this function, we could just use clusterID if we have it cached either in front end or backend for specific paper

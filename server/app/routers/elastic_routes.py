@@ -3,7 +3,8 @@ from uuid import uuid4
 
 from fastapi import APIRouter
 
-from models.api_response import SearchQueryResponse, PaperDetailResponse
+from models.api_response import SearchQueryResponse, PaperDetailResponse, CitationsResponse
+from models.citation import Citation
 from models.paper import Paper
 from models.search_query import SearchQuery
 from services.elastic_service import Elastic
@@ -30,10 +31,14 @@ def paper_info(id: str):
     return PaperDetailResponse(query_id=str(uuid4()), paper=paper_entity_response)
 
 
-@router.get('/citations')
-def citations(paperID: str = ""):
-    result = ES.get_citations(paperID)
-    return result
+@router.get('/citations/{id}')
+def citations(id: str, page: int = 1, pageSize: int = 10):
+    es_citations_response = ES.paginated_search('citations', id, page, pageSize, 'paperid')
+    result_list = []
+    for doc_hit in es_citations_response['hits']['hits']:
+        result_list.append(build_citation_entity(doc=doc_hit['_source']))
+    total_results = es_citations_response['hits']['total']['value']
+    return CitationsResponse(query_id=str(uuid4()), total_results=total_results, citations=result_list)
 
 
 @router.get('/similar')
@@ -58,3 +63,23 @@ def build_paper_entity(doc):
 
 def get_authors_in_list(doc, field) -> List[str]:
     return [field['name'] for field in doc[field]]
+
+
+def build_citation_entity(doc):
+    return Citation(id=doc.get('id'),
+                    cluster=doc.get('cluster'),
+                    authors=doc.get('authors'),
+                    title=doc.get('title'),
+                    venue=doc.get('venue'),
+                    venue_type=doc.get('venueType'),
+                    year=doc.get('year'),
+                    pages=doc.get('pages'),
+                    editors=doc.get('editors'),
+                    publisher=doc.get('publisher'),
+                    pub_address=doc.get('pubAddress'),
+                    volume=doc.get('volume'),
+                    number=doc.get('number'),
+                    tech=doc.get('tech'),
+                    raw=doc.get('raw'),
+                    paper_id=doc.get('paperid'),
+                    self=doc.get('self'))
