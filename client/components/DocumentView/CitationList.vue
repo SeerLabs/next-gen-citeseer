@@ -18,7 +18,6 @@
             :per-page="perPage"
             @input="getCitationEntities()"
         ></b-pagination>
-        
     </div>
 </template>
 
@@ -54,8 +53,11 @@
         },
         methods: {
             getCitationEntities(){
-                docViewService.getCitationsEntities(this.$route.params.id, this.currentPage)
-                .then(response => (this.citations = response.data.citations))
+                if (true) {
+                    docViewService.getCitationsEntities(this.$route.params.id, this.currentPage)
+                        .then(response => (this.citations = response.data.citations))
+                }
+                
                 
             }
         }
