@@ -4,7 +4,7 @@ export default {
     getPaperEntity (id) {
         return CoreApi().get('/paper/' + id)
     },
-    getCitationsEntities (id) {
-        return CoreApi().get('/citation_entities',{params: {id: id}})
+    getCitationsEntities (id, page) {
+        return CoreApi().get('/citations/' + id,{params: {page: page, pageSize: 10}})
     }
 }

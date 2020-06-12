@@ -31,7 +31,7 @@
             </b-row>
              <b-row>
                 <b-col>
-                    <citation-list v-bind:type="title"/>
+                    <citation-list doi="doi" v-bind:type="title" />
                 </b-col>
             </b-row>
             
@@ -57,6 +57,7 @@
             CitationList
         },
         props: {
+            doi: String,
             title: String,
             ncitation: String
         },

@@ -6,17 +6,17 @@
     </b-row>
 
     <b-row>
-      <b-col class="result-info"><h6>{{ authors }} - Venue - {{ year }}</h6></b-col>
+      <b-col class="result-info"><h6>{{ authors }} - {{ venue }} - {{ year }}</h6></b-col>
     </b-row>
 
     <b-row>
       <b-col class="result-content">
         <p>
-            <span v-if="!readMoreToggle">{{abstract.slice(0, 200)}}</span>
+            <!-- <span v-if="!readMoreToggle">{{abstract.slice(0, 200)}}</span>
             <a class="" v-if="!readMoreToggle" @click="toggleReadMore" href="#">
                 Read more...
             </a>
-            <span v-if="readMoreToggle" v-html="abstract"></span>
+            <span v-if="readMoreToggle" v-html="abstract"></span> -->
         </p>
       </b-col>
     </b-row>
@@ -42,7 +42,8 @@
         props: {
           title: String,
           type: String,
-          authors: Array,
+          authors: String,
+          venue: String,
           year: String,
           abstract: String,
           numCitations: Number
