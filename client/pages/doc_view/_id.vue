@@ -1,6 +1,12 @@
 <template>
+    <!-- $ sudo sysctl fs.inotify.max_user_watches=524288
+    $ sudo sysctl -p -->
+
+
+
+
     <div id="doc-view-layout">
-        
+        <test-child/>
         <b-card id="toc">
             <b-row>
                 <b-col><h6 v-on:click="scroll('citation-card')" >Citation</h6></b-col>
@@ -82,14 +88,14 @@
             <!-- Citations Row -->
             <b-row id ="citation-card" class="citation-card" align-h="center">
                 <b-col cols="12">
-                    <citation-card id="citation-card" title="Citations" v-bind:ncitation="nCitation"/>
+                    <citation-card id="citation-card" title="Citations" v-bind:doi="doi" v-bind:ncitation="nCitation"/>
                 </b-col>
             </b-row>
             
             <!-- Similar Articles Row -->
             <b-row id ="similar-article-card" class="citation-card" align-h="center">
                 <b-col cols="12">
-                    <citation-card id="citation-card" title="Similar Articles" ncitation=""/>
+                    <citation-card id="citation-card" title="Similar Articles" v-bind:doi="doi" citation=""/>
                 </b-col>
             </b-row>
 
@@ -147,7 +153,6 @@
     import DocViewService from "~/api/DocViewService"
     import DocumentResultsList from "~/components/DocumentResults/DocumentResultsList.vue"
     import VersionHistoryCard from "~/components/DocumentView/VersionHistoryCard.vue"
-
     export default {
         components: {
             Navbar,
@@ -169,6 +174,7 @@
         data (){
             return {
                 pdfURL: "/pdf/",
+                doi: "123",//this.$route.params.id,
                 title: "",
                 year: "",
                 authors: [],
