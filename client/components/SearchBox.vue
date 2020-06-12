@@ -1,33 +1,39 @@
 <template>
     <div id="searchbox">
-        <template>
+        <b-form @submit.prevent="submitInput">
             <b-input-group prepend="All Fields" class="mt-3">
-            <b-form-input></b-form-input>
+                <b-form-input v-model="searchQuery" @input="handleInput"></b-form-input>
+
                 <b-input-group-append>
-                    <b-button variant="info" v-on:click="getPaperResults">Search</b-button>
+                    <b-button variant="info" type="submit">Search</b-button>
                 </b-input-group-append>
             </b-input-group>
-        </template>
-        {{searchResults}}
+        </b-form>
     </div>
 </template>
 
 <script>
+    // @TODO direct search bar to the search results page
     import SearchPaperService from '../api/SearchPaperService'
     export default {
         name: 'SearchBox',
-        data () {
-                return {
-                    searchResults: null
-                }
-            },
+        props: {
+        },
+        data() {
+            return {
+                searchQuery: ""
+            }
+        },
         methods: {
-            async getPaperResults () {
-                SearchPaperService.searchPaper()
-                .then(response => (this.searchResults = response.data))
+            handleInput() {
+                this.$emit('input', this.searchQuery);
+            },
+            submitInput() {
+                this.$emit('submit', this.searchQuery);
             }
         }
     }
 </script>
+
 <style>
 </style>

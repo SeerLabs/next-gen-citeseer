@@ -5,7 +5,7 @@
 		<b-col cols="12" id="page-container">
 			<b-row>
 				<b-col sm="8" id="search-box-container">
-					<search-box/>
+					<search-box v-model="searchQuery"/>
 				</b-col>
 			</b-row>
 			<nuxt/>
@@ -26,6 +26,11 @@ export default {
 		NavBar,
 		FooterBar,
     	SearchBox
+	},
+	data() {
+		return {
+			searchQuery: ''
+		}
 	}
 };
 </script>
