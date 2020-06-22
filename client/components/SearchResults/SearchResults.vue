@@ -68,6 +68,8 @@
         methods: {
           searchQuery() {
             this.loadingState = true;
+            //push params
+            console.log(this.$route.query.query);
             searchPaperService.searchPaper(this.queryString, this.page, this.pageSize)
             .then(response => {
               this.documents = response.data.response;
@@ -77,7 +79,16 @@
           },
         },
         created: function() {
+          this.queryString = this.$route.query.query;
+          console.log(this.queryString);
           this.searchQuery();
+        },
+        watch: {
+          '$route.query.query'() {
+            this.queryString = this.$route.query.query;
+            console.log(this.queryString);
+            this.searchQuery();
+          }
         }
     }
 </script>
