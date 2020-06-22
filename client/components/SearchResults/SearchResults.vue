@@ -11,7 +11,6 @@
             <b-spinner class="spinner" label="Loading..."></b-spinner>
         </b-col>
         <b-col v-else md="8" id="search-results-list">
-          <h3>{{sortBy}}</h3>
           <document-results-container 
             :documents="documents"
             :totalPageResults="totalPageResults"

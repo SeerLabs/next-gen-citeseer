@@ -2,7 +2,9 @@
   <header>
     <!-- Imports -->
     <b-navbar toggleable="lg" type="dark" variant="dark">
-    <b-navbar-brand href="#">CiteSeerX</b-navbar-brand>
+    <b-navbar-brand href="#">
+        <nuxt-link to="/" id="navbar-home-link">CiteSeerX</nuxt-link>
+    </b-navbar-brand>
 
     <b-navbar-toggle target="nav-collapse"></b-navbar-toggle>
 
@@ -43,5 +45,10 @@
 <style scoped>
   header {
     margin-bottom: 1.5em;
+  }
+
+  #navbar-home-link {
+    color: inherit;
+    text-decoration: none;
   }
 </style>
