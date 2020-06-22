@@ -49,7 +49,7 @@
                     <b-card>
                         <!-- PDF Button -->
                         <b-row>
-                            <b-col><b-button squared id="pdf-btn" v-bind:to="pdfURL">View PDF</b-button></b-col>
+                            <b-col><b-button squared id="pdf-btn" v-bind:to="getPDFUrl">View PDF</b-button></b-col>
 
                         </b-row>
                         
@@ -173,14 +173,6 @@
         },
         data (){
             return {
-                pdfURL: "/pdf/",
-                doi: "123",//this.$route.params.id,
-                title: "",
-                year: "",
-                authors: [],
-                venue: "",
-                abstract: "",
-                nCitation: " Citations",
                 readMoreToggle: false,
 
                  documents: [
@@ -194,17 +186,23 @@
             totalPageResults: 1000
             }
         },
-        mounted() {
-            this.pdfURL += this.$route.params.id, 
-            DocViewService.getPaperEntity(this.$route.params.id)
-                .then(response => (
-                    this.title = response.data.paper.title, 
-                    this.year = response.data.paper.year,
-                    this.authors = response.data.paper.authors,
-                    this.venue = response.data.paper.venue,
-                    this.abstract = response.data.paper.abstract,
-                    this.nCitation = response.data.paper.n_citation + this.nCitation
-                    ))
+        async asyncData({params}) {
+            console.log(params.id);
+            const { data } = await DocViewService.getPaperEntity(params.id)
+
+            return {
+                title : data.paper.title, 
+                year : data.paper.year,
+                authors : data.paper.authors,
+                venue : data.paper.venue,
+                abstract : data.paper.abstract,
+                nCitation : data.paper.n_citation
+            }
+        },
+        computed: {
+            getPDFUrl() {
+                return '/pdf/' + this.$route.params.id;
+            }
         },
         layout: 'layout_default',
         

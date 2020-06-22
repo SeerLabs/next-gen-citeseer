@@ -27,7 +27,7 @@
             },
             submitInput() {
                 console.log(this.searchQuery);
-                this.$router.push({ path: 'search_result', query: { query: this.searchQuery }});
+                this.$router.push({ name: 'search_result', query: { query: this.searchQuery }});
             },
         }
     }
