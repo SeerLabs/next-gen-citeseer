@@ -49,7 +49,7 @@
                     <b-card>
                         <!-- PDF Button -->
                         <b-row>
-                            <b-col><b-button squared id="pdf-btn" v-bind:to="pdfURL">View PDF</b-button></b-col>
+                            <b-col><b-button squared id="pdf-btn" v-bind:to="getPDFUrl" target="_blank">View PDF</b-button></b-col>
 
                         </b-row>
                         
@@ -173,15 +173,13 @@
         },
         data (){
             return {
-                pdfURL: "/pdf/",
-                doi: "123",//this.$route.params.id,
-                title: "",
-                year: "",
-                authors: [],
-                venue: "",
-                abstract: "",
-                nCitation: " Citations",
                 readMoreToggle: false,
+                title : "", 
+                year : "",
+                authors : [],
+                venue : "",
+                abstract : "",
+                nCitation : "",
 
                  documents: [
               {'title': 'Document Title', 'type': 'DOCUMENT', 'authors': 'Abcdefg Lastname',
@@ -194,17 +192,22 @@
             totalPageResults: 1000
             }
         },
-        mounted() {
-            this.pdfURL += this.$route.params.id, 
-            DocViewService.getPaperEntity(this.$route.params.id)
-                .then(response => (
-                    this.title = response.data.paper.title, 
-                    this.year = response.data.paper.year,
-                    this.authors = response.data.paper.authors,
-                    this.venue = response.data.paper.venue,
-                    this.abstract = response.data.paper.abstract,
-                    this.nCitation = response.data.paper.n_citation + this.nCitation
-                    ))
+        async fetch() {
+            console.log(this.$route.params.id);
+            const { data } = await DocViewService.getPaperEntity(this.$route.params.id)
+            console.log(data);
+
+            this.title = data.paper.title, 
+            this.year = data.paper.year,
+            this.authors = data.paper.authors,
+            this.venue = data.paper.venue,
+            this.abstract = data.paper.abstract,
+            this.nCitation = data.paper.n_citation
+        },
+        computed: {
+            getPDFUrl() {
+                return '/pdf/' + this.$route.params.id;
+            }
         },
         layout: 'layout_default',
         

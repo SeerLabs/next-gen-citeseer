@@ -1,7 +1,7 @@
 <template>
   <b-container fluid="sm" class="document-result">
     <b-row>
-      <b-col cols="6" class="result-title"><a :href="docUrl" target="_blank"><h4>{{ title }}</h4></a></b-col>
+      <b-col cols="6" class="result-title"><nuxt-link :to="`/doc_view/${doc_id}`"><h4>{{ title }}</h4></nuxt-link></b-col>
       <b-col cols="6" class="result-type">{{ type }}</b-col>
     </b-row>
 
