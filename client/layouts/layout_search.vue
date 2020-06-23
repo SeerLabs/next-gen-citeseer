@@ -8,7 +8,7 @@
 					<search-box v-model="searchQuery"/>
 				</b-col>
 			</b-row>
-			<nuxt/>
+			<nuxt keep-alive />
 		</b-col>
 	</b-container>
 	<footer-bar/>
