@@ -17,8 +17,6 @@ class Elastic:
     def print_response(self, response):
         print(json.dumps(response, indent=4, sort_keys=True))
 
-
-
     '''
     input: index (str), the index that needs to be queried, usually citeseerx for papers or authors for authors
             q (str), the string query that is being made to Elastic
@@ -26,27 +24,6 @@ class Elastic:
             fields_to_search (list), the list of strings that are going to searched for the query
     
     '''
-    def refined_search(self, index, q, fields_to_search, source=None):
-
-        body = {
-                "from": 0,
-                "size": 5,
-                "query": {
-                    "multi_match": {
-                        "query": q,
-                        "fields": fields_to_search
-                    }
-                }
-        }
-
-        if source:
-            body["_source"] = source
-
-        response = self.connection.search(index=index, body=body)
-        self.print_response(response)
-        return response
-
-    # Search with Pagination
     def paginated_search(self, index, query, page, pageSize, fields_to_search, source=None):
 
         body = {
@@ -63,34 +40,18 @@ class Elastic:
         if source:
             body["_source"] = source
 
-        response = self.connection.search(index=index, body=body)
-        self.print_response(response)
-        return response
+        return self.connection.search(index=index, body=body)
 
     # Given a paperID, return all the relevant information for the paper
     def get_paper_info(self, paperID):
-
         #Search the citeseerx index for this specific paperID and return all fields associated with a hit
-        response = self.refined_search('citeseerx', paperID, 'paper_id')
-        self.print_response(response)
-        return response
-
-    # Given a paperID, return all the citations to and from the input paper
-    # def get_citations(self, paperID):
-    #     # Search the citeseerx index for this specific paperID and return only citedby and cite list fields
-    #     response = self.refined_search('citeseerx', paperID, 'paper_id', ['citedby', 'cites'])
-    #     self.print_response(response)
-    #     return response
+        return self.paginated_search('citeseerx', paperID, 1, 10, 'paper_id')
 
     # Given a paperID, return a few similar or clustered documents from the cluster index
     # There is a more simple way of thinking of this function, we could just use clusterID if we have it cached either in front end or backend for specific paper
     def get_clustered_papers(self, paperID):
-
         # Search the cluster index for a cluster which contains this specific paperID, return all other included papers
-        response = self.refined_search('clusters', paperID, 'included_papers', ['included_papers'])
-        self.print_response(response)
-        return response
-
+        return self.paginated_search('clusters', paperID, 1, 10, 'included_papers', ['included_papers'])
 
 '''
 ES = Elastic()
