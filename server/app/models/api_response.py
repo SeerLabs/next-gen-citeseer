@@ -19,4 +19,3 @@ class CitationsResponse(BaseModel):
     query_id: str
     total_results: int
     citations: List[Citation]
-

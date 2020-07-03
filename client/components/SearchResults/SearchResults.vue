@@ -11,7 +11,6 @@
             <b-spinner class="spinner" label="Loading..."></b-spinner>
         </b-col>
         <b-col v-else md="8" id="search-results-list">
-          <h3>{{sortBy}}</h3>
           <document-results-container 
             :documents="documents"
             :totalPageResults="totalPageResults"
@@ -68,6 +67,8 @@
         methods: {
           searchQuery() {
             this.loadingState = true;
+            //push params
+            console.log(this.$route.query.query);
             searchPaperService.searchPaper(this.queryString, this.page, this.pageSize)
             .then(response => {
               this.documents = response.data.response;
@@ -77,7 +78,16 @@
           },
         },
         created: function() {
+          this.queryString = this.$route.query.query;
+          console.log(this.queryString);
           this.searchQuery();
+        },
+        watch: {
+          '$route.query.query'() {
+            this.queryString = this.$route.query.query;
+            console.log(this.queryString);
+            this.searchQuery();
+          }
         }
     }
 </script>

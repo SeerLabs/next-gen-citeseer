@@ -4,7 +4,7 @@
 	<b-container fluid="md">
 		<b-row>
 			<b-col cols="12" id="page-container">
-    			<nuxt/>
+    			<nuxt keep-alive />
 			</b-col>
 		</b-row>
 	</b-container>
