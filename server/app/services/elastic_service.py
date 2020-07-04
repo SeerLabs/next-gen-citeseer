@@ -7,7 +7,6 @@ class Elastic:
     def __init__(self):
         self.connection = Elasticsearch([{'host': '130.203.139.151', 'port': 9200}])
 
-
     def test_connection(self):
         req = requests.get('http://130.203.139.151:9200')
         content = req.content
@@ -42,6 +41,23 @@ class Elastic:
 
         return self.connection.search(index=index, body=body)
 
+    def paginated_search_with_ids(self, index, page, pageSize, ids, sort, source=None):
+
+        body = {
+                "from": (page-1)*pageSize,
+                "size": pageSize,
+                "query": {
+                    "ids": {
+                        "values": ids
+                    }
+                }
+        }
+
+        if source:
+            body["_source"] = source
+
+        return self.connection.search(index=index, body=body, sort=sort)
+
     # Given a paperID, return all the relevant information for the paper
     def get_paper_info(self, paperID):
         #Search the citeseerx index for this specific paperID and return all fields associated with a hit
@@ -53,6 +69,24 @@ class Elastic:
         # Search the cluster index for a cluster which contains this specific paperID, return all other included papers
         return self.paginated_search('clusters', paperID, 1, 10, 'included_papers', ['included_papers'])
 
+    def get_single_cluster_details(self, cluster_id):
+        return self.connection.get(index="clusters2", doc_type="cluster", id = cluster_id)
+
+    def get_paper_ids_for_clusters(self, cid_list):
+        return self.connection.mget(index="clusters2", doc_type="cluster", body={'ids': cid_list},
+                                    _source_includes='included_papers')
+
+    def get_sorted_papers(self, papers_list, page, pageSize, sort):
+        if sort is "yearAsc":
+            sort = 'year:desc'
+        elif sort is "yearDsc":
+            sort = 'year:desc'
+        elif sort is "citCount":
+            sort = 'ncites:desc'
+        else:
+            sort = 'ncites:desc'
+        return self.paginated_search_with_ids(index="citeseerx", ids=papers_list, page=page, pageSize=pageSize,
+                                              sort=sort)
 '''
 ES = Elastic()
 ES.test_connection()
