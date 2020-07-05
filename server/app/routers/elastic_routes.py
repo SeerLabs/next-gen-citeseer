@@ -53,18 +53,14 @@ def show_cluster_detail(cid: str):
 @router.get('/showCiting/{cid}')
 def show_citing(cid: str, sort: str, page: int, pageSize: int):
     cluster_response = elastic_service.get_cluster_info(cid)
-    print(cluster_response)
     primary_cluster_detail = build_cluster_entity(cluster_response['_source'])
     cid_list = cluster_response['_source']['cited_by']
     response = elastic_service.get_paper_ids_for_clusters(cid_list=cid_list)
-    print(response)
     papers_list = []
     for each_hit in response['docs']:
         if 'included_papers' in each_hit['_source'] and len(each_hit['_source']['included_papers']) != 0:
             papers_list.append(each_hit['_source']['included_papers'][0])
-    # print(papers_list)
     papers_response = elastic_service.get_sorted_papers(papers_list=papers_list, page=page, pageSize=pageSize, sort=sort)
-    print(papers_response)
     result_list = []
     for each_paper_hit in papers_response['hits']['hits']:
         result_list.append(build_paper_entity(doc=each_paper_hit['_source']))
