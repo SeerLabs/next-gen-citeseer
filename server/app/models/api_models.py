@@ -2,9 +2,7 @@ from typing import List
 
 from pydantic import BaseModel
 
-from models.citation import Citation
-from models.cluster import Cluster
-from models.paper import Paper
+from models.domain_models import Paper, Citation, Cluster
 
 
 class SearchQueryResponse(BaseModel):
@@ -30,3 +28,8 @@ class showCitingClustersResponse(BaseModel):
     total_results: int
     cluster: Cluster
     papers: List[Paper]
+
+class SearchQuery(BaseModel):
+    queryString: str
+    page: int
+    pageSize: int
