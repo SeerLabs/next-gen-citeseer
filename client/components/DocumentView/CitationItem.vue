@@ -1,27 +1,27 @@
 <template>
   <b-container fluid="sm" class="document-result">
     <b-row>
-      <b-col class="result-title"><h4>{{ title }}</h4></b-col>
+      <b-col class="result-title"><h4><nuxt-link :to="'/show_citing/' + cid">{{ title }}</nuxt-link></h4></b-col>
       <!-- <b-col cols="6" class="result-type">{{ type }}</b-col> -->
     </b-row>
 
     <b-row>
       <b-col class="result-info"><h6>{{ authors }} - {{ venue }} - {{ year }}</h6></b-col>
     </b-row>
-
-    <b-row>
+     
+    <!-- <b-row>
       <b-col class="result-content">
         <p>
-            <!-- <span v-if="!readMoreToggle">{{abstract.slice(0, 200)}}</span>
+            <span v-if="!readMoreToggle">{{abstract.slice(0, 200)}}</span>
             <a class="" v-if="!readMoreToggle" @click="toggleReadMore" href="#">
                 Read more...
             </a>
-            <span v-if="readMoreToggle" v-html="abstract"></span> -->
+            <span v-if="readMoreToggle" v-html="abstract"></span>
         </p>
       </b-col>
-    </b-row>
+    </b-row> -->
 
-    <b-row>
+    <!-- <b-row>
       <b-col cols="3" class="citations">
         Cited by {{ numCitations }}
       </b-col>
@@ -31,7 +31,7 @@
         <a href="http://google.com">+Save</a>
         <a href="http://google.com">+Add to ExportCart</a>
       </b-col>
-    </b-row>
+    </b-row> -->
 
   </b-container>
 </template>
@@ -46,18 +46,21 @@
           venue: String,
           year: String,
           abstract: String,
-          numCitations: Number
+          numCitations: Number,
+          cid: Number,
         },
         data(){
           return {
-            readMoreToggle: false
+            readMoreToggle: false,
+            url: ""
           }
         },
         methods: {
             toggleReadMore(){
                 this.readMoreFlag = true
             }
-        }
+        },
+       
     }
 </script>
 

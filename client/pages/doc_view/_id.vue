@@ -105,6 +105,7 @@
                     <version-history-card title="Version History"/>
                 </b-col>
             </b-row>
+            <!-- <br>
             <br>
             <br>
             <br>
@@ -112,13 +113,12 @@
             <br>
             <br>
             <br>
-            <br>
-            <!-- Similar Articles Row -->
+            
             <b-row class="citation-card" align-h="center">
                 <b-col cols="8">
                     <document-results-list :documents="documents" :totalPageResults="totalPageResults"/>
                 </b-col>
-            </b-row>
+            </b-row> -->
 
             <!--             
             <div id = "summary">

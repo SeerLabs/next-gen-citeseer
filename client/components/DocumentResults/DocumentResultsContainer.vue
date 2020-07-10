@@ -65,7 +65,7 @@
             const dropdownItem = event.target.name;
             this.sortByDisplay = event.target.text;
 
-            this.$emit('input', this.sortByDisplay);
+            this.$emit('input', event.target.name);
           },
         }
     }

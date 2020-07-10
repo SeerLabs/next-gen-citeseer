@@ -6,7 +6,7 @@
                 v-bind:year="citation.year"
                 v-bind:authors="citation.authors"
                 v-bind:venue="citation.venue"
-                
+                v-bind:cid="citation.cluster"                
 
             />
         
@@ -36,11 +36,10 @@
                 props: {
                     doi: String, 
                     type: String,
-                    
                 },
                 perPage: 3,
                 currentPage: 1,
-                citations: []
+                citations: [],
             }
         },
         mounted(currentPage) {
@@ -55,7 +54,9 @@
             getCitationEntities(){
                 if (true) {
                     docViewService.getCitationsEntities(this.$route.params.id, this.currentPage)
-                        .then(response => (this.citations = response.data.citations))
+                        .then(response => (
+                            this.citations = response.data.citations
+                            ))
                 }
                 
                 
