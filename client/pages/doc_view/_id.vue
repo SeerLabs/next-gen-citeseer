@@ -167,7 +167,7 @@
             this.authors = data.paper.authors,
             this.venue = data.paper.venue,
             this.abstract = data.paper.abstract,
-            this.nCitation = data.paper.n_citation
+            this.nCitation = data.paper.total_results
         },
         computed: {
             getPDFUrl() {

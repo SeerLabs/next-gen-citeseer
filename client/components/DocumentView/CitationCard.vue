@@ -59,7 +59,7 @@
         props: {
             doi: String,
             title: String,
-            ncitation: String
+            ncitation: Number
         },
         data () {
             return {
