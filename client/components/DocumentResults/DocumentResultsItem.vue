@@ -1,12 +1,12 @@
 <template>
   <b-container fluid="sm" class="document-result">
     <b-row>
-      <b-col cols="6" class="result-title"><nuxt-link :to="`/doc_view/${doc_id}`"><h4>{{ title }}</h4></nuxt-link></b-col>
+      <b-col cols="12" class="result-title"><nuxt-link :to="`/doc_view/${doc_id}`"><h4>{{ title }}</h4></nuxt-link></b-col>
       <b-col cols="6" class="result-type">{{ type }}</b-col>
     </b-row>
 
     <b-row>
-      <b-col class="result-info"><h6>{{ authors }} - {{ year }}</h6></b-col>
+      <b-col class="result-info"><h6>{{ authors.join(", ") }} - {{ year }}</h6></b-col>
     </b-row>
 
     <b-row>

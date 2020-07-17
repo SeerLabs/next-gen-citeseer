@@ -16,7 +16,14 @@
                 </b-col>
             </b-row>
             <!-- Main Info Row -->
-            <b-row><h2> What papers cite this paper</h2></b-row>
+            <b-row>
+                <b-col cols="5">
+                    <h2>What papers cite this paper</h2>
+                </b-col>
+                <b-col>
+                    <b-button @click="alert" size="sm" pill variant="outline-secondary">?</b-button>
+                </b-col>
+            </b-row>
             <b-row id="abstract" align-h="center">
                 
                 <b-col cols="9">
@@ -53,7 +60,6 @@
                     <citation-card id="citation-card" title="Citations" v-bind:doi="doi" v-bind:ncitation="nCitation"/>
                 </b-col>
             </b-row> -->
-            
             
         </b-container>    
     </div>
@@ -119,6 +125,9 @@
                     console.log("sort: " + this.sortBy)
 
                 ))
+            },
+            alert() {
+                window.alert("You are seeing this page because the summary page is not indexed.")
             }
         },
         watch: {
