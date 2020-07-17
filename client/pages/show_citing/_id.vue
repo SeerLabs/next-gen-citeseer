@@ -18,10 +18,10 @@
             <!-- Main Info Row -->
             <b-row>
                 <b-col cols="5">
-                    <h2>What papers cite this paper</h2>
+                    <h2>What papers cite this paper. . .</h2>
                 </b-col>
                 <b-col>
-                    <b-button @click="alert" size="sm" pill variant="outline-secondary">?</b-button>
+                    <b-button v-b-tooltip.hover title="You are seeing this page because the summary page is not indexed" size="sm" pill variant="outline-secondary">?</b-button>
                 </b-col>
             </b-row>
             <b-row id="abstract" align-h="center">
