@@ -6,10 +6,10 @@ from fastapi import APIRouter
 from models.api_models import SearchQueryResponse, PaperDetailResponse, CitationsResponse, ClusterDetailResponse, \
     showCitingClustersResponse, SearchQuery
 from models.domain_models import Paper, Citation, Cluster
-from services.citation_dao import CitationDao
-from services.cluster_dao import ClusterDao
+from services.citation_adapter import CitationDao
+from services.cluster_adapter import ClusterDao
 from services.elastic_service import ElasticService
-from services.paper_dao import PaperDao
+from services.paper_adapter import PaperDao
 
 router = APIRouter()
 elastic_service = ElasticService()
