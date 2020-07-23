@@ -60,6 +60,12 @@
                 this.readMoreFlag = true
             }
         },
+        created() {
+          if (!this.$props.title) { this.$props.title = "Title Not Indexed" }
+          if (!this.$props.authors) { this.$props.authors = "Authors Not Indexed"}
+          if (!this.$props.venue) { this.$props.venue = "Venue Not Indexed"}
+          if (!this.$props.year) { this.$props.year = "Year Not Indexed"}
+        }
        
     }
 </script>

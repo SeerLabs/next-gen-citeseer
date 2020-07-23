@@ -48,6 +48,11 @@
           docUrl: function() {
             return `/doc_view/${this.doc_id}`;
           }
+        },
+        created() {
+          if (!this.$props.title) { this.$props.title = "Title Not Indexed" }
+          if (this.$props.authors.length == 0) { this.$props.authors = ["Authors Not Indexed"]}
+          if (!this.$props.year || this.$props.year == 0) { this.$props.year = "Year Not Indexed"}
         }
 
     }

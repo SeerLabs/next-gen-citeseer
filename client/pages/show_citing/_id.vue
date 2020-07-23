@@ -125,6 +125,11 @@
                     console.log("sort: " + this.sortBy)
 
                 ))
+                if (!this.title) { this.title = "Title Not Indexed"}
+                if (!this.year || year == 0) { this.year = "Year Not Indexed"}
+                if (!this.authors) { this.authors = "Authors Not Indexed"}
+                if (!this.venue) { this.venue = "Venue Not Indexed"}
+                
             },
             alert() {
                 window.alert("You are seeing this page because the summary page is not indexed.")

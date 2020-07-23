@@ -76,9 +76,6 @@
                         <b-row>
                             <b-col><h6>Correct Errors</h6></b-col>
                         </b-row>
-                       
-                        
-                        
                         
                         
                     </b-card>
@@ -88,14 +85,14 @@
             <!-- Citations Row -->
             <b-row id ="citation-card" class="citation-card" align-h="center">
                 <b-col cols="12">
-                    <citation-card id="citation-card" title="Citations" v-bind:doi="doi" v-bind:ncitation="nCitation"/>
+                    <citation-card id="citation-card" title="Citations" v-bind:ncitation="nCitation"/>
                 </b-col>
             </b-row>
             
             <!-- Similar Articles Row -->
             <b-row id ="similar-article-card" class="citation-card" align-h="center">
                 <b-col cols="12">
-                    <citation-card id="citation-card" title="Similar Articles" v-bind:doi="doi" citation=""/>
+                    <citation-card id="citation-card" title="Similar Articles" citation=""/>
                 </b-col>
             </b-row>
 
@@ -158,10 +155,7 @@
             }
         },
         async fetch() {
-            console.log(this.$route.params.id);
             const { data } = await DocViewService.getPaperEntity(this.$route.params.id)
-            console.log(data);
-
             this.title = data.paper.title, 
             this.year = data.paper.year,
             this.authors = data.paper.authors,
