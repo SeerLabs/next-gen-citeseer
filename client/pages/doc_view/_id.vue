@@ -4,13 +4,6 @@
 
     <div id="doc-view-layout">
         <b-container fluid>
-            <!-- Search Box Row -->
-            <b-row align-h="center">
-                <b-col cols="12">
-                    <search-box />
-                </b-col>
-            </b-row>
-
             <!-- Main Info Row -->
             <b-row id="doc-view-top">
                 <b-col cols="9">
@@ -27,14 +20,12 @@
                                 : { height: '150px' }
                         "
                     >
-                        <p>
-                            {{ abstract }}
-                        </p>
+                        <p>{{ abstract }}</p>
                     </div>
 
-                    <b-button @click="() => (showAbstract = !showAbstract)">
-                        {{ !showAbstract ? 'Show more' : 'Show less' }}
-                    </b-button>
+                    <b-button
+                        @click="() => (showAbstract = !showAbstract)"
+                    >{{ !showAbstract ? 'Show more' : 'Show less' }}</b-button>
                 </b-col>
                 <b-col cols="3">
                     <b-card id="document-options">
@@ -46,8 +37,7 @@
                                 v-bind:to="getPDFUrl"
                                 target="_blank"
                                 class="mb-md-2"
-                                >View PDF</b-button
-                            >
+                            >View PDF</b-button>
 
                             <!-- Download Links Drop Down -->
                             <b-dropdown
@@ -85,12 +75,9 @@
                         class="citation-card"
                         id="similar-articles"
                         title="Similar Articles"
-                        citation=""
+                        citation
                     />
-                    <version-history-card
-                        id="version-history"
-                        title="Version History"
-                    />
+                    <version-history-card id="version-history" title="Version History" />
                 </b-col>
                 <b-col cols="3">
                     <b-card id="table-of-contents" title="Table of Contents">
@@ -98,10 +85,7 @@
                             <a href="#citations">
                                 <h6>Citation</h6>
                             </a>
-                            <a
-                                href="#similar-articles"
-                                v-on:click="scroll('similar-article-card')"
-                            >
+                            <a href="#similar-articles" v-on:click="scroll('similar-article-card')">
                                 <h6>Similar Articles</h6>
                             </a>
                             <a href="#version-history">
@@ -138,10 +122,10 @@ export default {
         VersionHistoryCard
     },
     methods: {
-        toggleReadMore: function() {
+        toggleReadMore: function () {
             this.readMoreFlag = true;
         },
-        scroll: function(id) {
+        scroll: function (id) {
             return null;
             // document.getElementById(id).scrollIntoView();
         }
@@ -185,8 +169,8 @@ export default {
             totalPageResults: 1000
         };
     },
-    mounted: function() {
-        $('#table-of-contents a').on('click', function(e) {
+    mounted: function () {
+        $('#table-of-contents a').on('click', function (e) {
             console.log('Press');
             e.preventDefault();
 
@@ -199,7 +183,7 @@ export default {
                     scrollTop: $(hash).offset().top
                 },
                 300,
-                function() {
+                function () {
                     window.location.hash = hash;
                 }
             );
@@ -222,7 +206,7 @@ export default {
             return '/pdf/' + this.$route.params.id;
         }
     },
-    layout: 'layout_default'
+    layout: 'layout_search'
 };
 </script>
 

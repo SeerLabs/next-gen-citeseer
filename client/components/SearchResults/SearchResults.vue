@@ -1,55 +1,49 @@
 <template>
     <div v-cloak>
-      <b-row>
-				<b-col sm="8" id="search-box-container">
-					<search-box v-model="queryString" @submit="searchQuery" />
-				</b-col>
-			</b-row>
-
-      <b-row>
-        <b-col v-if="loadingState" md="8">
-            <b-spinner class="spinner" label="Loading..."></b-spinner>
-        </b-col>
-        <b-col v-else md="8" id="search-results-list">
-          <document-results-container 
-            :documents="documents"
-            :totalPageResults="totalPageResults"
-            :page="page"
-            :sortDropdown="sortDropdown"
-            v-model="sortBy"
-          />
-          <b-pagination
-            :total-rows="totalPageResults" 
-            v-model="page"
-            :per-page="pageSize"
-            @input="searchQuery"
-          />
-        </b-col>
-        <b-col md="4" id="search-results-cards">
-          <search-results-filter/>
-          <search-results-external-links/>
-        </b-col>
-      </b-row>
+        <b-row>
+            <b-col v-if="loadingState" md="8">
+                <b-spinner class="spinner" label="Loading..."></b-spinner>
+            </b-col>
+            <b-col v-else md="8" id="search-results-list">
+                <document-results-container
+                    :documents="documents"
+                    :totalPageResults="totalPageResults"
+                    :page="page"
+                    :sortDropdown="sortDropdown"
+                    v-model="sortBy"
+                />
+                <b-pagination
+                    :total-rows="totalPageResults"
+                    v-model="page"
+                    :per-page="pageSize"
+                    @input="searchQuery"
+                />
+            </b-col>
+            <b-col md="4" id="search-results-cards">
+                <search-results-filter />
+                <search-results-external-links />
+            </b-col>
+        </b-row>
     </div>
 </template>
 
 <script>
-    import DocumentResultsContainer from "../DocumentResults/DocumentResultsContainer.vue";
-    import SearchResultsFilter from "./SearchResultsFilter.vue";
-    import SearchResultsExternalLinks from "./SearchResultsExternalLinks";
-    import SearchBox from '~/components/SearchBox.vue'
-    import searchPaperService from "~/api/SearchPaperService";
+import DocumentResultsContainer from '../DocumentResults/DocumentResultsContainer.vue';
+import SearchResultsFilter from './SearchResultsFilter.vue';
+import SearchResultsExternalLinks from './SearchResultsExternalLinks';
+import SearchBox from '~/components/SearchBox.vue';
+import searchPaperService from '~/api/SearchPaperService';
 
-    export default {
-        name: "SearchResults",
-        components: {
-          DocumentResultsContainer,
-          SearchResultsFilter,
-          SearchResultsExternalLinks,
-          SearchBox
-        },
-        data() {
-          return {
+export default {
+    name: 'SearchResults',
+    components: {
+        DocumentResultsContainer,
+        SearchResultsFilter,
+        SearchResultsExternalLinks,
+        SearchBox
+    },
+    data() {
+        return {
             queryString: '',
             documents: [],
             totalPageResults: 0,
@@ -58,56 +52,62 @@
             loadingState: false,
             sortBy: 'relevance',
             sortDropdown: {
-              'sort-relevance': {'displayName': 'Relevance', 'sortByKey': 'relevance'},
-              'sort-citations': {'displayName': 'Citations', 'sortByKey': 'num_citations'},
-              'sort-year': {'displayName': 'Year', 'sortByKey': 'year'},
-            },
-          }
-        },
-        methods: {
-          searchQuery() {
+                'sort-relevance': {
+                    displayName: 'Relevance',
+                    sortByKey: 'relevance'
+                },
+                'sort-citations': {
+                    displayName: 'Citations',
+                    sortByKey: 'num_citations'
+                },
+                'sort-year': { displayName: 'Year', sortByKey: 'year' }
+            }
+        };
+    },
+    methods: {
+        searchQuery() {
             this.loadingState = true;
             //push params
             console.log(this.$route.query.query);
-            searchPaperService.searchPaper(this.queryString, this.page, this.pageSize)
-            .then(response => {
-              this.documents = response.data.response;
-              this.totalPageResults = response.data.total_results;
-              this.loadingState = false;
-            });
-          },
-        },
-        created: function() {
-          this.queryString = this.$route.query.query;
-          console.log(this.queryString);
-          this.searchQuery();
-        },
-        watch: {
-          '$route.query.query'() {
+            searchPaperService
+                .searchPaper(this.queryString, this.page, this.pageSize)
+                .then((response) => {
+                    this.documents = response.data.response;
+                    this.totalPageResults = response.data.total_results;
+                    this.loadingState = false;
+                });
+        }
+    },
+    created: function () {
+        this.queryString = this.$route.query.query;
+        console.log(this.queryString);
+        this.searchQuery();
+    },
+    watch: {
+        '$route.query.query'() {
             this.queryString = this.$route.query.query;
             console.log(this.queryString);
             this.searchQuery();
-          }
         }
     }
+};
 </script>
 
 <style>
-
 .search-result {
-  margin-bottom: .5em;
+    margin-bottom: 0.5em;
 }
 
 #search-results-list {
-  margin-bottom: 1em;
+    margin-bottom: 1em;
 }
 
 .spinner {
-  text-align: center;
-  margin: auto;
+    text-align: center;
+    margin: auto;
 }
 
 [v-cloak] {
-  display: none;
+    display: none;
 }
 </style>

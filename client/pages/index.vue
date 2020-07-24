@@ -1,17 +1,17 @@
 <template>
     <div id="app">
-        <h1>Search Engine</h1>
+        <h1>CiteSeerX</h1>
         <search-box />
     </div>
 </template>
 
 <script>
-import SearchBox from "~/components/SearchBox.vue";
+import SearchBox from '~/components/SearchBox.vue';
 export default {
     components: {
-        SearchBox,
+        SearchBox
     },
-    layout: "layout_default",
+    layout: 'layout_default'
 };
 </script>
 

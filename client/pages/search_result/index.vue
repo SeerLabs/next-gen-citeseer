@@ -1,16 +1,16 @@
 <template>
-  <SearchResults />
+    <SearchResults />
 </template>
 
 <script>
-import SearchResults from "../../components/SearchResults/SearchResults.vue";
+import SearchResults from '../../components/SearchResults/SearchResults.vue';
 
 export default {
-  components: {
-    SearchResults
-  },
-  layout: 'layout_default',
-}
+    components: {
+        SearchResults
+    },
+    layout: 'layout_search'
+};
 </script>
 
 <style>
