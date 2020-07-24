@@ -12,23 +12,33 @@
       </b-row>
 
       <!-- Main Info Row -->
-      <b-row id="abstract" align-h="center">
+      <b-row id="doc-view-top">
         <b-col cols="9">
-          <h1>{{ title }}</h1>
+          <h2>{{ title }}</h2>
           <h5>{{ authors.join(", ") }}</h5>
           <h5>{{ venue }} - {{ year }}</h5>
           <br />
-          <p v-if="!readMoreToggle">
-            {{ abstract.slice(0, 700) }}
-            <a href>Read more...</a>
-          </p>
-          <p v-else>
-            {{ abstract }}
-            <!-- <span v-show="readMoreToggle" v-html="abstract"></span> -->
-          </p>
+
+          <div
+            id="abstract"
+            :style="
+              showAbstract ? { height: 'min-content' } : { height: '150px' }
+            "
+          >
+            <p>
+              {{ abstract }}
+            </p>
+          </div>
+
+          <b-button
+            v-if="!showAbstract"
+            @click="() => (showAbstract = !showAbstract)"
+          >
+            Show more
+          </b-button>
         </b-col>
         <b-col cols="3">
-          <b-card>
+          <b-card id="document-options">
             <b-card-text>
               <!-- PDF Button -->
               <b-button
@@ -36,6 +46,7 @@
                 id="pdf-btn"
                 v-bind:to="getPDFUrl"
                 target="_blank"
+                class="mb-md-2"
                 >View PDF</b-button
               >
 
@@ -44,20 +55,18 @@
                 id="download-links-dropdown"
                 text="Download Links"
                 variant="outline-secondary"
-                class="my-md-2"
+                class="mb-md-4"
                 size="sm"
               >
                 <b-dropdown-item>Link 1</b-dropdown-item>
                 <b-dropdown-item>Link 2</b-dropdown-item>
                 <b-dropdown-item>Link 3</b-dropdown-item>
               </b-dropdown>
-              <ul>
-                <h6>Cite This</h6>
-                <h6>Save</h6>
-                <h6>Add to Collection</h6>
-                <h6>Add to MetaCart</h6>
-                <h6>Correct Errors</h6>
-              </ul>
+              <h6>Cite This</h6>
+              <h6>Save</h6>
+              <h6>Add to Collection</h6>
+              <h6>Add to MetaCart</h6>
+              <h6>Correct Errors</h6>
             </b-card-text>
           </b-card>
         </b-col>
@@ -65,7 +74,7 @@
 
       <!-- Citations Row -->
       <b-row>
-        <b-col cols="10">
+        <b-col cols="9">
           <citation-card
             class="citation-card"
             id="citations"
@@ -81,20 +90,22 @@
           />
           <version-history-card id="version-history" title="Version History" />
         </b-col>
-        <b-col cols="2">
-          <b-card id="table-of-contents">
-            <a href="#citations">
-              <h6>Citation</h6>
-            </a>
-            <a
-              href="#similar-articles"
-              v-on:click="scroll('similar-article-card')"
-            >
-              <h6>Similar Articles</h6>
-            </a>
-            <a href="#version-history">
-              <h6>Version History</h6>
-            </a>
+        <b-col cols="3">
+          <b-card id="table-of-contents" title="Table of Contents">
+            <b-card-text>
+              <a href="#citations">
+                <h6>Citation</h6>
+              </a>
+              <a
+                href="#similar-articles"
+                v-on:click="scroll('similar-article-card')"
+              >
+                <h6>Similar Articles</h6>
+              </a>
+              <a href="#version-history">
+                <h6>Version History</h6>
+              </a>
+            </b-card-text>
           </b-card>
         </b-col>
       </b-row>
@@ -135,7 +146,7 @@ export default {
   },
   data() {
     return {
-      readMoreToggle: false,
+      showAbstract: false,
       title: "",
       year: "",
       authors: [],
@@ -216,10 +227,14 @@ export default {
   background: rgb(255, 255, 255);
 }
 
-#abstract {
-  margin-top: 4%;
-  margin-bottom: 2%;
+#doc-view-top {
+  margin-top: 3em;
+  margin-bottom: 3em;
   background: #ffffff;
+}
+
+#abstract {
+  overflow: hidden;
 }
 
 #summary-text {
