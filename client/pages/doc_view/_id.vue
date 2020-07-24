@@ -70,7 +70,6 @@
             class="citation-card"
             id="citations"
             title="Citations"
-            v-bind:doi="doi"
             v-bind:ncitation="nCitation"
           />
 
@@ -78,8 +77,7 @@
             class="citation-card"
             id="similar-articles"
             title="Similar Articles"
-            v-bind:doi="doi"
-            citation
+            citation=""
           />
           <version-history-card id="version-history" title="Version History" />
         </b-col>
@@ -195,9 +193,7 @@ export default {
     });
   },
   async fetch() {
-    console.log(this.$route.params.id);
     const { data } = await DocViewService.getPaperEntity(this.$route.params.id);
-    console.log(data);
 
     (this.title = data.paper.title),
       (this.year = data.paper.year),

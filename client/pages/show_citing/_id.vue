@@ -69,6 +69,7 @@ import BaseCard from "~/components/Base/BaseCard.vue";
 import ShowCitingService from "~/api/ShowCitingService";
 import DocumentResultsList from "~/components/DocumentResults/DocumentResultsList.vue";
 import DocumentResultsContainer from "~/components/DocumentResults/DocumentResultsContainer.vue";
+
 export default {
   components: {
     SearchBox,
@@ -126,6 +127,19 @@ export default {
           console.log("sort: " + this.sortBy)
         )
       );
+
+      if (!this.title) {
+        this.title = "Title Not Indexed";
+      }
+      if (!this.year || year == 0) {
+        this.year = "Year Not Indexed";
+      }
+      if (!this.authors) {
+        this.authors = "Authors Not Indexed";
+      }
+      if (!this.venue) {
+        this.venue = "Venue Not Indexed";
+      }
     },
     alert() {
       window.alert(
