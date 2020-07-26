@@ -1,248 +1,251 @@
 <template>
     <!-- $ sudo sysctl fs.inotify.max_user_watches=524288
-    $ sudo sysctl -p -->
-
-
-
+    $ sudo sysctl -p-->
 
     <div id="doc-view-layout">
-        <test-child/>
-        <b-card id="toc">
-            <b-row>
-                <b-col><h6 v-on:click="scroll('citation-card')" >Citation</h6></b-col>
-            </b-row>
-            <br>
-            <b-row>
-                <b-col><h6 v-on:click="scroll('similar-article-card')" >Similar Article</h6></b-col>
-            </b-row>
-            <br>
-            <b-row>
-                <b-col><h6 v-on:click="scroll('ver-history-card')" >Version History</h6></b-col>
-            </b-row>
-            
-        </b-card>
         <b-container fluid>
-            <!-- Search Box Row -->
-            <b-row align-h="center">
-                <b-col  cols="12"> 
-                    <search-box/>
-                </b-col>
-            </b-row>
             <!-- Main Info Row -->
-            <b-row id="abstract" align-h="center">
+            <b-row id="doc-view-top">
                 <b-col cols="9">
-                    <h1>{{ title }}</h1>
-                    <h5>{{ authors.join(', ')}}</h5>
+                    <h2>{{ title }}</h2>
+                    <h5>{{ authors.join(', ') }}</h5>
                     <h5>{{ venue }} - {{ year }}</h5>
-                    <br>
-                    <p v-if="!readMoreToggle">
-                        {{abstract.slice(0, 700)}} 
-                        <a href="">
-                            Read more...
-                        </a>
-                    <p v-else>
-                        {{ abstract }}
-                        <!-- <span v-show="readMoreToggle" v-html="abstract"></span> -->
-                    </p>
+                    <br />
+
+                    <div
+                        id="abstract"
+                        :style="
+                            showAbstract
+                                ? { height: 'min-content' }
+                                : { height: '150px' }
+                        "
+                    >
+                        <p>{{ abstract }}</p>
+                    </div>
+
+                    <b-button
+                        @click="() => (showAbstract = !showAbstract)"
+                    >{{ !showAbstract ? 'Show more' : 'Show less' }}</b-button>
                 </b-col>
                 <b-col cols="3">
-                    <b-card>
-                        <!-- PDF Button -->
-                        <b-row>
-                            <b-col><b-button squared id="pdf-btn" v-bind:to="getPDFUrl" target="_blank">View PDF</b-button></b-col>
+                    <b-card id="document-options">
+                        <b-card-text>
+                            <!-- PDF Button -->
+                            <b-button
+                                squared
+                                id="pdf-btn"
+                                v-bind:to="getPDFUrl"
+                                target="_blank"
+                                class="mb-md-2"
+                            >View PDF</b-button>
 
-                        </b-row>
-                        
-                        <!-- Download Links Drop Down -->
-                        <b-row>
-                            <b-dropdown id="download-links-dropdown" text="Download Links" variant="outline-secondary" class="m-md-2" size="sm">
+                            <!-- Download Links Drop Down -->
+                            <b-dropdown
+                                id="download-links-dropdown"
+                                text="Download Links"
+                                variant="outline-secondary"
+                                class="mb-md-4"
+                                size="sm"
+                            >
                                 <b-dropdown-item>Link 1</b-dropdown-item>
                                 <b-dropdown-item>Link 2</b-dropdown-item>
                                 <b-dropdown-item>Link 3</b-dropdown-item>
                             </b-dropdown>
-                        </b-row>
-                        <b-row >
-                            <b-col> <h6>Cite This</h6> </b-col>
-                        </b-row>
-                        <b-row>
-                            <b-col><h6>Save</h6></b-col>
-                        </b-row>
-                        <b-row>
-                            <b-col><h6>Add to Collection</h6></b-col>
-                        </b-row>
-                        <b-row>
-                            <b-col><h6>Add to MetaCart</h6></b-col>
-                        </b-row>
-                        <b-row>
-                            <b-col><h6>Correct Errors</h6></b-col>
-                        </b-row>
-                       
-                        
-                        
-                        
-                        
+                            <h6>Cite This</h6>
+                            <h6>Save</h6>
+                            <h6>Add to Collection</h6>
+                            <h6>Add to MetaCart</h6>
+                            <h6>Correct Errors</h6>
+                        </b-card-text>
                     </b-card>
                 </b-col>
             </b-row>
 
             <!-- Citations Row -->
-            <b-row id ="citation-card" class="citation-card" align-h="center">
-                <b-col cols="12">
-                    <citation-card id="citation-card" title="Citations" v-bind:doi="doi" v-bind:ncitation="nCitation"/>
-                </b-col>
-            </b-row>
-            
-            <!-- Similar Articles Row -->
-            <b-row id ="similar-article-card" class="citation-card" align-h="center">
-                <b-col cols="12">
-                    <citation-card id="citation-card" title="Similar Articles" v-bind:doi="doi" citation=""/>
-                </b-col>
-            </b-row>
+            <b-row>
+                <b-col cols="9">
+                    <citation-card
+                        class="citation-card"
+                        id="citations"
+                        title="Citations"
+                        v-bind:ncitation="nCitation"
+                    />
 
-            <!-- Similar Articles Row -->
-            <b-row id="ver-history-card" class="citation-card" align-h="center">
-                <b-col cols="12">
-                    <version-history-card title="Version History"/>
+                    <citation-card
+                        class="citation-card"
+                        id="similar-articles"
+                        title="Similar Articles"
+                        citation
+                    />
+                    <version-history-card id="version-history" title="Version History" />
+                </b-col>
+                <b-col cols="3">
+                    <b-card id="table-of-contents" title="Table of Contents">
+                        <b-card-text>
+                            <a href="#citations">
+                                <h6>Citation</h6>
+                            </a>
+                            <a href="#similar-articles" v-on:click="scroll('similar-article-card')">
+                                <h6>Similar Articles</h6>
+                            </a>
+                            <a href="#version-history">
+                                <h6>Version History</h6>
+                            </a>
+                        </b-card-text>
+                    </b-card>
                 </b-col>
             </b-row>
-            <br>
-            <br>
-            <br>
-            <br>
-            <br>
-            <br>
-            <br>
-            <br>
-            <!-- Similar Articles Row -->
-            <b-row class="citation-card" align-h="center">
-                <b-col cols="8">
-                    <document-results-list :documents="documents" :totalPageResults="totalPageResults"/>
-                </b-col>
-            </b-row>
-
-            <!--             
-            <div id = "summary">
-                <div id = "summary-text">
-                    <h1>Place Holder For Title</h1>
-                    <h5>Auther Name</h5>
-                    <h5>Vanue - Year</h5>
-                    <br>
-                    <p> Place  holder for abstract ... Es ging durch so schnelle Verrenkungen, dass der kleine Bär gezwungen war, kleine Bär gezwungen war,seinen Griff 
-                        so oft zu ändern, dass er . seine untersten Rippen stie, dieser Punkt wurde für ihn einen in der Dunkelheit verwirrt Moment später von dem Tier selbst entschieden, wurde und für sein Leben nicht sagen konnte, ob er die Schafe mit der rechten Seite nach oben 
-                        oder nach oben hielt Nieder. Aber dieser Punkt wurde für ihn einen Moment später von dem Tier selbst entschieden, das mit einer plötzlichen Drehung 
-                        seine Hörner so fest in seine untersten Rippen stieß, dass er vor Wut und Ekel grunzte....
-                    </p>
-                </div>
-            </div>
-            <div>
-                <citation-card id="citation-card" title="Citations" ncitation="ncitation"/>
-                <citation-card id="citation-card" title="Active Bibilography" ncitation="ncitation"/>
-                <citation-card id="citation-card" title="Co-citations" ncitation="ncitation"/>
-                <citation-card id="citation-card" title="Clustered Documents" ncitation="ncitation"/>
-            </div>   -->
-        </b-container>    
+        </b-container>
     </div>
 </template>
 
 <script>
-    import Navbar from '~/components/Navbar.vue'
-    import TableOfContent from '~/components/DocumentView/TableOfContent.vue'
-    import SearchBox from '~/components/SearchBox.vue'
-    import CitationCard from '~/components/DocumentView/CitationCard.vue'
-    import BaseCard from '~/components/Base/BaseCard.vue'
-    import DocViewService from "~/api/DocViewService"
-    import DocumentResultsList from "~/components/DocumentResults/DocumentResultsList.vue"
-    import VersionHistoryCard from "~/components/DocumentView/VersionHistoryCard.vue"
-    export default {
-        components: {
-            Navbar,
-            TableOfContent,
-            SearchBox,
-            CitationCard,
-            BaseCard,
-            DocumentResultsList,
-            VersionHistoryCard,
-        },
-        methods: {
-            toggleReadMore : function(){
-                this.readMoreFlag = true
-            },
-            scroll(id) {
-              document.getElementById(id).scrollIntoView();
-            }
-        },
-        data (){
-            return {
-                readMoreToggle: false,
-                title : "", 
-                year : "",
-                authors : [],
-                venue : "",
-                abstract : "",
-                nCitation : "",
+import Navbar from '~/components/Navbar.vue';
+import TableOfContent from '~/components/DocumentView/TableOfContent.vue';
+import SearchBox from '~/components/SearchBox.vue';
+import CitationCard from '~/components/DocumentView/CitationCard.vue';
+import BaseCard from '~/components/Base/BaseCard.vue';
+import DocViewService from '~/api/DocViewService';
+import DocumentResultsList from '~/components/DocumentResults/DocumentResultsList.vue';
+import VersionHistoryCard from '~/components/DocumentView/VersionHistoryCard.vue';
 
-                 documents: [
-              {'title': 'Document Title', 'type': 'DOCUMENT', 'authors': 'Abcdefg Lastname',
-              'year': '2018', 'abstract': 'Lorem ipsum', 'numCitations': 20},
-              {'title': 'ABCDEFG', 'type': 'DOCUMENT', 'authors': 'Hijklmno Pqrstuv',
-              'year': '2020', 'abstract': 'Lorem ipsum', 'numCitations': 3},
-              {'title': 'EFGHIJK', 'type': 'CITATION', 'authors': 'Firstname Lastname',
-              'year': '2021', 'abstract': 'Lorem ipsum', 'numCitations': 30}
+import $ from 'jquery';
+
+export default {
+    components: {
+        Navbar,
+        TableOfContent,
+        SearchBox,
+        CitationCard,
+        BaseCard,
+        DocumentResultsList,
+        VersionHistoryCard
+    },
+    methods: {
+        toggleReadMore: function () {
+            this.readMoreFlag = true;
+        },
+        scroll: function (id) {
+            return null;
+            // document.getElementById(id).scrollIntoView();
+        }
+    },
+    data() {
+        return {
+            showAbstract: false,
+            title: '',
+            year: '',
+            authors: [],
+            venue: '',
+            abstract: '',
+            nCitation: '',
+
+            documents: [
+                {
+                    title: 'Document Title',
+                    type: 'DOCUMENT',
+                    authors: 'Abcdefg Lastname',
+                    year: '2018',
+                    abstract: 'Lorem ipsum',
+                    numCitations: 20
+                },
+                {
+                    title: 'ABCDEFG',
+                    type: 'DOCUMENT',
+                    authors: 'Hijklmno Pqrstuv',
+                    year: '2020',
+                    abstract: 'Lorem ipsum',
+                    numCitations: 3
+                },
+                {
+                    title: 'EFGHIJK',
+                    type: 'CITATION',
+                    authors: 'Firstname Lastname',
+                    year: '2021',
+                    abstract: 'Lorem ipsum',
+                    numCitations: 30
+                }
             ],
             totalPageResults: 1000
-            }
-        },
-        async fetch() {
-            console.log(this.$route.params.id);
-            const { data } = await DocViewService.getPaperEntity(this.$route.params.id)
-            console.log(data);
+        };
+    },
+    mounted: function () {
+        $('#table-of-contents a').on('click', function (e) {
+            console.log('Press');
+            e.preventDefault();
 
-            this.title = data.paper.title, 
-            this.year = data.paper.year,
-            this.authors = data.paper.authors,
-            this.venue = data.paper.venue,
-            this.abstract = data.paper.abstract,
-            this.nCitation = data.paper.n_citation
-        },
-        computed: {
-            getPDFUrl() {
-                return '/pdf/' + this.$route.params.id;
-            }
-        },
-        layout: 'layout_default',
-        
-        
-    }
+            var hash = this.hash;
+            console.log(hash);
+
+            // animate
+            $('html, body').animate(
+                {
+                    scrollTop: $(hash).offset().top
+                },
+                300,
+                function () {
+                    window.location.hash = hash;
+                }
+            );
+        });
+    },
+    async fetch() {
+        const { data } = await DocViewService.getPaperEntity(
+            this.$route.params.id
+        );
+
+        (this.title = data.paper.title),
+            (this.year = data.paper.year),
+            (this.authors = data.paper.authors),
+            (this.venue = data.paper.venue),
+            (this.abstract = data.paper.abstract),
+            (this.nCitation = data.paper.total_results);
+    },
+    computed: {
+        getPDFUrl() {
+            return '/pdf/' + this.$route.params.id;
+        }
+    },
+    layout: 'layout_search'
+};
 </script>
 
 <style>
-#doc-view-layout{
+#doc-view-layout {
     background: rgb(255, 255, 255);
 }
-#side-margine {
 
-}
-#abstract {
-    margin-top: 4%;
-    margin-bottom: 2%;
+#doc-view-top {
+    margin-top: 3em;
+    margin-bottom: 3em;
     background: #ffffff;
 }
+
+#abstract {
+    overflow: hidden;
+}
+
 #summary-text {
     padding-top: 2%;
     padding-bottom: 2%;
 }
+
 .citation-card {
-    margin-top: 3%;
-    margin-bottom: 3%;
+    margin-bottom: 1em;
 }
+
 #pdf-btn {
     background: rgb(235, 0, 0);
     outline: transparent;
     border-color: transparent;
 }
-#toc {
-    position: fixed;
-    right: 5%;
-    margin-top: 20%;
+
+#table-of-contents {
+    position: sticky;
+    top: 5em;
+}
+
+#table-of-contents .card-body {
+    padding: 1rem;
 }
 </style>

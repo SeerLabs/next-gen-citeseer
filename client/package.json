@@ -16,7 +16,8 @@
     "@nuxtjs/pwa": "^3.0.0-0",
     "bootstrap": "^4.5.0",
     "bootstrap-vue": "^2.15.0",
-    "lodash": "^4.17.15",
+    "jquery": "^3.5.1",
+    "lodash": "^4.17.19",
     "nuxt": "^2.12.2"
   },
   "devDependencies": {

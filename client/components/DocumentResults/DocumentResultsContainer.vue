@@ -1,7 +1,7 @@
 <template>
   <b-container class="document-result-container">
     <b-row class="document-results-header">
-      <b-col sm="6">Results {{(page-1)*pageSize + 1}} - {{(page-1)*pageSize + pageSize}} of {{totalPageResults}}</b-col>
+      <b-col sm="6">Results {{(page-1)*pageSize + 1}} - {{Math.min((page-1)*pageSize + pageSize, totalPageResults)}} of {{totalPageResults}}</b-col>
       <b-col sm="6">
         <div class="document-results-sorting">
           Sort by
@@ -65,7 +65,7 @@
             const dropdownItem = event.target.name;
             this.sortByDisplay = event.target.text;
 
-            this.$emit('input', this.sortByDisplay);
+            this.$emit('input', event.target.name);
           },
         }
     }
