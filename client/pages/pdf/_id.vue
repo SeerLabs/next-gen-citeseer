@@ -1,22 +1,21 @@
 
 <template>
-    <object id="fit-screen" v-bind:data="pdfURL" type="application/pdf">
-        <embed v-bind:src="pdfURL" type="application/pdf" />
-    </object>
-
+  <object id="fit-screen" :data="pdfURL" type="application/pdf">
+    <embed :src="pdfURL" type="application/pdf">
+  </object>
 </template>
 
 <script>
 
 export default {
-    data(){
-        return{
-            pdfURL: "http://localhost:8000/api/document?repid=rep1&type=pdf&doi="
-        }
-    },
-    mounted(){
-        this.pdfURL += this.$route.params.id
+  data () {
+    return {
+      pdfURL: 'http://localhost:8000/api/document?repid=rep1&type=pdf&doi='
     }
+  },
+  mounted () {
+    this.pdfURL += this.$route.params.id
+  }
 }
 </script>
 

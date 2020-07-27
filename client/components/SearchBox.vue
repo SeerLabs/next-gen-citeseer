@@ -1,17 +1,21 @@
 <template>
     <div id="searchbox">
         <b-input-group prepend="All Fields" class="mt-3">
-            <b-form-input v-model="searchQuery" @input="handleInput" value="Test" />
+            <b-form-input
+                v-model="searchQuery"
+                value="Test"
+                @input="handleInput"
+            />
             <b-input-group-append>
-                <b-button variant="info" type="submit" @click="submitInput">Search</b-button>
+                <b-button variant="info" type="submit" @click="submitInput">
+                    Search
+                </b-button>
             </b-input-group-append>
         </b-input-group>
     </div>
 </template>
 
 <script>
-// @TODO direct search bar to the search results page
-import SearchPaperService from '../api/SearchPaperService';
 export default {
     name: 'SearchBox',
     props: {},
@@ -20,7 +24,7 @@ export default {
             searchQuery: ''
         };
     },
-    created: function () {
+    created() {
         this.searchQuery = this.$route.query.query || '';
     },
     methods: {
@@ -28,7 +32,6 @@ export default {
             this.$emit('input', this.searchQuery);
         },
         submitInput() {
-            console.log(this.searchQuery);
             this.$router.push({
                 name: 'search_result',
                 query: { query: this.searchQuery }
@@ -38,5 +41,4 @@ export default {
 };
 </script>
 
-<style>
-</style>
+<style></style>

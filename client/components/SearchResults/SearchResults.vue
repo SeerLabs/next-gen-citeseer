@@ -2,24 +2,24 @@
     <div v-cloak>
         <b-row>
             <b-col v-if="loadingState" md="8">
-                <b-spinner class="spinner" label="Loading..."></b-spinner>
+                <b-spinner class="spinner" label="Loading..." />
             </b-col>
-            <b-col v-else md="8" id="search-results-list">
-                <document-results-container
-                    :documents="documents"
-                    :totalPageResults="totalPageResults"
-                    :page="page"
-                    :sortDropdown="sortDropdown"
+            <b-col v-else id="search-results-list" md="8">
+                <doc-results-container
                     v-model="sortBy"
+                    :documents="documents"
+                    :total-page-results="totalPageResults"
+                    :page="page"
+                    :sort-dropdown="sortDropdown"
                 />
                 <b-pagination
-                    :total-rows="totalPageResults"
                     v-model="page"
+                    :total-rows="totalPageResults"
                     :per-page="pageSize"
                     @input="searchQuery"
                 />
             </b-col>
-            <b-col md="4" id="search-results-cards">
+            <b-col id="search-results-cards" md="4">
                 <search-results-filter />
                 <search-results-external-links />
             </b-col>
@@ -28,19 +28,17 @@
 </template>
 
 <script>
-import DocumentResultsContainer from '../DocumentResults/DocumentResultsContainer.vue';
+import DocResultsContainer from '../DocResults/DocResultsContainer.vue';
 import SearchResultsFilter from './SearchResultsFilter.vue';
 import SearchResultsExternalLinks from './SearchResultsExternalLinks';
-import SearchBox from '~/components/SearchBox.vue';
 import searchPaperService from '~/api/SearchPaperService';
 
 export default {
     name: 'SearchResults',
     components: {
-        DocumentResultsContainer,
+        DocResultsContainer,
         SearchResultsFilter,
-        SearchResultsExternalLinks,
-        SearchBox
+        SearchResultsExternalLinks
     },
     data() {
         return {
@@ -61,33 +59,36 @@ export default {
                     sortByKey: 'num_citations'
                 },
                 'sort-year': { displayName: 'Year', sortByKey: 'year' }
-            }
+            },
+            error: false
         };
-    },
-    methods: {
-        searchQuery() {
-            this.loadingState = true;
-            //push params
-            console.log(this.$route.query.query);
-            searchPaperService
-                .searchPaper(this.queryString, this.page, this.pageSize)
-                .then((response) => {
-                    this.documents = response.data.response;
-                    this.totalPageResults = response.data.total_results;
-                    this.loadingState = false;
-                });
-        }
-    },
-    created: function () {
-        this.queryString = this.$route.query.query;
-        console.log(this.queryString);
-        this.searchQuery();
     },
     watch: {
         '$route.query.query'() {
             this.queryString = this.$route.query.query;
-            console.log(this.queryString);
             this.searchQuery();
+        }
+    },
+    created() {
+        // make search query immediately when page is loaded
+        this.queryString = this.$route.query.query;
+        this.searchQuery();
+    },
+    methods: {
+        searchQuery() {
+            this.loadingState = true;
+            // push params
+            searchPaperService
+                .searchPaper(this.queryString, this.page, this.pageSize)
+                .then(response => {
+                    this.documents = response.data.response;
+                    this.totalPageResults = response.data.total_results;
+                    this.loadingState = false;
+                })
+                .catch(error => {
+                    console.log(error.message);
+                    this.error = true;
+                });
         }
     }
 };

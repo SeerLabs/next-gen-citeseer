@@ -1,31 +1,29 @@
 <template>
   <div>
-	<nav-bar/>
-	<b-container fluid="md">
-		<b-row>
-			<b-col cols="12" id="page-container">
-    			<nuxt keep-alive />
-			</b-col>
-		</b-row>
-	</b-container>
-	<footer-bar/>
+    <nav-bar />
+    <b-container fluid="md">
+      <b-row>
+        <b-col id="page-container" cols="12">
+          <nuxt keep-alive />
+        </b-col>
+      </b-row>
+    </b-container>
+    <footer-bar />
   </div>
 </template>
 
-
 <script>
-import NavBar from '~/components/Navigation/Navbar.vue';
-import FooterBar from '~/components/Navigation/FooterBar.vue';
+import NavBar from '~/components/Navigation/Navbar.vue'
+import FooterBar from '~/components/Navigation/FooterBar.vue'
 
 export default {
-	name: 'LayoutDefault',
-	components: {
-		NavBar,
-		FooterBar
-	}
-};
+  name: 'LayoutDefault',
+  components: {
+    NavBar,
+    FooterBar
+  }
+}
 </script>
-
 
 <style>
 	#page-container {

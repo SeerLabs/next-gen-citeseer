@@ -1,39 +1,44 @@
 <template>
-    <footer class="footer-distributed">
-	            <div class="footer-left">
-	                <img id="psu_logo" src="https://raw.githubusercontent.com/jasonchhay/CovidSeer/master/seer/static/img/psu_logo.png" width="250vw">
-		            <div class="elasticsearch">
-			            <a href="https://www.elastic.co/enterprise-search">
-				            <img src="https://raw.githubusercontent.com/jasonchhay/CovidSeer/95f76ed85448bd26628bbc854102b616c478e5ab/seer/static/img/svg/logo-elasticsearch-64-color-reverse.svg" width="50vw" style="display: inline-block;">
-				            <p style="color: white; display: inline-block;">Powered by ElasticSearch</p>
-			            </a>
-		            </div>
-		            <p class="footer-links">
-	                    <a href="https://csxstatic.ist.psu.edu/privacy-policy/">Privacy Policy</a>
-	                    ·
-	                    <a href="https://csxstatic.ist.psu.edu/help/">Help</a>
-	                    ·
-	                    <a href="https://csxstatic.ist.psu.edu/contact/">Contact Us</a>
-	                </p>
-	                <p class="footer-company-name">Developed at and hosted by <a href="http://ist.psu.edu/">The College of Information Sciences and Technology</a></p><br>
-	                <p class="footer-company-name"><a href="https://www.psu.edu/">Pennsylvania State University</a> © 2020</p>
-	            </div>
-	            <div class="footer-center">
-	                <div>
-			    <div>
-	                        <i class="fa fa-map-marker"></i>
-	                        <p><span>Westgate Building</span>
-				   Pennsylvania State University
-				   <br>University Park, PA 16802
-				</p>
-			    </div>
-	                    <div>
-	                        <i class="fa fa-phone"></i>
-	                        <p>+(814) 865 7884</p>
-	                    </div>
-	                </div>
-	        </div>
-	</footer>
+  <footer class="footer-distributed">
+    <div class="footer-left">
+      <img id="psu_logo" src="https://raw.githubusercontent.com/jasonchhay/CovidSeer/master/seer/static/img/psu_logo.png" width="250vw">
+      <div class="elasticsearch">
+        <a href="https://www.elastic.co/enterprise-search">
+          <img src="https://raw.githubusercontent.com/jasonchhay/CovidSeer/95f76ed85448bd26628bbc854102b616c478e5ab/seer/static/img/svg/logo-elasticsearch-64-color-reverse.svg" width="50vw" style="display: inline-block;">
+          <p style="color: white; display: inline-block;">Powered by ElasticSearch</p>
+        </a>
+      </div>
+      <p class="footer-links">
+        <a href="https://csxstatic.ist.psu.edu/privacy-policy/">Privacy Policy</a>
+        ·
+        <a href="https://csxstatic.ist.psu.edu/help/">Help</a>
+        ·
+        <a href="https://csxstatic.ist.psu.edu/contact/">Contact Us</a>
+      </p>
+      <p class="footer-company-name">
+        Developed at and hosted by <a href="http://ist.psu.edu/">The College of Information Sciences and Technology</a>
+      </p><br>
+      <p class="footer-company-name">
+        <a href="https://www.psu.edu/">Pennsylvania State University</a> © 2020
+      </p>
+    </div>
+    <div class="footer-center">
+      <div>
+        <div>
+          <i class="fa fa-map-marker" />
+          <p>
+            <span>Westgate Building</span>
+            Pennsylvania State University
+            <br>University Park, PA 16802
+          </p>
+        </div>
+        <div>
+          <i class="fa fa-phone" />
+          <p>+(814) 865 7884</p>
+        </div>
+      </div>
+    </div>
+  </footer>
 </template>
 
 <style scoped>
@@ -150,7 +155,6 @@
 		color:  #5383d3;
 		text-decoration: none;;
 	}
-
 
 	/* Footer Right */
 
