@@ -15,7 +15,7 @@
 
         <b-pagination
             v-model="currentPage"
-            :total-rows="rows"
+            :total-rows="nCitations"
             :per-page="perPage"
             @input="getCitationEntities()"
         />
@@ -38,15 +38,11 @@ export default {
     },
     data() {
         return {
-            perPage: 5,
+            perPage: 10,
             currentPage: 1,
-            citations: []
+            citations: [],
+            nCitations: 0
         };
-    },
-    computed: {
-        rows() {
-            return this.citations.length;
-        }
     },
     mounted() {
         this.getCitationEntities();
@@ -54,9 +50,16 @@ export default {
     methods: {
         getCitationEntities() {
             docViewService
-                .getCitationsEntities(this.docId, this.currentPage)
-                .then(response => (this.citations = response.data.citations))
-                .catch(error => {
+                .getCitationsEntities(
+                    this.docId,
+                    this.currentPage,
+                    this.perPage
+                )
+                .then((response) => {
+                    this.citations = response.data.citations;
+                    this.nCitations = response.data.total_results;
+                })
+                .catch((error) => {
                     console.log(error);
                 });
             console.log('Finished');

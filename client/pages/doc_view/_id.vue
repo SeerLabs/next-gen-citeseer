@@ -1,5 +1,5 @@
 <template>
-    <div id="doc-view-layout">
+    <div v-cloak id="doc-view-layout">
         <div v-if="loading" id="loading">
             <b-spinner label="Spinning" />
         </div>
@@ -22,7 +22,7 @@
                         class="citation-card"
                         :doc-id="docId"
                         title="Citations"
-                        :ncitation="nCitation"
+                        :n-citations="nCitations"
                     />
 
                     <citation-card
@@ -30,12 +30,9 @@
                         class="citation-card"
                         :doc-id="docId"
                         title="Similar Articles"
-                        citation
+                        :n-citations="nCitations"
                     />
-                    <version-history-card
-                        id="version-history"
-                        title="Version History"
-                    />
+                    <version-history-card id="version-history" title="Version History" />
                 </b-col>
                 <b-col cols="3">
                     <b-card id="table-of-contents" title="Table of Contents">
@@ -43,10 +40,7 @@
                             <a href="#citations">
                                 <h6>Citation</h6>
                             </a>
-                            <a
-                                href="#similar-articles"
-                                @click="scroll('similar-article-card')"
-                            >
+                            <a href="#similar-articles" @click="scroll('similar-article-card')">
                                 <h6>Similar Articles</h6>
                             </a>
                             <a href="#version-history">
@@ -76,13 +70,12 @@ export default {
     async fetch() {
         this.loading = true;
         const { data } = await DocViewService.getPaperEntity(this.docId);
-
         this.title = data.paper.title;
         this.year = data.paper.year;
         this.authors = data.paper.authors;
         this.venue = data.paper.venue;
         this.abstract = data.paper.abstract;
-        this.nCitation = data.paper.total_results;
+        this.nCitation = data.paper.n_citation;
 
         this.loading = false;
     },
@@ -96,7 +89,7 @@ export default {
             authors: [],
             venue: '',
             abstract: '',
-            nCitation: 0,
+            nCitations: 0,
 
             documents: [
                 {
@@ -133,7 +126,7 @@ export default {
         }
     },
     mounted() {
-        $('#table-of-contents a').on('click', function(e) {
+        $('#table-of-contents a').on('click', function (e) {
             e.preventDefault();
             const hash = this.hash;
 
@@ -143,7 +136,7 @@ export default {
                     scrollTop: $(hash).offset().top
                 },
                 300,
-                function() {
+                function () {
                     window.location.hash = hash;
                 }
             );
@@ -182,5 +175,9 @@ export default {
 
 #table-of-contents .card-body {
     padding: 1rem;
+}
+
+[v-cloak] {
+    display: none;
 }
 </style>

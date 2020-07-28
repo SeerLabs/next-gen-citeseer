@@ -9,17 +9,14 @@
                 <div class="document-results-sorting">
                     Sort by
                     <b-dropdown variant="primary" class="m-2 results-dropdown">
-                        <template v-slot:button-content>
-                            {{ sortByDisplay }}
-                        </template>
+                        <template v-slot:button-content>{{ sortByDisplay }}</template>
 
                         <ul>
                             <li v-for="(item, key) in sortDropdown" :key="key">
                                 <b-dropdown-item
                                     :name="key"
                                     @click="sortResults"
-                                    >{{ item.displayName }}</b-dropdown-item
-                                >
+                                >{{ item.displayName }}</b-dropdown-item>
                             </li>
                         </ul>
                     </b-dropdown>
