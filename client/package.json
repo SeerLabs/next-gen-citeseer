@@ -20,7 +20,8 @@
     "jquery": "^3.5.1",
     "lodash": "^4.17.19",
     "nuxt": "^2.14.0",
-    "typescript": "^3.9.7"
+    "typescript": "^3.9.7",
+    "vue-material-design-icons": "^4.8.0"
   },
   "devDependencies": {
     "@nuxtjs/eslint-config": "^2.0.0",

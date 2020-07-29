@@ -1,7 +1,6 @@
 <template>
     <header>
-        <!-- Imports -->
-        <v-app-bar absolute hide-on-scroll dark>
+        <v-app-bar id="navbar" dark>
             <v-toolbar-title href="#">
                 <nuxt-link id="navbar-home-link" :to="{ path: '/' }">
                     CiteSeerX

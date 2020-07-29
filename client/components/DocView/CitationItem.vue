@@ -1,25 +1,28 @@
 <template>
-    <b-container fluid="sm" class="document-result">
-        <b-row>
-            <b-col class="result-title">
+    <div class="document-result">
+        <v-row no-gutters>
+            <v-col class="result-title">
                 <h5>
-                    <nuxt-link :to="'/show_citing/' + cid">
+                    <nuxt-link v-if="cid" :to="'/show_citing/' + cid">
                         {{ title }}
                     </nuxt-link>
+                    <span v-else>
+                        {{ title || 'No title available' }}
+                    </span>
                 </h5>
-            </b-col>
-        </b-row>
+            </v-col>
+        </v-row>
 
-        <b-row>
-            <b-col class="result-info">
+        <v-row no-gutters>
+            <v-col class="result-info">
                 <h6>
                     {{ authors || 'No authors available' }} -
                     {{ venue || 'No venue available' }} -
                     {{ year || 'No year available' }}
                 </h6>
-            </b-col>
-        </b-row>
-    </b-container>
+            </v-col>
+        </v-row>
+    </div>
 </template>
 
 <script>
@@ -29,7 +32,7 @@ export default {
         title: { type: String, default: '' },
         authors: { type: String, default: 'No authors available' },
         venue: { type: String, default: 'No venue available' },
-        year: { type: Number, required: 0 },
+        year: { type: Number, default: 0 },
         numCitations: { type: Number, default: 0 },
         cid: { type: Number, required: true }
     },

@@ -13,11 +13,11 @@
 
         <p class="mt-3">Current Page: {{ currentPage }}</p>
 
-        <b-pagination
+        <v-pagination
             v-model="currentPage"
-            :total-rows="nCitations"
-            :per-page="perPage"
-            @input="getCitationEntities()"
+            :total-visible="6"
+            :length="totalNumRows"
+            @input="getCitationEntities"
         />
     </div>
 </template>
@@ -44,7 +44,12 @@ export default {
             nCitations: 0
         };
     },
-    mounted() {
+    computed: {
+        totalNumRows() {
+            return this.nCitations / this.perPage;
+        }
+    },
+    created() {
         this.getCitationEntities();
     },
     methods: {
@@ -55,14 +60,14 @@ export default {
                     this.currentPage,
                     this.perPage
                 )
-                .then((response) => {
+                .then(response => {
                     this.citations = response.data.citations;
                     this.nCitations = response.data.total_results;
                 })
-                .catch((error) => {
+                .catch(error => {
+                    // eslint-disable-next-line
                     console.log(error);
                 });
-            console.log('Finished');
         }
     }
 };

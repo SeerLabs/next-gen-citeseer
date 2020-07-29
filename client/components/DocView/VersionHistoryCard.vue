@@ -1,19 +1,36 @@
 <template>
     <div>
-        <b-card :title="title">
-            <b-dropdown
-                text="Versions"
-                variant="outline-secondary"
-                class="m-md-2"
-                size="sm"
-            >
-                <b-dropdown-item>Version 1</b-dropdown-item>
-                <b-dropdown-item>Version 2</b-dropdown-item>
-                <b-dropdown-item>Version 3</b-dropdown-item>
-            </b-dropdown>
-
-            <b-table striped hover :items="items" />
-        </b-card>
+        <v-card>
+            <v-card-title>{{ title }}</v-card-title>
+            <v-card-text>
+                <v-select
+                    dense
+                    class="m-2"
+                    :value="sortByValues[0]"
+                    :items="sortByValues"
+                    label="Sort By"
+                    outlined
+                />
+                <v-simple-table striped hover :items="items">
+                    <template v-slot:default>
+                        <thead>
+                            <tr>
+                                <th class="text-left">Datum</th>
+                                <th class="text-left">Value</th>
+                                <th class="text-left">Source</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr v-for="(item, index) in items" :key="index">
+                                <td>{{ item.Datum }}</td>
+                                <td>{{ item.Value }}</td>
+                                <td>{{ item.Source }}</td>
+                            </tr>
+                        </tbody>
+                    </template>
+                </v-simple-table>
+            </v-card-text>
+        </v-card>
     </div>
 </template>
 
@@ -27,6 +44,7 @@ export default {
     },
     data() {
         return {
+            sortByValues: ['Version 1', 'Version 2', 'Version 3'],
             items: [
                 {
                     Datum: 'TITLE',

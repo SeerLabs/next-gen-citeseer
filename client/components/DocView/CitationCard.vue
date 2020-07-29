@@ -1,33 +1,32 @@
 <template>
-    <b-card>
+    <v-card class="mb-10">
         <span v-if="true">
             <div class="citation-card-header">
                 <div>
-                    <h4>{{ title }}</h4>
-                    <h6>{{ nCitations || 0 }} {{ title.toLowerCase() }}</h6>
+                    <v-card-title>{{ title }}</v-card-title>
+                    <v-card-subtitle>
+                        {{ nCitations || 0 }} {{ title.toLowerCase() }}
+                    </v-card-subtitle>
                 </div>
-                <div class="document-results-sorting">
-                    Sort by
-                    <b-dropdown variant="primary" class="m-2 results-dropdown">
-                        <template v-slot:button-content>{{ sortByDisplay }}</template>
-
-                        <ul>
-                            <li v-for="(item, key) in sortDropdown" :key="key">
-                                <b-dropdown-item
-                                    :name="key"
-                                    @click="sortResults"
-                                >{{ item.displayName }}</b-dropdown-item>
-                            </li>
-                        </ul>
-                    </b-dropdown>
+                <div class="citation-sorting-container">
+                    <v-select
+                        dense
+                        class="m-2 citation-sorting"
+                        :value="sortDropdown[0]"
+                        :items="sortDropdown"
+                        label="Sort By"
+                        outlined
+                    />
                 </div>
             </div>
-            <citation-list :doc-id="docId" :type="title" />
+            <v-card-text>
+                <citation-list :doc-id="docId" :type="title" />
+            </v-card-text>
         </span>
-        <b-card-text v-else class="my-5 text-center text-muted">
-            <h3 class="md-3">No {{ title.toLowerCase() }} available</h3>
-        </b-card-text>
-    </b-card>
+        <v-card-text v-else class="text-center text-muted blue-grey lighten-4">
+            <h3 class="pa-10">No {{ title.toLowerCase() }} available</h3>
+        </v-card-text>
+    </v-card>
 </template>
 
 <script>
@@ -45,7 +44,7 @@ export default {
     data() {
         return {
             sortByDisplay: '',
-            sortDropdown: {},
+            sortDropdown: [],
             sortByKey: ''
         };
     },
@@ -53,30 +52,30 @@ export default {
         switch (this.title) {
             case 'Citations':
                 this.sortByDisplay = 'Relevance';
-                this.sortDropdown = {
-                    'sort-relevance': {
-                        displayName: 'Relevance',
+                this.sortDropdown = [
+                    {
+                        text: 'Relevance',
                         sortByKey: 'relevance'
                     },
-                    'sort-Recency': {
-                        displayName: 'Recency',
+                    {
+                        text: 'Recency',
                         sortByKey: 'Recency'
                     }
-                };
+                ];
                 this.sortByKey = 'relevance';
                 break;
             case 'Similar Articles':
                 this.sortByDisplay = 'Co-Citation';
-                this.sortDropdown = {
-                    'sort-co-citation': {
-                        displayName: 'Co-Citation',
+                this.sortDropdown = [
+                    {
+                        text: 'Co-Citation',
                         sortByKey: 'co-citation'
                     },
-                    'sort-active-bibliography': {
-                        displayName: 'Active Bibliography',
+                    {
+                        text: 'Active Bibliography',
                         sortByKey: 'active-bibliography'
                     }
-                };
+                ];
                 this.sortByKey = 'co-citation';
                 break;
         }
@@ -98,7 +97,12 @@ export default {
     justify-content: space-between;
 }
 
-.document-results-sorting {
+div.citation-sorting-container {
+    padding: 16px;
+}
+
+.citation-sorting {
+    width: 150px;
     text-align: right;
 }
 
