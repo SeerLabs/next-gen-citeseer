@@ -1,45 +1,44 @@
 <template>
-  <div id="search-result-external-links">
-    <base-card :title="filter_title">
-      <b-row>
-        <b-col cols="1">
-          <label for="year-filter">Year</label>
-        </b-col>
-
-        <b-col id="year-filter-value" cols="11">
-          1999 - {{ value }}
-        </b-col>
-      </b-row>
-
-      <b-row>
-        <b-col cols="12">
-          <b-form-input id="year-filter" v-model="value" type="range" min="1999" max="2020" />
-        </b-col>
-      </b-row>
-    </base-card>
-  </div>
+    <v-card id="search-results-filter" :title="filter_title">
+        <v-card-title>{{ filter_title }}</v-card-title>
+        <v-card-text>
+            <div class="d-flex justify-space-between">
+                <label for="year-filter">Year</label>
+                <span>1999 - {{ value }}</span>
+            </div>
+            <v-row>
+                <v-col cols="12">
+                    <v-form-input
+                        id="year-filter"
+                        v-model="value"
+                        type="range"
+                        min="1999"
+                        max="2020"
+                    />
+                </v-col>
+            </v-row>
+        </v-card-text>
+    </v-card>
 </template>
 
 <script>
-import BaseCard from '../Base/BaseCard.vue'
-
 export default {
-  name: 'SearchResultsFilter',
-  components: {
-    BaseCard
-  },
-
-  data () {
-    return {
-      filter_title: 'Filter results',
-      value: 2020
+    name: 'SearchResultsFilter',
+    data() {
+        return {
+            filter_title: 'Filter results',
+            value: 2020
+        };
     }
-  }
-}
+};
 </script>
 
 <style scoped>
-  #year-filter-value {
+#search-results-filter {
+    margin-bottom: 20px;
+}
+
+#year-filter-value {
     text-align: right;
-  }
+}
 </style>

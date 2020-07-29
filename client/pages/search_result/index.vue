@@ -2,7 +2,7 @@
     <div v-cloak>
         <v-row>
             <v-col v-if="loadingState" md="8">
-                <b-spinner class="spinner" label="Loading..." />
+                <v-progress-linear rounded indeterminate color="teal" />
             </v-col>
             <v-col v-else id="search-results-list" md="8">
                 <doc-results-container
@@ -19,7 +19,7 @@
                     @input="searchQuery"
                 />
             </v-col>
-            <v-col id="search-results-cards" md="4">
+            <v-col id="search-results-cards">
                 <search-results-filter />
                 <search-results-external-links />
             </v-col>

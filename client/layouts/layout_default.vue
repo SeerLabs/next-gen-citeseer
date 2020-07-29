@@ -1,6 +1,6 @@
 <template>
     <div>
-        <v-app>
+        <v-app v-cloak>
             <nav-bar />
             <v-main>
                 <v-container>
@@ -32,5 +32,9 @@ export default {
 
 #app {
     text-align: left;
+}
+
+[v-cloak] {
+    display: none;
 }
 </style>

@@ -1,6 +1,6 @@
 <template>
     <div>
-        <v-app>
+        <v-app v-cloak>
             <nav-bar />
             <v-main>
                 <v-container>
@@ -41,5 +41,9 @@ export default {
 <style>
 #search-box-container {
     margin: 1.5em 0;
+}
+
+[v-cloak] {
+    display: none;
 }
 </style>
