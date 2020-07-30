@@ -35,7 +35,7 @@ export default {
 
 <style scoped>
 #search-results-filter {
-    margin-bottom: 20px;
+    margin-bottom: 20px !important;
 }
 
 #year-filter-value {

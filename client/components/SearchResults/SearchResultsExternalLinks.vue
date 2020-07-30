@@ -2,9 +2,7 @@
     <div id="search-results-external-links">
         <v-card :title="filter_title">
             <v-card-title>{{ filter_title }}</v-card-title>
-            <v-card-text>
-                LINKS
-            </v-card-text>
+            <v-card-text>LINKS</v-card-text>
         </v-card>
     </div>
 </template>
@@ -22,6 +20,6 @@ export default {
 
 <style scoped>
 #search-results-external-links {
-    margin-bottom: 10px;
+    margin-bottom: 20px !important;
 }
 </style>

@@ -20,7 +20,7 @@
                 />
             </v-col>
             <v-col id="search-results-cards">
-                <search-results-filter />
+                <search-results-filter class="mb-md-10" />
                 <search-results-external-links />
             </v-col>
         </v-row>

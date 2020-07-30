@@ -10,7 +10,8 @@
                     :authors="item.authors"
                     :year="item.year"
                     :abstract="item.abstract"
-                    :num-citations="item.n_citation"
+                    :n-cited-by="item.n_cited_by"
+                    :n-self-cites="item.n_self_cites"
                 />
             </li>
         </ul>

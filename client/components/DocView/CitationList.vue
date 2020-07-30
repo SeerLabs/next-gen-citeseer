@@ -1,24 +1,29 @@
 <template>
     <div class="overflow-auto">
-        <citation-item
-            v-for="(citation, index) in citations"
-            id="citation-list"
-            :key="index"
-            :title="citation.title"
-            :year="citation.year"
-            :authors="citation.authors"
-            :venue="citation.venue"
-            :cid="citation.cluster"
-        />
+        <div v-if="loading" id="loading">
+            <v-progress-linear rounded indeterminate color="teal" />
+        </div>
+        <div v-else>
+            <citation-item
+                v-for="(citation, index) in citations"
+                id="citation-list"
+                :key="index"
+                :title="citation.title"
+                :year="citation.year"
+                :authors="citation.authors"
+                :venue="citation.venue"
+                :cid="citation.cluster"
+            />
 
-        <p class="mt-3">Current Page: {{ currentPage }}</p>
+            <p class="mt-3">Current Page: {{ currentPage }}</p>
 
-        <v-pagination
-            v-model="currentPage"
-            :total-visible="6"
-            :length="totalNumRows"
-            @input="getCitationEntities"
-        />
+            <v-pagination
+                v-model="currentPage"
+                :total-visible="6"
+                :length="totalNumRows"
+                @input="getCitationEntities"
+            />
+        </div>
     </div>
 </template>
 
@@ -41,7 +46,8 @@ export default {
             perPage: 10,
             currentPage: 1,
             citations: [],
-            nCitations: 0
+            nCitations: 0,
+            loading: false
         };
     },
     computed: {
@@ -54,6 +60,7 @@ export default {
     },
     methods: {
         getCitationEntities() {
+            this.loading = true;
             docViewService
                 .getCitationsEntities(
                     this.docId,
@@ -63,8 +70,11 @@ export default {
                 .then(response => {
                     this.citations = response.data.citations;
                     this.nCitations = response.data.total_results;
+                    this.loading = false;
                 })
                 .catch(error => {
+                    this.loading = false;
+
                     // eslint-disable-next-line
                     console.log(error);
                 });

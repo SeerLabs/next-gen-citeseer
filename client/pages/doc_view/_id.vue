@@ -165,7 +165,7 @@ export default {
 <style>
 #loading {
     text-align: center;
-    padding: 50px;
+    padding: 50px 0;
 }
 #doc-view-layout {
     background: rgb(255, 255, 255);

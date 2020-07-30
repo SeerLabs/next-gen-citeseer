@@ -1,9 +1,9 @@
 <template>
-    <v-container fluid="sm" class="document-result">
+    <v-container fluid class="document-result">
         <v-row no-gutters>
             <v-col cols="12" class="result-title">
                 <nuxt-link :to="{ path: docUrl }">
-                    <h4>{{ title }}</h4>
+                    <h4 class="font-weight-medium">{{ title }}</h4>
                 </nuxt-link>
             </v-col>
             <v-col cols="6" class="result-type">
@@ -19,10 +19,10 @@
         </v-row>
 
         <v-row no-gutters>
-            <v-col cols="3" class="citations">
-                Cited by {{ numCitations }}
+            <v-col cols="4" class="citations">
+                Cited by {{ nCitedBy }} ({{ nSelfCites }} self-citations)
             </v-col>
-            <v-col cols="9" class="links">
+            <v-col cols="8" class="links">
                 <a href="http://google.com">+Cite</a>
                 <a :href="pdfUrl" target="_blank">+View PDF</a>
                 <a href="http://google.com">+Save</a>
@@ -42,7 +42,8 @@ export default {
         authors: { type: Array, default: null },
         year: { type: String, default: '' },
         abstract: { type: String, default: '' },
-        numCitations: { type: Number, default: 0 }
+        nCitedBy: { type: Number, default: 0 },
+        nSelfCites: { type: Number, default: 0 }
     },
     computed: {
         docUrl() {
