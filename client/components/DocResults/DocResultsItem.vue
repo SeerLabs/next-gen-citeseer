@@ -1,40 +1,35 @@
 <template>
-    <b-container fluid="sm" class="document-result">
-        <b-row>
-            <b-col cols="12" class="result-title">
-                <nuxt-link :to="{ path: `/doc_view/${docId}` }">
+    <v-container fluid="sm" class="document-result">
+        <v-row no-gutters>
+            <v-col cols="12" class="result-title">
+                <nuxt-link :to="{ path: docUrl }">
                     <h4>{{ title }}</h4>
                 </nuxt-link>
-            </b-col>
-            <b-col cols="6" class="result-type">
+            </v-col>
+            <v-col cols="6" class="result-type">
                 {{ type }}
-            </b-col>
-        </b-row>
+            </v-col>
+        </v-row>
 
-        <b-row>
-            <b-col class="result-info">
+        <v-row no-gutters>
+            <v-col class="result-info">
                 <h6>{{ authors.join(', ') }} - {{ year }}</h6>
-            </b-col>
-        </b-row>
-
-        <b-row>
-            <b-col class="result-content">
                 <p>{{ abstract.slice(0, 200) }}...</p>
-            </b-col>
-        </b-row>
+            </v-col>
+        </v-row>
 
-        <b-row>
-            <b-col cols="3" class="citations">
+        <v-row no-gutters>
+            <v-col cols="3" class="citations">
                 Cited by {{ numCitations }}
-            </b-col>
-            <b-col cols="9" class="links">
+            </v-col>
+            <v-col cols="9" class="links">
                 <a href="http://google.com">+Cite</a>
-                <a href="http://google.com">+View PDF</a>
+                <a :href="pdfUrl" target="_blank">+View PDF</a>
                 <a href="http://google.com">+Save</a>
                 <a href="http://google.com">+Add to ExportCart</a>
-            </b-col>
-        </b-row>
-    </b-container>
+            </v-col>
+        </v-row>
+    </v-container>
 </template>
 
 <script>
@@ -51,7 +46,11 @@ export default {
     },
     computed: {
         docUrl() {
-            return `/doc_view/${this.doc_id}`;
+            return `/doc_view/${this.docId}`;
+        },
+
+        pdfUrl() {
+            return '/pdf/' + this.docId;
         }
     }
 };

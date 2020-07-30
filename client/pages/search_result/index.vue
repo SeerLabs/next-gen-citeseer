@@ -1,10 +1,10 @@
 <template>
     <div v-cloak>
-        <b-row>
-            <b-col v-if="loadingState" md="8">
-                <b-spinner class="spinner" label="Loading..." />
-            </b-col>
-            <b-col v-else id="search-results-list" md="8">
+        <v-row>
+            <v-col v-if="loadingState" md="8">
+                <v-progress-linear rounded indeterminate color="teal" />
+            </v-col>
+            <v-col v-else id="search-results-list" md="8">
                 <doc-results-container
                     v-model="sortBy"
                     :documents="documents"
@@ -12,18 +12,18 @@
                     :page="page"
                     :sort-dropdown="sortDropdown"
                 />
-                <b-pagination
+                <v-pagination
                     v-model="page"
-                    :total-rows="totalPageResults"
-                    :per-page="pageSize"
+                    :length="totalNumRows"
+                    :total-visible="8"
                     @input="searchQuery"
                 />
-            </b-col>
-            <b-col id="search-results-cards" md="4">
+            </v-col>
+            <v-col id="search-results-cards">
                 <search-results-filter />
                 <search-results-external-links />
-            </b-col>
-        </b-row>
+            </v-col>
+        </v-row>
     </div>
 </template>
 
@@ -49,19 +49,24 @@ export default {
             page: 1,
             loadingState: false,
             sortBy: 'relevance',
-            sortDropdown: {
-                'sort-relevance': {
-                    displayName: 'Relevance',
-                    sortByKey: 'relevance'
+            sortDropdown: [
+                {
+                    text: 'Relevance',
+                    callback: () => (this.sortBy = 'relevance')
                 },
-                'sort-citations': {
-                    displayName: 'Citations',
-                    sortByKey: 'num_citations'
+                {
+                    text: 'Citations',
+                    callback: () => (this.sortBy = 'num_citations')
                 },
-                'sort-year': { displayName: 'Year', sortByKey: 'year' }
-            },
+                { text: 'Year', callback: () => (this.sortBy = 'year') }
+            ],
             error: false
         };
+    },
+    computed: {
+        totalNumRows() {
+            return this.totalPageResults / this.pageSize;
+        }
     },
     watch: {
         '$route.query.query'() {
@@ -80,12 +85,13 @@ export default {
             // push params
             searchPaperService
                 .searchPaper(this.queryString, this.page, this.pageSize)
-                .then((response) => {
+                .then(response => {
                     this.documents = response.data.response;
                     this.totalPageResults = response.data.total_results;
                     this.loadingState = false;
                 })
-                .catch((error) => {
+                .catch(error => {
+                    // eslint-disable-next-line
                     console.log(error.message);
                     this.error = true;
                 });

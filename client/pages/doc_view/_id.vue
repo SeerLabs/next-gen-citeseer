@@ -1,7 +1,7 @@
 <template>
     <div v-cloak id="doc-view-layout">
         <div v-if="loading" id="loading">
-            <b-spinner label="Spinning" />
+            <v-progress-linear rounded indeterminate color="teal" />
         </div>
         <span v-else>
             <DocumentViewHeader
@@ -15,8 +15,8 @@
             />
 
             <!-- Citations Row -->
-            <b-row>
-                <b-col cols="9">
+            <v-row>
+                <v-col cols="9">
                     <citation-card
                         id="citations"
                         class="citation-card"
@@ -32,24 +32,31 @@
                         title="Similar Articles"
                         :n-citations="nCitations"
                     />
-                    <version-history-card id="version-history" title="Version History" />
-                </b-col>
-                <b-col cols="3">
-                    <b-card id="table-of-contents" title="Table of Contents">
-                        <b-card-text>
+                    <version-history-card
+                        id="version-history"
+                        title="Version History"
+                    />
+                </v-col>
+                <v-col cols="3">
+                    <v-card id="table-of-contents">
+                        <v-card-title>Table of Contents</v-card-title>
+                        <v-card-text>
                             <a href="#citations">
                                 <h6>Citation</h6>
                             </a>
-                            <a href="#similar-articles" @click="scroll('similar-article-card')">
+                            <a
+                                href="#similar-articles"
+                                @click="scroll('similar-article-card')"
+                            >
                                 <h6>Similar Articles</h6>
                             </a>
                             <a href="#version-history">
                                 <h6>Version History</h6>
                             </a>
-                        </b-card-text>
-                    </b-card>
-                </b-col>
-            </b-row>
+                        </v-card-text>
+                    </v-card>
+                </v-col>
+            </v-row>
         </span>
     </div>
 </template>
@@ -126,7 +133,7 @@ export default {
         }
     },
     mounted() {
-        $('#table-of-contents a').on('click', function (e) {
+        $('#table-of-contents a').on('click', function(e) {
             e.preventDefault();
             const hash = this.hash;
 
@@ -136,7 +143,7 @@ export default {
                     scrollTop: $(hash).offset().top
                 },
                 300,
-                function () {
+                function() {
                     window.location.hash = hash;
                 }
             );

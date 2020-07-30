@@ -1,19 +1,19 @@
 <template>
-    <b-card>
-        <b-row>
-            <b-col>
+    <v-card>
+        <v-row>
+            <v-col>
                 <h6 @click="scroll">
                     Citation
                 </h6>
-            </b-col>
-        </b-row>
-        <b-row>
-            <b-col><h6>Similar Article</h6></b-col>
-        </b-row>
-        <b-row>
-            <b-col><h6>Version History</h6></b-col>
-        </b-row>
-    </b-card>
+            </v-col>
+        </v-row>
+        <v-row>
+            <v-col><h6>Similar Article</h6></v-col>
+        </v-row>
+        <v-row>
+            <v-col><h6>Version History</h6></v-col>
+        </v-row>
+    </v-card>
 </template>
 
 <script>
