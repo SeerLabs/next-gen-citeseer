@@ -1,0 +1,523 @@
+{
+  "title": "Generative Constituent Parsing and Discriminative Dependency Reranking: Experiments on English and French",
+  "abstract": "We present an architecture for parsing in two steps. A phrase-structure parser builds for each sentence an n-best list of analyses which are converted to dependency trees. These dependency structures are then rescored by a discriminative reranker. Our method is language agnostic and enables the incorporation of additional information which are useful for the choice of the best parse candidate. We test our approach on the the Penn Treebank and the French Treebank. Evaluation shows a significative improvement on different parse metrics.",
+  "authors": [
+    {
+      "forename": "Joseph",
+      "surname": "Le Roux",
+      "email": "leroux@univ-paris13.fr"
+    },
+    {
+      "forename": "Beno\xc3\xaet",
+      "surname": "Favre",
+      "email": "benoit.favre@lif.univ-mrs.fr",
+      "affiliation": "Computer Engineering Department, LIF, UMR 7279, Universit\xc3\xa9 Aix-Marseille -CNRS | Sharif university of Technology"
+    },
+    {
+      "forename": "Alexis",
+      "surname": "Nasr",
+      "email": "alexis.nasr@lif.univ-mrs.fr",
+      "affiliation": "Computer Engineering Department, LIF, UMR 7279, Universit\xc3\xa9 Aix-Marseille -CNRS | Sharif university of Technology"
+    },
+    {
+      "forename": "Abolghasem",
+      "surname": "Seyed",
+      "email": ""
+    },
+    {
+      "forename": "",
+      "surname": "Mirroshandel",
+      "email": "ghasem.mirroshandel@lif.univ-mrs.fr",
+      "affiliation": "Computer Engineering Department, LIF, UMR 7279, Universit\xc3\xa9 Aix-Marseille -CNRS | Sharif university of Technology"
+    },
+    {
+      "forename": "",
+      "surname": "",
+      "email": "",
+      "affiliation": "UMR 7030, LIPN, Universit\xc3\xa9 Paris Nord -CNRS"
+    }
+  ],
+  "citations": [
+    {
+      "title": "Treebanks, chapter Building a treebank for French",
+      "authors": [
+        {
+          "surname": "Abeill\xc3\xa9",
+          "forename": "Anne"
+        },
+        {
+          "surname": "Cl\xc3\xa9ment",
+          "forename": "Lionel"
+        },
+        {
+          "surname": "Fran\xc3\xa7ois",
+          "forename": "Toussenel"
+        }
+      ]
+    },
+    {
+      "title": "Handling Unknown Words in Statistical Latent-Variable Parsing Models for Arabic, English and French",
+      "authors": [
+        {
+          "surname": "Attia",
+          "forename": "M"
+        },
+        {
+          "surname": "Foster",
+          "forename": "J"
+        },
+        {
+          "surname": "Hogan",
+          "forename": "D"
+        },
+        {
+          "surname": "Roux",
+          "forename": "J"
+        },
+        {
+          "surname": "Tounsi",
+          "forename": "L"
+        },
+        {
+          "surname": "Van Genabith",
+          "forename": "J"
+        }
+      ]
+    },
+    {
+      "title": "Top Accuracy and Fast Dependency Parsing is not a Contradiction",
+      "authors": [
+        {
+          "surname": "Bohnet",
+          "forename": "Bernd"
+        }
+      ]
+    },
+    {
+      "title": "Improving Generative Statistical Parsing with Semi-Supervised Word Clustering",
+      "authors": [
+        {
+          "surname": "Candito",
+          "forename": "M.-H"
+        },
+        {
+          "surname": "Crabb\xc3\xa9",
+          "forename": "B"
+        }
+      ]
+    },
+    {
+      "title": "Benchmarking of Statistical Dependency Parsers for French",
+      "authors": [
+        {
+          "surname": "Candito",
+          "forename": "M.-H"
+        },
+        {
+          "surname": "Nivre",
+          "forename": "J"
+        },
+        {
+          "surname": "Denis",
+          "forename": "P"
+        },
+        {
+          "surname": "Henestroza",
+          "forename": "E"
+        }
+      ]
+    },
+    {
+      "title": "Statistical French Dependency Parsing : Treebank Conversion and First Results",
+      "authors": [
+        {
+          "surname": "Candito",
+          "forename": "Marie"
+        },
+        {
+          "surname": "Crabb\xc3\xa9",
+          "forename": "Beno\xc3\xaet"
+        },
+        {
+          "surname": "Denis",
+          "forename": "Pascal"
+        }
+      ]
+    },
+    {
+      "title": "TAG, Dynamic Programming and the Perceptron for Efficient, Feature-rich Parsing",
+      "authors": [
+        {
+          "surname": "Carreras",
+          "forename": "Xavier"
+        },
+        {
+          "surname": "Collins",
+          "forename": "Michael"
+        },
+        {
+          "surname": "Koo",
+          "forename": "Terry"
+        }
+      ]
+    },
+    {
+      "title": "Coarseto-Fine n-Best Parsing and MaxEnt Discriminative Reranking",
+      "authors": [
+        {
+          "surname": "Charniak",
+          "forename": "Eugene"
+        },
+        {
+          "surname": "Johnson",
+          "forename": "Mark"
+        }
+      ]
+    },
+    {
+      "title": "Better training for function labeling",
+      "authors": [
+        {
+          "surname": "Chrupa\xc5\x82a",
+          "forename": "Grzegorz"
+        },
+        {
+          "surname": "Stroppa",
+          "forename": "Nicolas"
+        },
+        {
+          "surname": "Van Genabith",
+          "forename": "Josef"
+        },
+        {
+          "surname": "Dinu",
+          "forename": "Georgiana"
+        }
+      ]
+    },
+    {
+      "title": "Three Generative, Lexicalised Models for Statistical Parsing",
+      "authors": [
+        {
+          "surname": "Collins",
+          "forename": "Michael"
+        }
+      ]
+    },
+    {
+      "title": "Discriminative Reranking for Natural Language Parsing",
+      "authors": [
+        {
+          "surname": "Collins",
+          "forename": "Michael"
+        }
+      ]
+    },
+    {
+      "title": "Online Passive-Aggressive Algorithm",
+      "authors": [
+        {
+          "surname": "Crammer",
+          "forename": "Koby"
+        },
+        {
+          "surname": "Dekel",
+          "forename": "Ofer"
+        },
+        {
+          "surname": "Keshet",
+          "forename": "Joseph"
+        },
+        {
+          "surname": "Shalevshwartz",
+          "forename": "Shai"
+        },
+        {
+          "surname": "Singer",
+          "forename": "Yoram"
+        }
+      ]
+    },
+    {
+      "title": "Coupling an annotated corpus and a morphosyntactic lexicon for stateof-the-art pos tagging with less human effort",
+      "authors": [
+        {
+          "surname": "Denis",
+          "forename": "Pascal"
+        },
+        {
+          "surname": "Sagot",
+          "forename": "Beno\xc3\xaet"
+        }
+      ]
+    },
+    {
+      "title": "Forest Reranking: Discriminative Parsing with Non-Local Features",
+      "authors": [
+        {
+          "surname": "Huang",
+          "forename": "Liang"
+        }
+      ]
+    },
+    {
+      "title": "Extended constituent-to-dependency conversion for English",
+      "authors": [
+        {
+          "surname": "Johansson",
+          "forename": "Richard"
+        },
+        {
+          "surname": "Nugues",
+          "forename": "Pierre"
+        }
+      ]
+    },
+    {
+      "title": "Reranking the Berkeley and Brown Parsers",
+      "authors": [
+        {
+          "surname": "Johnson",
+          "forename": "Mark"
+        },
+        {
+          "surname": "Ural",
+          "forename": "Ahmet"
+        }
+      ]
+    },
+    {
+      "title": "The penn treebank: Annotating predicate argument structure",
+      "authors": [
+        {
+          "surname": "Marcus",
+          "forename": "Mitchell"
+        },
+        {
+          "surname": "Kim",
+          "forename": "Grace"
+        },
+        {
+          "surname": "Marcinkiewicz",
+          "forename": "Mary"
+        },
+        {
+          "surname": "Macintyre",
+          "forename": "Robert"
+        },
+        {
+          "surname": "Bies",
+          "forename": "Ann"
+        },
+        {
+          "surname": "Ferguson",
+          "forename": "Mark"
+        },
+        {
+          "surname": "Katz",
+          "forename": "Karen"
+        },
+        {
+          "surname": "Schasberger",
+          "forename": "Britta"
+        }
+      ]
+    },
+    {
+      "title": "Probabilistic CFG with Latent Annotations",
+      "authors": [
+        {
+          "surname": "Matsuzaki",
+          "forename": "Takuya"
+        },
+        {
+          "surname": "Miyao",
+          "forename": "Yusuke"
+        },
+        {
+          "surname": "Tsujii",
+          "forename": "Jun"
+        }
+      ]
+    },
+    {
+      "title": "Online Large-Margin Training of Dependency Parsers",
+      "authors": [
+        {
+          "surname": "Mcdonald",
+          "forename": "Ryan"
+        },
+        {
+          "surname": "Crammer",
+          "forename": "Koby"
+        },
+        {
+          "surname": "Pereira",
+          "forename": "Fernando"
+        }
+      ]
+    },
+    {
+      "title": "Discriminative Training and Spanning Tree Algorithms for Dependency Parsing",
+      "authors": [
+        {
+          "surname": "Mcdonald",
+          "forename": "Ryan"
+        }
+      ]
+    },
+    {
+      "title": "Integrating graphbased and transition-based dependency parsers",
+      "authors": [
+        {
+          "surname": "Nivre",
+          "forename": "J"
+        },
+        {
+          "surname": "Mcdonald",
+          "forename": "R"
+        }
+      ]
+    },
+    {
+      "title": "Improved Inference for Unlexicalized Parsing",
+      "authors": [
+        {
+          "surname": "Petrov",
+          "forename": "Slav"
+        },
+        {
+          "surname": "Klein",
+          "forename": "Dan"
+        }
+      ]
+    },
+    {
+      "title": "Learning Accurate, Compact, and Interpretable Tree Annotation",
+      "authors": [
+        {
+          "surname": "Petrov",
+          "forename": "Slav"
+        },
+        {
+          "surname": "Barrett",
+          "forename": "Leon"
+        },
+        {
+          "surname": "Thibaux",
+          "forename": "Romain"
+        },
+        {
+          "surname": "Klein",
+          "forename": "Dan"
+        }
+      ]
+    },
+    {
+      "title": "On the distinction between model-theoretic and generativeenumerative syntactic frameworks",
+      "authors": [
+        {
+          "surname": "Pullum",
+          "forename": "Geoffrey"
+        },
+        {
+          "surname": "Scholz",
+          "forename": "Barbara"
+        }
+      ]
+    },
+    {
+      "title": "The Simple Truth about Dependency and Phrase Structure Representations: An Opinion Piece",
+      "authors": [
+        {
+          "surname": "Rambow",
+          "forename": "Owen"
+        }
+      ]
+    },
+    {
+      "title": "The Perceptron: A Probabilistic Model for Information Storage and Organization in the Brain",
+      "authors": [
+        {
+          "surname": "Rosenblatt",
+          "forename": "Frank"
+        }
+      ]
+    },
+    {
+      "title": "The lefff, a freely available and large-coverage lexicon for french",
+      "authors": [
+        {
+          "surname": "Sagot",
+          "forename": "Beno\xc3\xaet"
+        }
+      ]
+    },
+    {
+      "title": "An empirical study of semi-supervised structured conditional models for dependency parsing",
+      "authors": [
+        {
+          "surname": "Suzuki",
+          "forename": "J"
+        },
+        {
+          "surname": "Isozaki",
+          "forename": "H"
+        },
+        {
+          "surname": "Carreras",
+          "forename": "X"
+        },
+        {
+          "surname": "Collins",
+          "forename": "M"
+        }
+      ]
+    },
+    {
+      "title": "K-best combination of syntactic parsers",
+      "authors": [
+        {
+          "surname": "Zhang",
+          "forename": "Hui"
+        },
+        {
+          "surname": "Zhang",
+          "forename": "Min"
+        },
+        {
+          "surname": "Chew Lim Tan",
+          "forename": "Haizhou"
+        },
+        {
+          "surname": "Li"
+        }
+      ]
+    }
+  ],
+  "text": "Introduction\\n\\nTwo competing approaches exist for parsing natural language. The first one, called generative, is based on the theory of formal languages and rewriting systems. Parsing is defined here as a process that transforms a string into a tree or a tree forest. It is often grounded on phrase-based grammars -although there are generative dependency parsers -in particular context-free grammars or one of their numerous variants, that can be parsed in polynomial time. However, the independence hypothesis that underlies this kind of formal system does not allow for precise analyses of some linguistic phenomena, such as long distance and lexical dependencies.\\n\\nIn the second approach, known as discriminative, the grammar is viewed as a system of constraints over the correct syntactic structures, the words of the sentence themselves being seen as constraints over the position they occupy in the sentence. Parsing boils down to finding a solution that is compatible with the different constraints. The major problem of this approach lies in its complexity. The constraints can, theoretically, range over any aspect of the final structures, which prevents from using efficient dynamic programming techniques when searching for a global solution. In the worst case, final structures must be enumerated in order to be evaluated. Therefore, only a subset of constraints is used in implementations for complexity reasons. This approach can itself be divided into formalisms relying on logic to describe constraints, as the model-theoretic syntax\\n(Pullum and Scholz, 2001)\\n, or numerical formalisms that associate weights to lexico-syntactic substructures. The latter has been the object of some recent work thanks to progresses achieved in the field of Machine Learning. A parse tree is represented as a vector of features and its accuracy is measured as the distance between this vector and the reference.\\n\\nOne way to take advantage of both approaches is to combine them sequentially, as initially proposed by\\nCollins (2000)\\n. A generative parser produces a set of candidates structures that constitute the input of a second, discriminative module, whose search space is limited to this set of candidates. Such an approach, parsing followed by reranking, is used in the Brown parser\\n(Charniak and Johnson, 2005)\\n. The approach can be extended in order to feed the reranker with the output of different parsers, as shown by\\n(Johnson and Ural, 2010;\\n\\nZhang et al., 2009)\\n.\\n\\nIn this paper we are interested in applying reranking to dependency structures. The main reason is that many linguistic constraints are straightforward to implement on dependency structures, as, for example, subcategorization frames or selectional constraints that are closely linked to the notion of de-89 pendents of a predicate. On the other hand, dependencies extracted from constituent parses are known to be more accurate than dependencies obtained from dependency parsers. Therefore the solution we choose is an indirect one: we use a phrase-based parser to generate n-best lists and convert them to lists of dependency structures that are reranked. This approach can be seen as trade-off between phrasebased reranking experiments\\n(Collins, 2000)\\n and the approach of\\nCarreras et al. (2008)\\n where a discriminative model is used to score lexical features representing unlabelled dependencies in the Tree Adjoining Grammar formalism.\\n\\nOur architecture, illustrated in\\nFigure 1\\n, is based on two steps. During the first step, a syntagmatic parser processes the input sentence and produces nbest parses as well as their probabilities. They are annotated with a functional tagger which tags syntagms with standard syntactic functions subject, object, indirect object . . . and converted to dependency structures by application of percolation rules. In the second step, we extract a set of features from the dependency parses and the associated probabilities. These features are used to reorder the n-best list and select a potentially more accurate parse. Syntagmatic parses are produced by the implementation of a PCFG-LA parser of\\n(Attia et al., 2010)\\n, similar to\\n(Petrov et al., 2006)\\n, a functional tagger and dependency converter for the target language. The reranking model is a linear model trained with an implementation of the MIRA algorithm\\n(Crammer et al., 2006)\\n 1 .\\nCharniak and Johnson (2005)\\n and Collins (2000) rerank phrase-structure parses and they also include head-dependent information, in other words unlabelled dependencies. In our approach we take into account grammatical functions or labelled dependencies.\\n\\nIt should be noted that the features we use are very generic and do not depend on the linguistic knowledge of the authors. We applied our method to English, the de facto standard for testing parsing technologies, and French which exhibits many aspects of a morphologically rich language. But our approach could be applied to other languages, provided that 1 This implementation is available at https://github. com/jihelhere/adMIRAble. the resources -treebanks and conversion tools -exist.\\n\\n(1) PCFG-LA n-best constituency parses Input text\\nFigure 1\\n: The parsing architecture: production of the nbest syntagmatic trees (1) tagged with functional labels (2), conversion to a dependency structure (3) and feature extraction (4), scoring with a linear model (5). The parse with the best score is considered as final.\\n\\nThe structure of the paper is the following: in Section 2 we describe the details of our generative parser and in Section 3 our reranking model together with the features templates. Section 4 reports the results of the experiments conducted on the Penn Treebank\\n(Marcus et al., 1994)\\n as well as on the Paris 7 Treebank\\n(Abeill&#233; et al., 2003)\\n and Section 5 concludes the paper.\\n\\n\\n\\nGenerative Model\\n\\nThe first part of our system, the syntactic analysis itself, generates surface dependency structures in a sequential fashion\\n(Candito et al., 2010b;\\n\\nCandito et al., 2010a)\\n. A phrase structure parser based on Latent Variable PCFGs (PCFG-LAs) produces tree structures that are enriched with functions and then converted to labelled dependency structures, which will be processed by the parse reranker. 90\\n\\n\\n\\nPCFG-LAs\\n\\nProbabilistic Context Free Grammars with Latent Annotations, introduced in\\n(Matsuzaki et al., 2005)\\n can be seen as automatically specialised PCFGs learnt from treebanks. Each symbol of the grammar is enriched with annotation symbols behaving as subclasses of this symbol. More formally, the probability of an unannotated tree is the sum of the probabilities of its annotated counterparts. For a PCFG-LA G, R is the set of annotated rules, D(t) is the set of (annotated) derivations of an unannotated tree t, and R(d) is the set of rules used in a derivation d. Then the probability assigned by G to t is:\\n\\nP G (t) = d&#8712;D(t) P G (d) = d&#8712;D(t) r&#8712;R(d) P G (r) (1)\\n\\nBecause of this alternation of sums and products that cannot be optimally factorised, there is no exact polynomial dynamic programming algorithm for parsing.\\nMatsuzaki et al. (2005)\\n and\\nPetrov and Klein (2007)\\n discuss approximations of the decoding step based on a Bayesian variational approach. This enables cubic time decoding that can be further enhanced with coarse-to-fine methods\\n(Charniak and Johnson, 2005)\\n.\\n\\nThis type of grammars has already been tested on a variety of languages, in particular English and French, giving state-of-the-art results. Let us stress that this phrase-structure formalism is not lexicalised as opposed to grammars previously used in reranking experiments\\n(Collins, 2000;\\n\\nCharniak and Johnson, 2005)\\n. The notion of lexical head is therefore absent at parsing time and will become available only at the reranking step.\\n\\n\\n\\nDependency Structures\\n\\nA syntactic theory can either be expressed with phrase structures or dependencies, as advocated for in\\n(Rambow, 2010)\\n. However, some information may be simpler to describe in one of the representations. This equivalence between the modes of representations only stands if the informational contents are the same. Unfortunately, this is not the case here because the phrase structures that we use do not contain functional annotations and lexical heads, whereas labelled dependencies do. This implies that, in order to be converted into labelled dependency structures, phrase structure parses must first be annotated with functions. Previous experiments for English and French as well\\n(Candito et al., 2010b)\\n showed that a sequential approach is better than an integrated one for contextfree grammars, because the strong independence hypothesis of this formalism implies a restricted domain of locality which cannot express the context needed to properly assign functions. Most functional taggers, such as the ones used in the following experiments, rely on classifiers whose feature sets can describe the whole context of a node in order to make a decision.\\n\\n\\n\\nDiscriminative model\\n\\nOur discriminative model is a linear model trained with the Margin-Infused Relaxed Algorithm (MIRA)\\n(Crammer et al., 2006)\\n. This model computes the score of a parse tree as the inner product of a feature vector and a weight vector representing model parameters. The training procedure of MIRA is very close to that of a perceptron\\n(Rosenblatt, 1958)\\n, benefiting from its speed and relatively low requirements while achieving better accuracy.\\n\\nRecall that parsing under this model consists in (1) generating a n-best list of constituency parses using the generative model, (2) annotating each of them with function tags, (3) converting them to dependency parses, (4) extracting features, (5) scoring each feature vector against the model, (6) selecting the highest scoring parse as output.\\n\\nFor training, we collect the output of feature extraction (4) for a large set of training sentences and associate each parse tree with a loss function that denotes the number of erroneous dependencies compared to the reference parse tree. Then, model weights are adjusted using MIRA training so that the parse with the lowest loss gets the highest score. Examples are processed in sequence, and for each of them, we compute the score of each parse according to the current model and find an updated weight vector that assigns the first rank to the best parse (called oracle). Details of the algorithm are given in the following sections. 91\\n\\n\\n\\nDefinitions\\n\\nLet us consider a vector space of dimension m where each component corresponds to a feature: a parse tree p is represented as a sparse vector &#966;(p). The model is a weight vector w in the same space where each weight corresponds to the importance of the features for characterizing good (or bad) parse trees. The score s(p) of a parse tree p is the scalar product of its feature vector &#966;(p) and the weight vector w.\\n\\ns(p) = m i=1 w i &#966; i (p)\\n(2)\\n\\n\\nLet L be the n-best list of parses produced by the generative parser for a given sentence. The highest scoring parsep is selected as output of the reranker:\\n\\np = argmax p&#8712;L s(p)\\n(3)\\n\\n\\nMIRA learning consists in using training sentences and their reference parses to determine the weight vector w. It starts with w = 0 and modifies it incrementally so that parses closest to the reference get higher scores. Let l(p), loss of parse p, be the number of erroneous dependencies (governor, dependent, label) compared to the reference parse. We define o, the oracle parse, as the parse with the lowest loss in L.\\n\\nTraining examples are processed in sequence as an instance of online learning. For each sentence, we compute the score of each parse in the n-best list. If the highest scoring parse differs from the oracle (p = o), the weight vector can be improved. In this case, we seek a modification of w ensuring that o gets a better score thanp with a difference at least proportional to the difference between their loss. This way, very bad parses get pushed deeper than average parses. Finding such weight vector can be formulated as the following constrained optimization problem:\\n\\nminimize: ||w|| 2 (4) subject to: s(o) &#8722; s(p) &#8805; l(o) &#8722; l(p)\\n(5)\\n\\n\\nSince there is an infinity of weight vectors that satisfy constraint 5, we settle on the one with the smallest magnitude. Classical constrained quadratic optimization methods can be applied to solve this problem: first, Lagrange multipliers are used to introduce the constraint in the objective function, then the Hildreth algorithm yields the following analytic solution to the non-constrained problem:\\n\\nw = w + &#945; (&#966;(o) &#8722; &#966;(p)) (6) &#945; = max 0, l(o) &#8722; l(p) &#8722; [s(o) &#8722; s(p)] ||&#966;(o) &#8722; &#966;(p)|| 2\\n(7)\\n\\n\\nHere, w is the new weight vector, &#945; is an update magnitude and [&#966;(o) &#8722; &#966;(p)] is the difference between the feature vector of the oracle and that of the highest scoring parse. This update, similar to the perceptron update, draws the weight vector towards o while pushing it away fromp. Usual tricks that apply to the perceptron also apply here: (a) performing multiple passes on the training data, and (b) averaging the weight vector over each update 2 . Algorithm 1 details the instructions for MIRA training.\\n\\nAlgorithm 1 MIRA training for i = 1 to t do for all sentences in training set do Generate n-best list L from generative parser for all p &#8712; L do Extract feature vector &#966;(p) Compute score s(p) (eq. 2) end for Get oracle o = argmin p l(p) Get best parsep = argmax p s(p) ifp = o then Compute &#945; (eq. 7) Update weight vector (eq. 6) end if end for end for Return average weight vector over updates.\\n\\n\\n\\nFeatures\\n\\nThe quality of the reranker depends on the learning algorithm as much as on the feature set. These features can span over any subset of a parse tree, up to the whole tree. Therefore, there are a very large set of possible features to choose from. Relevant features must be general enough to appear in as many parses as possible, but specific enough to characterize good and bad configurations in the parse tree.\\n\\nWe extended the feature set from\\n(McDonald, 2006)\\n which showed to be effective for a range of languages. Our feature templates can be categorized in 5 classes according to their domain of locality. In the following, we describe and exemplify these templates on the following sentence from the Penn treebank, in which we target the PMOD dependency between \\"
+  at
+  \
+  \
+  " and \\"
+  watch.
+  \
+  \
+  "\\n\\nProbability Three features are derived from the PCFG-LA parser, namely the posterior probability of the parse (eq. 1), its normalized probability relative to the 1-best, and its rank in the n-best list.\\n\\nUnigram Unigram features are the most simple as they only involve one word. Given a dependency between position i and position j of type l, governed by x i , denoted x i l &#8594; x j , two features are created: one for the governor x i and one for the dependent x j . They are described as 6-tuples (word, lemma, pos-tag, is-governor, direction, type of dependency). Variants with wildcards at each subset of tuple slots are also generated in order to handle sparsity.\\n\\nIn our example, the dependency between \\"
+  looked
+  \
+  \
+  " and \\"
+  at
+  \
+  \
+  " generates two features: This wildcard feature generation is applied to all types of features. We will omit it in the remainder of the description.\\n\\nBigram Unlike the previous template, bigram features model the conjunction of the governor and the dependent of a dependency relation, like bilexical dependencies in\\n(Collins, 1997)\\n.\\n\\nGiven dependency x i l &#8594; x j , the feature created is (word x i , lemma x i , pos-tag x i , word x j , lemma x j , pos-tag x j , distance 3 from i to j, direction, type).\\n\\nThe previous example generates the following feature:\\n\\n[at, at, IN, watch, watch, NN, 2, R, PMOD]\\n\\nWhere 2 is the distance between \\"
+  at
+  \
+  \
+  " and \\"
+  watch
+  \
+  \
+  ".\\n\\nLinear context This feature models the linear context between the governor and the dependent of a relation by looking at the words between them. Given dependency x i l &#8594; x j , for each word from i + 1 to j &#8722; 1, a feature is created with the pos-tags of x i and x j , and the pos tag of the word between them (no feature is create if j = i + 1). An additional feature is created with pos-tags at positions i &#8722; 1, i, i + 1, j &#8722; 1, j, j + 1. Our example yields the following features: Syntactic context: siblings This template and the next one look at two dependencies in two configurations. Given two dependencies x i l &#8594; x j and x i m &#8594; x k , we create the feature (word, lemma, pos-tag for x i , x j and x k , distance from i to j, distance from i to k, direction and type of each of the two dependencies). In our example:\\n\\n[looked, look, VBD, I, I, PRP, at, at, IN, 1, 1, L, SBJ, R, ADV] Syntactic context: chains Given two dependencies x i l &#8594; x j m &#8594; x k , we create the feature (word, lemma, pos-tag of x i , x j and x k , distance from i to j, distance from i to k, direction and type of each of the two dependencies). In our example:\\n\\n[looked, look, VBD, at, at, IN, watch, watch, NN, 1, 2, R, ADV,\\n\\n\\n\\nR, PMOD]\\n\\nIt is worth noting that our feature templates only rely on information available in the training set, and do not use any external linguistic knowledge.\\n\\n\\n\\nExperiments\\n\\nIn this section, we evaluate our architecture on two corpora, namely the Penn Treebank\\n(Marcus et al., 1994)\\n and the French Treebank\\n(Abeill&#233; et al., 2003)\\n. We first present the corpora and the tools used for annotating and converting structures, then the performances of the phrase structure parser alone and with the discriminative reranker.\\n\\n\\n\\nTreebanks and Tools\\n\\nFor English, we use the Wall Street Journal sections of the Penn Treebank. We learn the PCFG-LA from sections 02-21 4 . We then use FUNTAG\\n(Chrupa&#322;a et al., 2007)\\n to add functions back to the PCFG-LA analyses. For the conversion to dependency structures we use the LTH tool\\n(Johansson and Nugues, 2007)\\n. In order to get the gold dependencies, we run LTH directly on the gold parse trees. We use section 22 for development and section 23 for the final evaluation.\\n\\nFor French, we use the Paris 7 Treebank (or French Treebank, FTB). As in several previous experiments we decided to divide the 12,350 phrase structure trees in three sets: train (80%), development (10%) and test (10%). The syntactic tag set for French is not fixed and we decided to use the one described in\\n(Candito and Crabb&#233;, 2009\\n) to be able to compare this system with recent parsing results on French. As for English, we learn the PCFG-LA without functional annotations which are added afterwards. We use the dependency structures developed in\\n(Candito et al., 2010b)\\n and the conversion toolkit BONSA&#207;. Furthermore, to test our approach against state of the art parsing results for French we use word clusters in the phrase-based parser as in\\n(Candito and Crabb&#233;, 2009)\\n.\\n\\nFor both languages we constructed 10-fold training data from train sets in order to avoid overfitting the training data. The trees from training sets were divided into 10 subsets and the parses for each subset were generated by a parser trained on the other 9 subsets. Development and test parses are given by a parser using the whole training set. Development sets were used to choose the best reranking model.\\n\\nFor lemmatisation, we use the MATE lemmatiser for English and a home-made lemmatiser for French based on the lefff lexicon\\n(Sagot, 2010)\\n.\\n\\n\\n\\nGenerative Model\\n\\nThe performances of our parser are summarised in\\nFigure 2, (a) and (b)\\n, where F-score denotes the Parseval F-score 5 , and LAS and UAS are respectively the Labelled and Unlabelled Attachment Score of the converted dependency structures 6 . We give oracle scores (the score that our system would get if it selected the best parse from the n-best lists) when the parser generates n-best lists of depth 10, 20, 50 and 100 in order to get an idea of the effectiveness of the reranking process.\\n\\nOne of the issues we face with this approach is the use of an imperfect functional annotator. For French we evaluate the loss of accuracy on the resulting dependency structure from the gold development set where functions have been omitted. The UAS is 100% but the LAS is 96.04%. For English the LAS from section 22 where functions are omitted is 95.35%.\\n\\nFrom the results presented in this section we can make two observations. First, the results of our parser are at the state of the art on English (90.7% F-score) and on French (85.7% F-score). So the reranker will be confronted with the difficult task of improving on these scores. Second, the progression margin is sensible with a potential LAS error reduction of 41% for English and 40.2% for French.\\n\\n\\n\\nAdding the Reranker\\n\\n\\n\\nLearning Feature Weights\\n\\nThe discriminative model, i.e. template instances and their weights, is learnt on the training set parses obtained via 10-fold cross-validation. The generative parser generates 100-best lists that are used as learning example for the MIRA algorithm. Feature extraction produces an enormous number of features: about 571 millions for English and 179 mil- lions for French. Let us remark that this large set of features is not an issue because our discriminative learning algorithm is online, that is to say it considers only one example at a time, and it only gives non-null weights to useful features.\\n\\n\\n\\nEvaluation\\n\\nIn order to test our system we first tried to evaluate the impact of the length of the n-best list over the reranking predictions 7 . The results are shown in\\nFigure 2\\n, parts (c) and (d).\\n\\nFor French, we can see that even though the LAS and UAS are consistently improving with the number of candidates, the F-score is maximal with 50 candidates. However the difference between 50 candidates and 100 candidates is not statistically significant. For English, the situation is simpler and scores improve continuously on the three metrics.\\n\\nFinally we run our system on the test sets for both treebanks. Results are shown 8 in\\nTable 1\\n for English, and\\nTable 2\\n for French. For English the improvement is 0.9% LAS, 0.7% Parseval F-score and 7 The model is always trained with 100 candidates. 8 F < 40 is the parseval F-score for sentences with less than 40 words. For French we have improvements of 0.3/0.7/0.9. If we add a template feature indicating the agreement between part-of-speech provided by the PCFG-LA parser and a part-of-speech tagger\\n(Denis and Sagot, 2009)\\n, we obtain better improvements: 0.5/0.8/1.\\n\\n\\n\\nComparison with Related Work\\n\\nWe compare our results with related parsing results on English and French.\\n\\nFor English, the main results are shown in Table 3. From the presented data, we can see that indirect reranking on LAS may not seem as good as direct reranking on phrase-structures compared to F-scores obtained in\\n(Charniak and Johnson, 2005)\\n and\\n(Huang, 2008)\\n with one parser or\\n(Zhang et al., 2009)\\n with several parsers. However, our system does not rely on any language specific feature and can be applied to other languages/treebanks. It is difficult to compare our system for LAS because most systems evaluate on gold data (part-of-speech, lemmas and morphological information) like\\nBohnet (2010)\\n.\\n\\nOur system also compares favourably with the system of\\nCarreras et al. (2008)\\n that relies on a more complex generative model, namely Tree Adjoining Grammars, and the system of\\nSuzuki et al. (2009)\\n that makes use of external data (unannotated text).  For French, see\\nTable 4\\n, we compare our system with the MATE parser\\n(Bohnet, 2010)\\n, an improvement over the\\nMST parser (McDonald et al., 2005)\\n with hash kernels, using the MELT part-of-speech tagger\\n(Denis and Sagot, 2009\\n) and our own lemmatiser.\\n\\nWe also compare the French system with results drawn from the benchmark performed by\\nCandito et al. (2010a)\\n. The first system (BKY-FR) is close to ours without the reranking module, using the Berkeley parser adapted to French. The second (MST-FR) is based on MSTParser\\n(McDonald et al., 2005\\n). These two system use word clusters as well.\\n\\nThe next section takes a close look at the models of the reranker and its impact on performance.\\n\\n\\n\\nModel Analysis\\n\\nIt is interesting to note that in the test sets, the one-best of the syntagmatic parser is selected 52.0% of the time by the reranker for English and 34.3% of the time for French. This can be explained by the difference in the quantity of training data in the two treebanks (four times more parses are available for English) resulting in an improvement of the quality of the probabilistic grammar.\\n\\nWe also looked at the reranking models, specifically at the weight given to each of the features. It shows that 19.8% of the 571 million features have a non-zero weight for English as well as 25.7% of the 179 million features for French. This can be explained by the fact that for a given sentence, features that are common to all the candidates in the n-best list are not discriminative to select one of these candidates (they add the same constant weight to the score of all candidates), and therefore ignored by the model. It also shows the importance of feature engineering: designing relevant features is an art (Charniak and\\nJohnson, 2005)\\n.\\n\\nWe took a closer look at the 1,000 features of highest weight and the 1,000 features of lowest weight (negative) for both languages that represent the most important features for discriminating between correct and incorrect parses. For English, 62.0% of the positive features are backoff features which involve at least one wildcard while they are 85.9% for French. Interestingly, similar results hold for negative features. The difference between the two languages is hard to interpret and might be due in part to lexical properties and to the fact that these features may play a balancing role against towards non-backoff features that promote overfitting.\\n\\nExpectedly, posterior probability features have the highest weight and the n-best rank feature has the highest negative weight. As evidenced by  among the other feature templates, linear context occupies most of the weight mass of the 1,000 highest weighted features. It is interesting to note that the unigram and bigram templates are less present for French than for English while the converse seems to be true for the linear template. Sibling features are consistently less relevant.\\n\\nIn terms of LAS performance, on the PTB test set the reranked output is better than the baseline on 22.4% of the sentences while the opposite is true for 10.4% of the sentences. In 67.0% of the sentences, they have the same LAS (but not necessarily the same errors). This emphasises the difficulty of reranking an already good system and also explains why oracle performance is not reached. Both the baseline and reranker output are completely correct on 21.3% of the sentences, while PCFG-LA correctly parses 23% of the sentences and the MIRA brings that number to 26%.\\nFigures 3 and 4\\n show hand-picked sentences for which the reranker selected the correct parse. The French sentence is a typical difficult example for PCFGs because it involves a complex rewriting rule which might not be well covered in the training data (SENT &#8594; NP VP PP PONCT PP PONCT PP PONCT). The English example is tied to a wrong attachment of the prepositional phrase to the verb instead of the date, which lexicalized features of the reranker handle easily.\\n\\n\\n\\nConclusion\\n\\nWe showed that using a discriminative reranker, on top of a phrase structure parser, based on converted dependency structures could lead to significant improvements over dependency and phrase structure parse results. We experimented on two treebanks for two languages, English and French and we mea-sured the improvement of parse quality on three different metrics: Parseval F-score, LAS and UAS, with the biggest error reduction on the latter. However the gain is not as high as expected by looking at oracle scores, and we can suggest several possible improvements on this method.\\n\\nFirst, the sequential approach is vulnerable to cascading errors. Whereas the generative parser produces several candidates, this is not the case of the functional annotators: these errors are not amendable. It should be possible to have a functional tagger with ambiguous output upon which the reranker could discriminate. It remains an open question as how to integrate ambiguous output from the parser and from the functional tagger. The combination of n-best lists would not scale up and working on the ambiguous structure itself, the packed forest as in\\n(Huang, 2008)\\n, might be necessary. Another possibility for future work is to let the phrase-based parser itself perform function annotation, but some preliminary tests on French showed disappointing results.\\n\\nSecond, designing good features, sufficiently general but precise enough, is, as already coined by\\nCharniak and Johnson (2005)\\n, an art. More formally, we can see several alternatives. Dependency structures could be exploited more thoroughly using, for example, tree kernels. The restricted number of candidates enables the use of more global features. Also, we haven\'t used any language-specific syntactic features. This could be another way to improve this system, relying on external linguistic knowledge (lexical preferences, subcategorisation frames, copula verbs, coordination symmetry . . . ). Integrating features from the phrase-structure trees is also an option that needs to be explored.\\n\\nThird this architecture enables the integration of several systems. We experimented on French using a part-of-speech tagger but we could also use another parser and either use the methodology of\\n(Johnson and Ural, 2010)\\n or\\n(Zhang et al., 2009\\n) which fusion n-best lists form different parsers, or use stacking methods where an additional parser is used as a guide for the main parser\\n(Nivre and McDonald, 2008)\\n.\\n\\nFinally it should be noted that this system does not rely on any language specific feature, and thus can be applied to languages other that French or English 97\\nFigure 4\\n: Sentence from the FTB for which the best parse according to baseline was incorrect, probably due to the tendency of the PCFG-LA model to prefer rules with more support. The reranker selected the correct parse.\\n\\nwithout re-engineering new reranking features. This makes this architecture suitable for morphologically rich languages.\\n\\n\\n\\n[\\n\\n\\nat, at, IN, G, R, PMOD] and [looked, look, NN, D, L, PMOD] And also wildcard features such as: [-, at, IN, G, R, PMOD], [at, -, IN, G, R, PMOD] ... [at, -, -, -, -, PMOD]\\n\\n\\n\\n[\\n\\n\\nIN, PRP$, NN], and [VBD, IN, PRP$, PRP$, NN, .].\\n\\n\\n\\nFigure 2 :\\n\\n2\\n\\nOracle and reranker scores on PTB and FTB data on the dev. set, according to the depth of the n-best.\\n\\n\\n\\nFigure 3 :\\n\\n3\\n\\nEnglish sentence from the WSJ test set for which the reranker selected the correct tree while the first candidate of the n-best list suffered from an incorrect attachment.\\n\\n\\n\\nTable 2 :\\n\\n2\\n\\n\\n\\nSystem results on FTB Test set\\n\\n\\n\\nTable 3 :\\n\\n3\\n\\n\\n\\nComparison on PTB Test set\\n\\n\\n\\nTable 4 :\\n\\n4\\n\\nComparison on FTB Test set\\n\\n\\n\\n\\n\\nTable 5\\n\\n5\\n\\n\\n\\n\\n,\\n\\n\\n\\n\\n\\n\\nTable 5\\n\\n5\\n\\n\\n\\n\\n: Repartition of weight (in percentage) in the\\n\\n\\n\\n1,000 highest (+) and lowest (-) weighted features for En-\\n\\n\\n\\nglish and French.\\n\\n\\n\\n\\n\\nThis can be implemented efficiently using two weight vectors as for the averaged perceptron.\\n\\nIn every template, distance features are quantified in 7 classes: 1, 2, 3, 4, 5, 5 to 10, more.\\n\\nFunctions are omitted.\\n\\nWe use a modified version of evalb that gives the oracle score when the parser outputs a list of candidates for each sentence.6  All scores are measured without punctuation."
+}

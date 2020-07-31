@@ -6,3 +6,4 @@ elasticsearch==7.7.0
 pydantic~=1.5.1
 starlette~=0.13.2
 elasticsearch-dsl~=7.0.0
+zeep~=3.4.0
