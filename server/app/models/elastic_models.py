@@ -4,7 +4,8 @@ from elasticsearch_dsl import Document, Text, Completion, Date, datetime, Keywor
 class Author(Document):
     author_id: Text()
     author_suggest: Completion()
-    name: Text()
+    forename: Text()
+    surname: Text()
     affiliation: Text()
     address: Text()
     email: Keyword()
@@ -23,8 +24,6 @@ class Citation(Document):
     citation_id = Text()
     title = Text()
     title_suggest = Completion()
-    text = Text()
-    abstract = Text()
     created_at = Date(default_timezone='UTC')
     authors = Nested(Author)
 
