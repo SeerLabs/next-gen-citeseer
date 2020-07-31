@@ -1,6 +1,6 @@
 <template>
     <div id="homepage">
-        <h1 class="mb-5">CiteSeerX</h1>
+        <img id="logo" src="../assets/img/csx_logo.png" alt="CiteSeerX" />
         <search-box />
     </div>
 </template>
@@ -24,5 +24,10 @@ export default {
     color: #2c3e50;
     margin: 10% auto;
     width: 75vw;
+}
+
+#logo {
+    width: 20em;
+    margin-bottom: 1em;
 }
 </style>
