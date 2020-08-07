@@ -1,4 +1,10 @@
-import os
+__author__ = "Sai Raghav Keesara"
+__copyright__ = "Copyright 2020, Penn State University"
+__license__ = ""
+__version__ = "1.0"
+__maintainer__ = "Sai Raghav Keesara"
+__email__ = "sai@psu.edu"
+__status__ = "Development"
 
 import re
 
@@ -6,7 +12,7 @@ from pathlib import Path
 import xml.sax.saxutils as xmlutils
 from ingestion.interfaces import CSXExtractor
 from xml.etree.ElementTree import parse, tostring
-from models.elastic_models import Paper, Author, Citation
+from models.elastic_models import Paper, Author, Citation, PubInfo
 import functools
 import json
 
@@ -96,53 +102,100 @@ def extract_citations_from_tei_root(tei_root):
     citations = []
     """Retrieve author names from TEI doc"""
     namespaces = {'ns1': 'http://www.tei-c.org/ns/1.0'}
-    citations_strucs = tei_root.findall('./text//listBibl//biblStruct')
-    if citations_strucs is None:
+    citations_node = tei_root.findall('./text//listBibl//biblStruct')
+    if citations_node is None:
         return citations
-    for citations_struc in citations_strucs:
+    for citation_node in citations_node:
         citation = Citation()
 
-        if citations_struc.find('./analytic/title') is not None:
-            citation.title = citations_struc.find('./analytic/title').text
-        elif citations_struc.find('./monogr/title') is not None:
-            citation.title = citations_struc.find('./monogr/title').text
+        # Citation Title
+        if citation_node.find('./analytic/title') is not None:
+            citation.title = citation_node.find('./analytic/title').text
+        elif citation_node.find('./monogr/title') is not None:
+            citation.title = citation_node.find('./monogr/title').text
         else:
             citation.title = ''
 
-        if citations_struc.findall('./analytic/author') is not None and len(
-                citations_struc.findall('./analytic/author')):
-            authors_strucs = citations_struc.findall('./analytic/author')
-        elif citations_struc.findall('./monogr/author') is not None:
-            authors_strucs = citations_struc.findall('./monogr/author')
-        else:
-            continue
+        # Citation Pub Info
+        if citation_node.find('./monogr') is not None:
+            citation.pub_info = extract_pub_info_from_bibil_node(citation_node)
 
-        for authors_struc in authors_strucs:
+        # raw citation info
+        if citation_node.find('./note') is not None:
+            citation.raw = citation_node.find('./note').text
+
+        # Citation Authors
+        if citation_node.findall('./analytic/author') is not None and len(
+                citation_node.findall('./analytic/author')):
+            authors_node = citation_node.findall('./analytic/author')
+        elif citation_node.findall('./monogr/author') is not None:
+            authors_node = citation_node.findall('./monogr/author')
+        else:
+            authors_node = []
+
+        for author_node in authors_node:
             author = Author()
-            if authors_struc.find("./ns1:persName/ns1:surname", namespaces) is not None:
-                author.surname = authors_struc.find("./ns1:persName/ns1:surname", namespaces).text
-            if authors_struc.find("./ns1:persName/ns1:forename", namespaces) is not None:
-                author.forename = authors_struc.find("./ns1:persName/ns1:forename", namespaces).text
+            if author_node.find("./ns1:persName/ns1:surname", namespaces) is not None:
+                author.surname = author_node.find("./ns1:persName/ns1:surname", namespaces).text
+            if author_node.find("./ns1:persName/ns1:forename", namespaces) is not None:
+                author.forename = author_node.find("./ns1:persName/ns1:forename", namespaces).text
             citation.authors.append(author)
+
         citations.append(citation)
     return citations
 
 
 def extract_text_from_tei_root(tei_root):
     body_node = tei_root.find('./text/body')
+    if body_node is None:
+        print("bodynode is none")
+        return ""
     xml_string = tostring(body_node).decode('utf-8')
     plain_text = xml_to_plain_text(xml_string)
     return plain_text
 
 
+def extract_pub_info_from_bibil_node(bibilnode):
+    pub_info = PubInfo()
+    if bibilnode is None:
+        return pub_info
+    if bibilnode.find('./monogr') is not None:
+        if bibilnode.find('./monogr/imprint/publisher') is not None:
+            pub_info.publisher = bibilnode.find('./monogr/imprint/publisher').text
+        if bibilnode.find('./monogr/imprint/date') is not None:
+            # pub_info.date = bibilnode.find('./monogr/imprint/date').attrib['when']
+            pass
+        if bibilnode.find('./monogr/meeting') is not None:
+            pub_info.meeting = bibilnode.find('./monogr/meeting').text
+        if bibilnode.find('./monogr/title') is not None:
+            pub_info.monogr_title = bibilnode.find('./monogr/title').text
+    return pub_info
+
+
+def extract_paper_pub_info_from_tei_root(tei_root):
+    pub_info = extract_pub_info_from_bibil_node(tei_root.find('./teiHeader/sourceDesc/biblStruct'))
+    pub_stmt_node = tei_root.find('./teiHeader/fileDesc/publicationStmt')
+    if pub_stmt_node is not None:
+        if pub_stmt_node.find('./publisher') is not None:
+            pub_info.publisher = pub_stmt_node.find('./publisher').text
+        if pub_stmt_node.find('./date') is not None:
+            # pub_info.date = pub_stmt_node.find('./date').attrib['when']
+            # print(pub_info)
+            pass
+    return pub_info
+
 class CSXExtractorImpl(CSXExtractor):
 
     def batch_extract_textual_data(self, dirPath):
-        all_files = list(Path(dirPath).rglob("*.[tT][eE][iI]"))
-        papers = []
-        for filepath in all_files:
-            papers.append(self.extract_textual_data(filepath))
-        return papers
+        # all_files = list(Path(dirPath).rglob("*.[tT][eE][iI]"))
+        # papers = []
+        # print("all_files")
+        # print(all_files)
+        # print("all_files")
+        # for filepath in all_files:
+        #     papers.append(self.extract_textual_data(str(filepath)))
+        # return papers
+        pass
 
     def extract_figures(self, filepath):
         pass
@@ -155,6 +208,7 @@ class CSXExtractorImpl(CSXExtractor):
         paper = Paper()
         paper.title = extract_title_from_tei_root(tei_root)
         paper.abstract = extract_abstract(tei_root)
+        paper.pub_info = extract_paper_pub_info_from_tei_root(tei_root)
         paper.authors = extract_authors_from_tei_root(tei_root)
         paper.citations = extract_citations_from_tei_root(tei_root)
         paper.text = extract_text_from_tei_root(tei_root)
@@ -164,4 +218,4 @@ class CSXExtractorImpl(CSXExtractor):
 if __name__ == "__main__":
     extractor = CSXExtractorImpl()
     paper = extractor.extract_textual_data("../../test/resources/sample_tei.tei")
-    print(json.dumps(paper.to_dict()))
+    print(paper.to_dict())
