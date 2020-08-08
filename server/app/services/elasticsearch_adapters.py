@@ -22,13 +22,13 @@ class PaperAdapter:
     def get_sorted_papers(self, papers_list, page, pageSize, sort):
         """Given Paper IDs get them sorted in desired order with Pagination support"""
         if sort == "yearAsc":
-            sort = 'year:asc'
+            sort = 'year'
         elif sort == "yearDsc":
-            sort = 'year:desc'
+            sort = '-year'
         elif sort == "citCount":
-            sort = 'ncites:desc'
+            sort = '-ncites'
         else:
-            sort = 'ncites:desc'
+            sort = '-ncites'
         return self.elastic_service.paginated_search_with_ids(index="citeseerx", ids=papers_list,
                                                               page=page, pageSize=pageSize, sort=sort)
 
