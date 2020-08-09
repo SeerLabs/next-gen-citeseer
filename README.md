@@ -1,31 +1,38 @@
 # next-gen-citeseer
-<<<<<<< HEAD
-This is the Django-Vue-Elasticsearch new version of CiteSeer!
+This is the Vue-FastAPI-Elasticsearch version of CiteSeer!
 
-## Project Setup
+## Setting up the local development environment
 
 ```
-Source the virtual environment [pipenv shell]
-Install the dependencies [pipenv install]
-Navigate into the backend directory [cd api]
-Start the backend server [python manage.py runserver]
+Source the virtual environment
+install necessary python requirements [pip install -r requirements.txt]
 ```
-For frontend setup, read client/README.md
+### Frontend setup
+```bash
+# install dependencies
+$ npm install
 
-client development server: http://localhost:3000/
+# serve with hot reload at localhost:3000
+$ npm run dev
 
-Core Api: http://localhost:8000/api/v1/
+# build for production and launch server
+$ npm run build
+$ npm run start
 
-## TODO
-### Frontend
-Store - state management
+# generate static project
+$ npm run generate
+```
+`Client development server:` http://localhost:3000/
 
-Unit Tests
-### Backend API
-Set up proper architecture as needed - service layer, repository layer, etc. 
+### Backend Setup
+```Navigate into the backend directory [cd server]
+1. Install the project [python setup.py install --user]
+2. Start the backend server by [python main.py] or running [uvicorn app.main:app --port=8000]
+```
 
-Persist data from Elasticsearch and other db, remove the sqlite db if not needed
+```Navigate into the backend directory [cd server]
+Start the backend server by [python main.py]
+or running [uvicorn app.main:app --port=8000]
+```
 
-Unit Tests
-=======
->>>>>>> b3c5a09f7c0bf4d500e9c943f766d151e0ee6499
+`Backend Core Api:` http://localhost:8000/docs

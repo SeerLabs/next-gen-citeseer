@@ -4,14 +4,6 @@ from elasticsearch_dsl import Nested, Search
 from services.elastic_service import ElasticService
 from services.elasticsearch_adapters import ClusterAdapter
 
-_author_ = "Sai Raghav Keesara"
-_copyright_ = "Copyright 2020, Penn State University"
-_license_ = ""
-_version_ = "1.0"
-_maintainer_ = "Sai Raghav Keesara"
-_email_ = "sai@psu.edu"
-_status_ = "Development"
-
 from collections import Counter
 from typing import List
 from ingestion.text_utils import remove_accents, strip_punctuation
@@ -19,6 +11,14 @@ from ingestion.interfaces import CSXClusterer
 from models.elastic_models import Author, Paper, Citation, Cluster
 from nltk.stem import PorterStemmer
 from nltk.corpus import stopwords
+
+_author_ = "Sai Raghav Keesara"
+_copyright_ = "Copyright 2020, Penn State University"
+_license_ = ""
+_version_ = "1.0"
+_maintainer_ = "Sai Raghav Keesara"
+_email_ = "sai@psu.edu"
+_status_ = "Development"
 
 nltk.download('stopwords')
 
@@ -95,7 +95,6 @@ class KeyGenerator:
     @classmethod
     def _normalize_authors(cls, authors: Nested(Author)):
         for author in authors:
-            # print(author.to_dict(skip_empty=False))
             if 'surname' not in author.to_dict(skip_empty=False):
                 continue
             author.surname = author.surname.lower()

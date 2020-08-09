@@ -47,7 +47,7 @@ class Citation(Document):
     authors = Nested(Author)
     cluster_id = Keyword()
     paper_id = Text()
-    raw: Text()
+    raw = Text()
     pub_info = Nested(PubInfo)
 
     class Index:
