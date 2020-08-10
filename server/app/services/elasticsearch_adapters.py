@@ -71,41 +71,36 @@ class ClusterAdapter:
         first_key = self._get_first_key(keys)
         if first_key is None:
             return self._create_new_cluster_for_paper(paper, keys)
-        query = Q("multi_match", query=first_key, fields=['keys'])
-        response = search.using(client=self.elastic_service.get_connection()).query(query).execute()
+        response = search.using(client=self.elastic_service.get_connection()).filter('term', keys=first_key).execute()
         if any(response) is False:
             return self._create_new_cluster_for_paper(paper, keys)
 
         # case when existing cluster is found for the key, update it and return the id
         existing_cluster_id = response[0].meta.id
-        # print(paper.to_dict())
         paper.save(using=self.elastic_service.get_connection())
         self._update_cluster_for_paper(cluster_id=existing_cluster_id, paper=paper, keys=keys)
         return existing_cluster_id
 
     def _update_cluster_for_paper(self, cluster_id: str, paper: Paper, keys: List[str]):
         cluster = Cluster.get(id=cluster_id, using=self.elastic_service.get_connection())
-        self._add_keys_to_cluster(cluster, keys, self._get_first_key(keys))
+        self._add_keys_to_cluster(cluster, new_keys=keys)
         cluster.add_paper_id(paper.meta.id)
+        cluster.in_collection = True
+        cluster.save(using=self.elastic_service.get_connection())
+        paper.update(using=self.elastic_service.get_connection(), cluster=cluster_id)
         cluster.save(using=self.elastic_service.get_connection())
 
     def _create_new_cluster_for_paper(self, paper: Paper, keys: List[str]):
         paper.save(using=self.elastic_service.get_connection())
-        if len(keys) == 0:
-            keys = ["$#@@$#@"]
         cluster = Cluster(
             title=paper.title,
             pub_info=Nested(PubInfo()).serialize(Nested(PubInfo()).deserialize(paper.pub_info)),
             in_collection=True,
             authors=Nested(Author()).serialize(Nested(Author()).deserialize(paper.authors)),
-            keys=keys,
-            papers=["$53#214*("],
-            citations=["$53#214*("],
-            cites=["$53#214*("],
-            cited_by=["$53#214*("]
         )
         # Save cluster
         cluster.save(using=self.elastic_service.get_connection())
+        paper.update(using=self.elastic_service.get_connection(), cluster=cluster.meta.id)
         self._update_cluster_for_paper(cluster_id=cluster.meta.id, paper=paper, keys=keys)
         return cluster.meta.id
 
@@ -114,10 +109,16 @@ class ClusterAdapter:
         return keys[0] if len(keys) > 0 else None
 
     @classmethod
-    def _add_keys_to_cluster(cls, cluster: Cluster, Keys: List[str], current_key: str):
-        for key in Keys:
-            if key != current_key:
-                cluster.add_key(key)
+    def _add_keys_to_cluster(cls, cluster: Cluster, new_keys: List[str]):
+        if not cluster.__contains__("keys"):
+            cluster.__setitem__("keys", new_keys)
+            return
+        keys_set = set(cluster.keys)
+        keys_to_add = []
+        for key in new_keys:
+            if key not in keys_set:
+                keys_to_add.append(key)
+        cluster.extend_keys(keys_to_add)
         return
 
     def cluster_citation(self, keys: List[str], citation: Citation):
@@ -143,32 +144,23 @@ class ClusterAdapter:
             return self._create_new_cluster_for_citation(citation, keys)
         elif len(matched_cluster_ids) >= 1:
             citation.cluster_id = matched_cluster_ids[0]
-            print("existing cluster")
-            print(citation.cluster_id)
             self._update_cluster_for_citation(matched_cluster_ids[0], keys, citation)
             return matched_cluster_ids[0]
 
-    def _update_cluster_for_citation(self, cluster_id: str, keys: List[str], citation: Citation):
+    def _update_cluster_for_citation(self, cluster_id: str, new_keys: List[str], citation: Citation):
         cluster = Cluster.get(id=cluster_id, using=self.elastic_service.get_connection())
-        # keys_to_update = keys.remove()
-        cluster.extend_keys(keys)
+        self._add_keys_to_cluster(cluster=cluster, new_keys=new_keys)
+        citation.cluster_id = cluster_id
         citation.save(using=self.elastic_service.get_connection())
         cluster.add_citation_id(citation.meta.id)
         cluster.save(using=self.elastic_service.get_connection())
 
     def _create_new_cluster_for_citation(self, citation: Citation, keys: List[str]):
-        if len(keys) == 0:
-            keys = ["$#@@$#@"]
         cluster = Cluster(
             title=citation.title,
             pub_info=Nested(PubInfo()).serialize(Nested(PubInfo()).deserialize(citation.pub_info)),
             in_collection=False,
-            authors=Nested(Author()).serialize(Nested(Author()).deserialize(citation.authors)),
-            keys=keys,
-            cites=["$53#214*("],
-            cited_by=["$53#214*("],
-            papers=["$53#214*("],
-            citations=["$53#214*("]
+            authors=Nested(Author()).serialize(Nested(Author()).deserialize(citation.authors))
         )
         cluster.save(using=self.elastic_service.get_connection())
         self._update_cluster_for_citation(cluster.meta.id, keys, citation)

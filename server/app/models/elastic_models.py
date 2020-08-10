@@ -1,6 +1,6 @@
 from typing import List
 
-from elasticsearch_dsl import Document, Text, Completion, Date, datetime, Keyword, Integer, Nested, Boolean, InnerDoc
+from elasticsearch_dsl import Document, Text, Completion, Date, datetime, Keyword, Integer, Nested, Boolean
 
 
 class Author(Document):
@@ -28,10 +28,11 @@ class Author(Document):
 
 class PubInfo(Document):
     title: Text()
-    monogr_title: Text()
     date: Text()
     publisher: Text()
     meeting: Text()
+    pub_place: Text()
+    pub_address: Text()
 
     class Index:
         name = 'pub_info_next'
@@ -129,25 +130,43 @@ class Cluster(Document):
         return super().save(**kwargs)
 
     def add_paper_id(self, paper_id: str):
+        if not self.__contains__("papers"):
+            self.__setitem__("papers", [paper_id])
+            return
         self.papers.append(paper_id)
         self.modified_at = datetime.now()
 
-    def add_citation_id(self, add_citation_id: str):
-        self.citations.append(add_citation_id)
+    def add_citation_id(self, citation_id: str):
+        if not self.__contains__("citations"):
+            self.__setitem__("citations", [citation_id])
+            return
+        self.citations.append(citation_id)
         self.modified_at = datetime.now()
 
     def add_cites(self, cite: str):
+        if not self.__contains__("cites"):
+            self.__setitem__("cites", [cite])
+            return
         self.cites.append(cite)
         self.modified_at = datetime.now()
 
     def add_cited_by(self, cited_by: str):
+        if not self.__contains__("cited_by"):
+            self.__setitem__("cited_by", [cited_by])
+            return
         self.cited_by.append(cited_by)
         self.modified_at = datetime.now()
 
     def add_key(self, key: str):
+        if not self.__contains__("keys"):
+            self.__setitem__("keys", [key])
+            return
         self.keys.append(key)
         self.modified_at = datetime.now()
 
     def extend_keys(self, keys: List[str]):
+        if not self.__contains__("keys"):
+            self.__setitem__("keys", keys)
+            return
         self.keys.extend(keys)
         self.modified_at = datetime.now()
