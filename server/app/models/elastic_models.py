@@ -39,6 +39,26 @@ class PubInfo(Document):
     class Meta:
         doc_type = 'pub_info_next'
 
+class CrawlMeta(Document):
+    crawl_status: Boolean()
+    pdf_path: Text()
+    citations_extracted: Boolean()
+    text_extracted: Boolean()
+    source: Text()
+    algorithms_extracted = Boolean()
+    uid = Text()
+    figures_extracted = Boolean()
+    text_ingested = Boolean()
+    time = Text()
+    doi = Text()
+    status = Boolean()
+    fields = Nested(Date)
+
+    class Index:
+        name = 'crawl_meta'
+
+    class Meta:
+        doc_type = 'crawl_meta'
 
 class Citation(Document):
     title = Text()
