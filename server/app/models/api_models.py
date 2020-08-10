@@ -4,12 +4,12 @@ from pydantic import BaseModel, typing
 
 
 class Paper(BaseModel):
-    id: str
-    title: str
-    venue: str
-    year: str
-    n_cited_by: int
-    n_self_cites: int
+    id: Optional[str]
+    title: Optional[str]
+    venue: Optional[str]
+    year: Optional[str]
+    n_cited_by: Optional[int]
+    n_self_cites: Optional[int]
     abstract: str = None
     bibtex: str
     authors: List[str] = []
