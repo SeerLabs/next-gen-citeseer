@@ -36,18 +36,18 @@ class KeyMatcherClusterer(CSXClusterer):
     def cluster_paper(self, paper: Paper) -> str:
         keys = self.key_generator.get_keys(paper.title, paper.authors)
         paper.cluster_id = self.cluster_adapter.cluster_paper(keys=keys, paper=paper)
-        self._cluster_citations_for_paper(paper, paper.cluster_id)
+        self._cluster_citations_for_paper(paper)
         return paper.cluster_id
 
     def recluster_paper(self, paper: Paper):
         pass
 
-    def _cluster_citations_for_paper(self, paper: Paper, paper_cluster_id: str):
+    def _cluster_citations_for_paper(self, paper: Paper):
         for citation in paper.citations:
             citation_keys = self.key_generator.get_keys(citation.title, citation.authors)
             citation.paper_id = paper.paper_id
             citation.cluster_id = self.cluster_adapter.cluster_citation(citation_keys, citation)
-            self.cluster_adapter.relate_citing_clusters(citation.cluster_id, paper_cluster_id)
+            self.cluster_adapter.relate_citing_clusters(citation.cluster_id, paper.cluster_id)
             # save the citation
             citation.save(using=self.elastic_service.get_connection())
 
@@ -74,6 +74,7 @@ class KeyGenerator:
         offset_title = " ".join(title.split()[1:-1])
         if offset_title is not title and len(offset_title) > 1:
             self._build_title_key(keys, offset_title)
+        self._build_title_key(keys, title)
         return keys
 
     def _get_author_keys(self, authors: List[Author]):
@@ -89,6 +90,8 @@ class KeyGenerator:
     @classmethod
     def _build_title_key(cls, keys: List[str], title: str):
         title = title.replace(" ", "")
+        if len(title) > 30:
+            title = title[:30]
         if len(title) >= 5:
             keys.append(title)
 

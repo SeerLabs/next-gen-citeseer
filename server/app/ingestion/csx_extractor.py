@@ -8,13 +8,11 @@ __status__ = "Development"
 
 import re
 
-from pathlib import Path
 import xml.sax.saxutils as xmlutils
 from ingestion.interfaces import CSXExtractor
 from xml.etree.ElementTree import parse, tostring
 from models.elastic_models import Paper, Author, Citation, PubInfo
 import functools
-import json
 
 
 def extract_affiliations(affiliation_node):
@@ -148,7 +146,6 @@ def extract_citations_from_tei_root(tei_root):
 def extract_text_from_tei_root(tei_root):
     body_node = tei_root.find('./text/body')
     if body_node is None:
-        print("bodynode is none")
         return ""
     xml_string = tostring(body_node).decode('utf-8')
     plain_text = xml_to_plain_text(xml_string)
@@ -165,10 +162,17 @@ def extract_pub_info_from_bibil_node(bibilnode):
         if bibilnode.find('./monogr/imprint/date') is not None:
             # pub_info.date = bibilnode.find('./monogr/imprint/date').attrib['when']
             pass
+        if bibilnode.find('./monogr/meeting/address') is not None:
+            addr_str = ""
+            for each_node in bibilnode.findall('./monogr/meeting/address/addrLine'):
+                addr_str = addr_str + ";" + each_node.find('./addrLine').text
+            pub_info.pub_address = addr_str
         if bibilnode.find('./monogr/meeting') is not None:
             pub_info.meeting = bibilnode.find('./monogr/meeting').text
+        if bibilnode.find('./monogr/pub_place') is not None:
+            pub_info.pub_place = bibilnode.find('./monogr/pub_info').text
         if bibilnode.find('./monogr/title') is not None:
-            pub_info.monogr_title = bibilnode.find('./monogr/title').text
+            pub_info.title = bibilnode.find('./monogr/title').text
     return pub_info
 
 
