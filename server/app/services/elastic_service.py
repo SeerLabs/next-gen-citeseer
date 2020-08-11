@@ -35,7 +35,6 @@ class ElasticService:
       s = s[start:start + pageSize]
 
       response = s.execute()
-      self.print_response(response)
       return response
 
 

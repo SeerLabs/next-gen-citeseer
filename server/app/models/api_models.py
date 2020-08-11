@@ -20,22 +20,22 @@ class Paper(BaseModel):
 
 class Citation(BaseModel):
     id: str
-    cluster: int
-    authors: typing.Any
-    title: typing.Any
-    venue: typing.Any
-    venue_type: typing.Any
-    year: typing.Any
-    pages: typing.Any
-    editors: typing.Any
-    publisher: typing.Any
-    pub_address: typing.Any
-    volume: typing.Any
-    number: typing.Any
-    tech: typing.Any
-    raw: str
-    paper_id: str
-    self: typing.Any
+    cluster: Optional[str]
+    authors: List[str] = []
+    title: Optional[str]
+    venue: Optional[str]
+    venue_type: Optional[str]
+    year: Optional[str]
+    pages: Optional[str]
+    editors: Optional[str]
+    publisher: Optional[str]
+    pub_address: Optional[str]
+    volume: Optional[str]
+    number: Optional[str]
+    tech: Optional[str]
+    raw: Optional[str]
+    paper_id: Optional[str]
+    self: Optional[str]
 
 class Cluster(BaseModel):
     cluster_id: str
