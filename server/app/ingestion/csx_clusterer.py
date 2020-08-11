@@ -1,14 +1,14 @@
 import nltk
-from elasticsearch_dsl import Nested, Search
+from elasticsearch_dsl import Nested
 
 from services.elastic_service import ElasticService
 from services.elasticsearch_adapters import ClusterAdapter
 
 from collections import Counter
 from typing import List
-from ingestion.text_utils import remove_accents, strip_punctuation
+from utils.text_utils import remove_accents, strip_punctuation
 from ingestion.interfaces import CSXClusterer
-from models.elastic_models import Author, Paper, Citation, Cluster
+from models.elastic_models import Author, Paper
 from nltk.stem import PorterStemmer
 from nltk.corpus import stopwords
 

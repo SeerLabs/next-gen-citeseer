@@ -33,7 +33,7 @@ class CSXIngesterImpl(CSXIngester):
 
 if __name__ == "__main__":
     csx_ingester = CSXIngesterImpl()
-    Cluster.init(using=csx_ingester.elastic_service.get_connection())
+    # Cluster.init(using=csx_ingester.elastic_service.get_connection())
     # Paper.init(using=csx_ingester.elastic_service.get_connection())
     # Author.init(using=csx_ingester.elastic_service.get_connection())
     # PubInfo.init(using=csx_ingester.elastic_service.get_connection())

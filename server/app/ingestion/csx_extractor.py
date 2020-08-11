@@ -160,17 +160,22 @@ def extract_pub_info_from_bibil_node(bibilnode):
         if bibilnode.find('./monogr/imprint/publisher') is not None:
             pub_info.publisher = bibilnode.find('./monogr/imprint/publisher').text
         if bibilnode.find('./monogr/imprint/date') is not None:
-            # pub_info.date = bibilnode.find('./monogr/imprint/date').attrib['when']
-            pass
+            if 'when' in bibilnode.find('./monogr/imprint/date'):
+                pub_info.date = bibilnode.find('./monogr/imprint/date').attrib['when']
+            else:
+                pub_info.date = bibilnode.find('./monogr/imprint/date').text
         if bibilnode.find('./monogr/meeting/address') is not None:
             addr_str = ""
             for each_node in bibilnode.findall('./monogr/meeting/address/addrLine'):
                 addr_str = addr_str + ";" + each_node.find('./addrLine').text
+            if bibilnode.findall('./monogr/meeting/address/addrLine') is not None:
+                for each_node in bibilnode.findall('./monogr/meeting/address/addrLine'):
+                    addr_str = addr_str + " " + each_node.text
             pub_info.pub_address = addr_str
         if bibilnode.find('./monogr/meeting') is not None:
             pub_info.meeting = bibilnode.find('./monogr/meeting').text
-        if bibilnode.find('./monogr/pub_place') is not None:
-            pub_info.pub_place = bibilnode.find('./monogr/pub_info').text
+        if bibilnode.find('./monogr/imprint/pubPlace') is not None:
+            pub_info.pub_place = bibilnode.find('./monogr/imprint/pubPlace').text
         if bibilnode.find('./monogr/title') is not None:
             pub_info.title = bibilnode.find('./monogr/title').text
     return pub_info
@@ -182,23 +187,18 @@ def extract_paper_pub_info_from_tei_root(tei_root):
     if pub_stmt_node is not None:
         if pub_stmt_node.find('./publisher') is not None:
             pub_info.publisher = pub_stmt_node.find('./publisher').text
+        if pub_stmt_node.find('./date') is not None and 'when' in pub_stmt_node.find('./date'):
+            pub_info.date = pub_stmt_node.find('./date').attrib['when']
         if pub_stmt_node.find('./date') is not None:
-            # pub_info.date = pub_stmt_node.find('./date').attrib['when']
-            # print(pub_info)
-            pass
+            if 'when' in pub_stmt_node.find('./date'):
+                pub_info.date = pub_stmt_node.find('./date').attrib['when']
+            else:
+                pub_info.date = pub_stmt_node.find('./date').text
     return pub_info
 
 class CSXExtractorImpl(CSXExtractor):
 
     def batch_extract_textual_data(self, dirPath):
-        # all_files = list(Path(dirPath).rglob("*.[tT][eE][iI]"))
-        # papers = []
-        # print("all_files")
-        # print(all_files)
-        # print("all_files")
-        # for filepath in all_files:
-        #     papers.append(self.extract_textual_data(str(filepath)))
-        # return papers
         pass
 
     def extract_figures(self, filepath):
