@@ -1,4 +1,6 @@
 from elasticsearch import Elasticsearch
+from elasticsearch_dsl import Search, MultiSearch, Q
+
 import requests
 import json
 
@@ -16,40 +18,39 @@ class ElasticService:
         parsed = json.loads(content)
         self.print_response(parsed)
 
+
     def print_response(self, response):
-        print(json.dumps(response, indent=4, sort_keys=True))
+      # print(json.dumps(response.json(), indent=4, sort_keys=True))
+      print(response['hits']['hits'])
+
 
     def paginated_search(self, index, query, page, pageSize, fields_to_search, source=None):
+      s = Search(index=index, using=self.connection)
 
-        body = {
-                "from": (page-1)*pageSize,
-                "size": pageSize,
-                "query": {
-                    "multi_match": {
-                        "query": query,
-                        "fields": fields_to_search
-                    }
-                }
-        }
+      if source:
+        s.source(includes=[source])
 
-        if source:
-            body["_source"] = source
+      start = (page-1)*pageSize
+      s = s.query('multi_match', query=query, fields=fields_to_search)
+      s = s[start:pageSize]
 
-        return self.connection.search(index=index, body=body)
+      response = s.execute()
+      self.print_response(response)
+      return response
+
 
     def paginated_search_with_ids(self, index, page, pageSize, ids, sort, source=None):
+      s = Search(index=index, using=self.connection)
 
-        body = {
-                "from": (page-1)*pageSize,
-                "size": pageSize,
-                "query": {
-                    "ids": {
-                        "values": ids
-                    }
-                }
-        }
-
-        if source:
-            body["_source"] = source
-
-        return self.connection.search(index=index, body=body, sort=sort)
+      if source:
+        s.source(includes=[source])
+      print(ids)
+      
+      start = (page-1)*pageSize
+      s = s.query('ids', values=ids)
+      s = s.sort(sort)
+      s = s[start:pageSize]
+      
+      response = s.execute()
+      self.print_response(response)
+      return response
