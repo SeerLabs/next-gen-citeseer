@@ -9,7 +9,7 @@ from models.api_models import SearchQueryResponse, PaperDetailResponse, Citation
 from services.elastic_service import ElasticService
 from services.elasticsearch_adapters import PaperAdapter, CitationAdapter, ClusterAdapter
 
-from utils.helpers import getKeyOrNone
+from utils.helpers import getKeyOrDefault
 
 router = APIRouter()
 elastic_service = ElasticService()
@@ -78,17 +78,17 @@ def similar_papers(paperID: str = ""):
 
 
 def build_paper_entity(doc):
-    return Paper(id=getKeyOrNone(doc, 'paper_id'),
-                 title=getKeyOrNone(doc, 'title'),
-                 venue=getKeyOrNone(doc, 'venue'),
-                 year=getKeyOrNone(doc, 'year'),
-                 n_cited_by=getKeyOrNone(doc, 'ncites'),
-                 n_self_cites=getKeyOrNone(doc, 'selfCites'),
-                 abstract=getKeyOrNone(doc, 'abstract'),
+    return Paper(id=getKeyOrDefault(doc, 'paper_id'),
+                 title=getKeyOrDefault(doc, 'title'),
+                 venue=getKeyOrDefault(doc, 'venue'),
+                 year=getKeyOrDefault(doc, 'year'),
+                 n_cited_by=getKeyOrDefault(doc, 'ncites'),
+                 n_self_cites=getKeyOrDefault(doc, 'selfCites'),
+                 abstract=getKeyOrDefault(doc, 'abstract'),
                  bibtex="test_bibtex",
                  authors=get_authors_in_list(doc, 'authors'),
-                 journal=getKeyOrNone(doc, 'journal'),
-                 publish_time=getKeyOrNone(doc, 'publish_time'),
+                 journal=getKeyOrDefault(doc, 'journal'),
+                 publish_time=getKeyOrDefault(doc, 'publish_time'),
                  source="")
 
 
@@ -97,36 +97,36 @@ def get_authors_in_list(doc, field) -> List[str]:
 
 
 def build_citation_entity(doc):
-    return Citation(id=getKeyOrNone(doc, 'id'),
-                    cluster=getKeyOrNone(doc, 'cluster'),
-                    authors=getKeyOrNone(doc, 'authors'),
-                    title=getKeyOrNone(doc, 'title'),
-                    venue=getKeyOrNone(doc, 'venue'),
-                    venue_type=getKeyOrNone(doc, 'venueType'),
-                    year=getKeyOrNone(doc, 'year'),
-                    pages=getKeyOrNone(doc, 'pages'),
-                    editors=getKeyOrNone(doc, 'editors'),
-                    publisher=getKeyOrNone(doc, 'publisher'),
-                    pub_address=getKeyOrNone(doc, 'pubAddress'),
-                    volume=getKeyOrNone(doc, 'volume'),
-                    number=getKeyOrNone(doc, 'number'),
-                    tech=getKeyOrNone(doc, 'tech'),
-                    raw=getKeyOrNone(doc, 'raw'),
-                    paper_id=getKeyOrNone(doc, 'paperid'),
-                    self=getKeyOrNone(doc, 'self'))
+    return Citation(id=getKeyOrDefault(doc, 'id'),
+                    cluster=getKeyOrDefault(doc, 'cluster'),
+                    authors=getKeyOrDefault(doc, 'authors'),
+                    title=getKeyOrDefault(doc, 'title'),
+                    venue=getKeyOrDefault(doc, 'venue'),
+                    venue_type=getKeyOrDefault(doc, 'venueType'),
+                    year=getKeyOrDefault(doc, 'year'),
+                    pages=getKeyOrDefault(doc, 'pages'),
+                    editors=getKeyOrDefault(doc, 'editors'),
+                    publisher=getKeyOrDefault(doc, 'publisher'),
+                    pub_address=getKeyOrDefault(doc, 'pubAddress'),
+                    volume=getKeyOrDefault(doc, 'volume'),
+                    number=getKeyOrDefault(doc, 'number'),
+                    tech=getKeyOrDefault(doc, 'tech'),
+                    raw=getKeyOrDefault(doc, 'raw'),
+                    paper_id=getKeyOrDefault(doc, 'paperid'),
+                    self=getKeyOrDefault(doc, 'self'))
 
 
 def build_cluster_entity(doc):
-    return Cluster(cluster_id=getKeyOrNone(doc, 'cluster_id'),
-                   incollection=getKeyOrNone(doc, 'incollection'),
-                   cpublisher=getKeyOrNone(doc, 'cpublisher'),
-                   cyear=getKeyOrNone(doc, 'cyear'),
-                   observations=getKeyOrNone(doc, 'observations'),
-                   selfCites=getKeyOrNone(doc, 'selfCites'),
-                   ctitle=getKeyOrNone(doc, 'ctitle'),
-                   ctech=getKeyOrNone(doc, 'ctech'),
-                   cvol=getKeyOrNone(doc, 'cvol'),
-                   cvenue=getKeyOrNone(doc, 'cvenue'),
-                   cnum=getKeyOrNone(doc, 'cnum'),
-                   cpages=getKeyOrNone(doc, 'cpages'),
-                   cventype=getKeyOrNone(doc, 'cventype'))
+    return Cluster(cluster_id=getKeyOrDefault(doc, 'cluster_id'),
+                   incollection=getKeyOrDefault(doc, 'incollection'),
+                   cpublisher=getKeyOrDefault(doc, 'cpublisher'),
+                   cyear=getKeyOrDefault(doc, 'cyear'),
+                   observations=getKeyOrDefault(doc, 'observations'),
+                   selfCites=getKeyOrDefault(doc, 'selfCites'),
+                   ctitle=getKeyOrDefault(doc, 'ctitle'),
+                   ctech=getKeyOrDefault(doc, 'ctech'),
+                   cvol=getKeyOrDefault(doc, 'cvol'),
+                   cvenue=getKeyOrDefault(doc, 'cvenue'),
+                   cnum=getKeyOrDefault(doc, 'cnum'),
+                   cpages=getKeyOrDefault(doc, 'cpages'),
+                   cventype=getKeyOrDefault(doc, 'cventype'))
