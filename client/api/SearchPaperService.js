@@ -13,6 +13,7 @@ export default {
                 return response;
             })
             .catch(function(error) {
+                // eslint-disable-next-line
                 console.log(error);
             });
     },
@@ -26,6 +27,7 @@ export default {
                 return response;
             })
             .catch(function(error) {
+                // eslint-disable-next-line
                 console.log(error);
             });
     }
