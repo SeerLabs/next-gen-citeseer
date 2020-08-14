@@ -10,7 +10,7 @@
         "dev": "nuxt",
         "generate": "nuxt generate",
         "start": "nuxt start",
-        "client": "npm run build && npm run start"
+        "client": "npm install && npm run build && npm run start"
     },
     "dependencies": {
         "@nuxtjs/axios": "^5.11.0",
