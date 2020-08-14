@@ -35,11 +35,15 @@
                         v-bind="attrs"
                         class="facet-menu"
                         v-on="on"
-                    >{{facet.key.toUpperCase()}}</v-btn>
+                        >{{ facet.key.toUpperCase() }}</v-btn
+                    >
                 </template>
                 <v-card>
                     <v-list>
-                        <v-list-item v-for="item in facet.items" :key="item.key">
+                        <v-list-item
+                            v-for="item in facet.items"
+                            :key="item.key"
+                        >
                             <v-list-item-action>
                                 <v-checkbox
                                     :id="item.key"
@@ -48,7 +52,12 @@
                                     :value="item.key"
                                     :label="`${item.key} (${item.doc_count})`"
                                     class="facet-checkbox"
-                                    @change="$emit('facet-change', {key: facet.key, filter: facet.filter})"
+                                    @change="
+                                        $emit('facet-change', {
+                                            key: facet.key,
+                                            filter: facet.filter
+                                        })
+                                    "
                                 />
                             </v-list-item-action>
                         </v-list-item>
@@ -96,8 +105,8 @@ export default {
 
             searchPaperService
                 .getAggregations(this.queryString)
-                .then((response) => {
-                    response.data.aggs.forEach((agg) => {
+                .then(response => {
+                    response.data.aggs.forEach(agg => {
                         this.facets = [
                             ...this.facets,
                             {
@@ -108,11 +117,9 @@ export default {
                         ];
                     });
 
-                    console.log(this.facets);
-
                     this.loadingState = false;
                 })
-                .catch((error) => {
+                .catch(error => {
                     // eslint-disable-next-line
                     console.log(error.message);
                     this.error = true;
