@@ -53,7 +53,7 @@ class CrawlMeta(Document):
     time = Text()
     doi = Text()
     status = Boolean()
-    fields = Nested(Date)
+    #fields = Nested(Date())
 
     class Index:
         name = 'crawl_meta'

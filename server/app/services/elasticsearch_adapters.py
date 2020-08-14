@@ -1,6 +1,6 @@
 from typing import List
 from elasticsearch_dsl import Q, Nested, MultiSearch, Search
-from models.api_models import SearchQuery
+from models.api_models import SearchQuery, QueryFilter, AggregationsQuery
 from models.elastic_models import Paper, Citation, Cluster, Author, PubInfo
 from services.elastic_service import ElasticService
 
@@ -17,7 +17,10 @@ class PaperAdapter:
 
     def search_papers(self, searchQuery: SearchQuery):
         return self.elastic_service.paginated_search('citeseerx', searchQuery.queryString, searchQuery.page,
-                                                     searchQuery.pageSize, ['title', 'text'])
+                                                     searchQuery.pageSize, ['title', 'text'], filters=searchQuery.filters)
+        
+    def search_papers_aggregations(self, aggsQuery: AggregationsQuery, aggs_fields):
+        return self.elastic_service.get_aggregations('citeseerx', aggsQuery.queryString, ['title', 'text'], aggs_fields)
 
     def get_sorted_papers(self, papers_list, page, pageSize, sort):
         """Given Paper IDs get them sorted in desired order with Pagination support"""

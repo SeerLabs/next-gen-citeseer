@@ -4,7 +4,7 @@ from uuid import uuid4
 from fastapi import APIRouter
 
 from models.api_models import SearchQueryResponse, PaperDetailResponse, CitationsResponse, ClusterDetailResponse, \
-    showCitingClustersResponse, SearchQuery, Paper, Citation, Cluster
+    showCitingClustersResponse, SearchQuery, Paper, Citation, Cluster, Aggregation, AggregationsResponse, AggregationsQuery
 
 from services.elastic_service import ElasticService
 from services.elasticsearch_adapters import PaperAdapter, CitationAdapter, ClusterAdapter
@@ -21,11 +21,31 @@ citation_adapter = CitationAdapter(elastic_service)
 @router.post('/search', response_model=SearchQueryResponse)
 def perform_search(searchQuery: SearchQuery):
     docs_response = paper_adapter.search_papers(searchQuery)
+    
     result_list = []
     for doc_hit in docs_response['hits']['hits']:
         result_list.append(build_paper_entity(doc=doc_hit['_source']))
     total_results = docs_response['hits']['total']['value']
+
     return SearchQueryResponse(query_id=str(uuid4()), total_results=total_results, response=result_list)
+
+
+@router.post('/aggregations', response_model=AggregationsResponse)
+def get_search_aggregations(aggsQuery: AggregationsQuery):
+    aggs_fields = [{'key': 'authors', 'field_name': 'authors.name.keyword'}]
+
+    response = paper_adapter.search_papers_aggregations(aggsQuery, aggs_fields)
+
+    aggregations = {}
+    for key in response:
+      aggs_list = []
+      for aggs in response[key]['buckets']:
+        aggs_list.append(build_aggregations_entity(aggs))
+      
+      aggregations[key] = aggs_list
+      
+    print(aggregations['authors'])
+    return AggregationsResponse(query_id=str(uuid4()), authors=aggregations['authors'])
 
 
 @router.get('/paper/{id}')
@@ -91,6 +111,9 @@ def build_paper_entity(doc):
                  publish_time=getKeyOrDefault(doc, 'publish_time'),
                  source="")
 
+def build_aggregations_entity(aggs):
+    return Aggregation(key=getKeyOrDefault(aggs, 'key'),
+                        doc_count=getKeyOrDefault(aggs, 'doc_count'))
 
 def get_authors_in_list(doc, field) -> List[str]:
     return [field['name'] for field in doc[field]]

@@ -53,6 +53,13 @@ class Cluster(BaseModel):
     cventype: Optional[str]
 
 
+class Aggregation(BaseModel):
+    key: str
+    doc_count: int
+
+class AggregationsResponse(BaseModel):
+    authors: List[Aggregation]
+
 class SearchQueryResponse(BaseModel):
     query_id: str
     total_results: int
@@ -77,7 +84,19 @@ class showCitingClustersResponse(BaseModel):
     cluster: Cluster
     papers: List[Paper]
 
+class YearFilter(BaseModel):
+    start: int
+    end: int
+
+class QueryFilter(BaseModel):
+    years: Optional[YearFilter]
+    authors: Optional[List[str]]
+
 class SearchQuery(BaseModel):
     queryString: str
     page: int
     pageSize: int
+    filters: Optional[QueryFilter]
+
+class AggregationsQuery(BaseModel):
+    queryString: str
