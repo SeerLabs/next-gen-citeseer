@@ -1,34 +1,40 @@
 <template>
-  <div>
-	<nav-bar/>
-	<b-container fluid="md">
-		<b-row>
-			<b-col cols="12" id="page-container">
-    			<nuxt keep-alive />
-			</b-col>
-		</b-row>
-	</b-container>
-	<footer-bar/>
-  </div>
+    <div>
+        <v-app v-cloak>
+            <nav-bar />
+            <v-main>
+                <v-container>
+                    <nuxt keep-alive />
+                </v-container>
+            </v-main>
+            <footer-bar />
+        </v-app>
+    </div>
 </template>
-
 
 <script>
 import NavBar from '~/components/Navigation/Navbar.vue';
 import FooterBar from '~/components/Navigation/FooterBar.vue';
 
 export default {
-	name: 'LayoutDefault',
-	components: {
-		NavBar,
-		FooterBar
-	}
+    name: 'LayoutDefault',
+    components: {
+        NavBar,
+        FooterBar
+    }
 };
 </script>
 
-
 <style>
-	#page-container {
-		margin: auto;
-	}
+#page-container {
+    margin: auto;
+}
+
+#app {
+    text-align: left;
+}
+
+[v-cloak] {
+    display: none;
+}
 </style>

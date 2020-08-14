@@ -2,15 +2,16 @@
     <div class="document-results-list">
         <ul>
             <li v-for="item in documents" :key="item.id">
-                <document-results-item
+                <doc-results-item
                     class="document-results-item"
-                    :doc_id="item.id"
+                    :doc-id="item.id"
                     :title="item.title"
                     :type="item.type"
                     :authors="item.authors"
                     :year="item.year"
                     :abstract="item.abstract"
-                    :numCitations="item.numCitations"
+                    :n-cited-by="item.n_cited_by"
+                    :n-self-cites="item.n_self_cites"
                 />
             </li>
         </ul>
@@ -18,15 +19,15 @@
 </template>
 
 <script>
-import DocumentResultsItem from './DocumentResultsItem';
+import DocResultsItem from './DocResultsItem';
 
 export default {
-    name: 'DocumentResultsList',
+    name: 'DocResultsList',
     components: {
-        DocumentResultsItem
+        DocResultsItem
     },
     props: {
-        documents: Array
+        documents: { type: Array, default: null }
     }
 };
 </script>

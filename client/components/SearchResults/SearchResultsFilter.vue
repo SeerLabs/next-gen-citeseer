@@ -1,46 +1,137 @@
 <template>
-  <div id="search-result-external-links">
-    <base-card :title="filter_title">
-        <b-row>
-          <b-col cols="1">
-            <label for="year-filter">Year</label>
-          </b-col>
+    <v-card id="search-results-filter">
+        <v-card-title>Filter results</v-card-title>
+        <v-card-text>
+            <div class="d-flex justify-space-between">
+                <h6>Year</h6>
+            </div>
+            <div>
+                <v-range-slider
+                    v-model="yearRange"
+                    :max="yearMax"
+                    :min="yearMin"
+                    hide-details
+                    class="align-center"
+                    @change="$emit('year-change', yearRange)"
+                >
+                    <template v-slot:prepend>{{ yearRange[0] }}</template>
+                    <template v-slot:append>{{ yearRange[1] }}</template>
+                </v-range-slider>
+            </div>
 
-          <b-col cols="11" id="year-filter-value">
-            1999 - {{ value }}
-          </b-col>
-        </b-row>
-
-        <b-row>
-          <b-col cols="12">
-            <b-form-input id="year-filter" v-model="value" type="range" min="1999" max="2020"/>
-          </b-col>
-        </b-row>
-
-    </base-card>
-  </div>
+            <v-menu
+                v-for="facet in facets"
+                :key="facet.key"
+                v-model="facet.menu"
+                :close-on-content-click="false"
+                bottom
+                offset-y
+                transition="scale-transition"
+            >
+                <template v-slot:activator="{ on, attrs }">
+                    <v-btn
+                        color="indigo"
+                        dark
+                        v-bind="attrs"
+                        class="facet-menu"
+                        v-on="on"
+                    >{{facet.key.toUpperCase()}}</v-btn>
+                </template>
+                <v-card>
+                    <v-list>
+                        <v-list-item v-for="item in facet.items" :key="item.key">
+                            <v-list-item-action>
+                                <v-checkbox
+                                    :id="item.key"
+                                    v-model="facet.filter"
+                                    type="checkbox"
+                                    :value="item.key"
+                                    :label="`${item.key} (${item.doc_count})`"
+                                    class="facet-checkbox"
+                                    @change="$emit('facet-change', {key: facet.key, filter: facet.filter})"
+                                />
+                            </v-list-item-action>
+                        </v-list-item>
+                    </v-list>
+                </v-card>
+            </v-menu>
+        </v-card-text>
+    </v-card>
 </template>
 
 <script>
-    import BaseCard from "../Base/BaseCard.vue";
+import searchPaperService from '~/api/SearchPaperService';
 
-    export default {
-        name: "SearchResultsFilter",
-        components: {
-          BaseCard
-      },
+export default {
+    name: 'SearchResultsFilter',
+    props: {
+        queryString: { type: String, default: '' }
+    },
+    data() {
+        const yearMin = 0;
+        const yearMax = new Date().getFullYear();
 
-      data() {
-          return {
-            filter_title: "Filter results",
-            value: 2020
-          }
-      }
+        return {
+            loadingState: false,
+
+            yearMin,
+            yearMax,
+            yearRange: [yearMin, yearMax],
+
+            facets: []
+        };
+    },
+    watch: {
+        queryString() {
+            this.getAggregations();
+        }
+    },
+    created() {
+        // make search query immediately when page is loaded
+        this.getAggregations();
+    },
+    methods: {
+        getAggregations() {
+            this.loadingState = true;
+
+            searchPaperService
+                .getAggregations(this.queryString)
+                .then((response) => {
+                    response.data.aggs.forEach((agg) => {
+                        this.facets = [
+                            ...this.facets,
+                            {
+                                ...agg,
+                                filter: [],
+                                menu: false
+                            }
+                        ];
+                    });
+
+                    console.log(this.facets);
+
+                    this.loadingState = false;
+                })
+                .catch((error) => {
+                    // eslint-disable-next-line
+                    console.log(error.message);
+                    this.error = true;
+                });
+        }
     }
+};
 </script>
 
 <style scoped>
-  #year-filter-value {
-    text-align: right;
-  }
+.facet-menu {
+    margin-top: 1rem;
+    width: 7vw;
+}
+</style>
+
+<style>
+.facet-checkbox .v-label {
+    margin-bottom: 0 !important;
+    margin-left: 0.5rem;
+}
 </style>
