@@ -20,8 +20,8 @@ class PaperAdapter:
         return self.elastic_service.paginated_search('citeseerx', searchQuery.queryString, searchQuery.page,
                                                      searchQuery.pageSize, ['title', 'text'], filters=searchQuery.filters)
         
-    def search_papers_aggregations(self, aggsQuery: AggregationsQuery, aggs_fields):
-        return self.elastic_service.get_aggregations('citeseerx', aggsQuery.queryString, ['title', 'text'], aggs_fields)
+    def search_papers_aggregations(self, aggsQuery):
+        return self.elastic_service.get_aggregations('citeseerx', aggsQuery.queryString, ['title', 'text'])
 
     def get_sorted_papers(self, papers_list, page, pageSize, sort):
         """Given Paper IDs get them sorted in desired order with Pagination support"""

@@ -24,7 +24,9 @@ class ElasticService:
       print(response['hits']['hits'])
 
     
-    def get_aggregations(self, index, query, query_fields, aggs_fields, size=10, order={'_count': 'desc'}):
+    def get_aggregations(self, index, query, query_fields, size=10, order={'_count': 'desc'}):
+      aggs_fields = [{'key': 'authors', 'field_name': 'authors.name.keyword'}]
+
       s = Search(index=index, using=self.connection)
       s.query = Q('multi_match', query=query, fields=query_fields)
 
@@ -59,7 +61,6 @@ class ElasticService:
           for author in filters.authors:
             query_filters.append(Q('term', authors__name__keyword=author))
 
-      print('Query Filters:', query_filters)
       s.query = Q('bool', must=query_filters, filter=[doc_search])
 
       start = (page-1)*pageSize

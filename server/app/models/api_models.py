@@ -57,8 +57,12 @@ class Aggregation(BaseModel):
     key: str
     doc_count: int
 
+class AggregationBucket(BaseModel):
+    key: str
+    items: List[Aggregation]
+    
 class AggregationsResponse(BaseModel):
-    authors: List[Aggregation]
+    aggs: List[AggregationBucket]
 
 class SearchQueryResponse(BaseModel):
     query_id: str

@@ -4,7 +4,7 @@ from uuid import uuid4
 from fastapi import APIRouter
 
 from models.api_models import SearchQueryResponse, PaperDetailResponse, CitationsResponse, ClusterDetailResponse, \
-    showCitingClustersResponse, SearchQuery, Paper, Citation, Cluster, Aggregation, AggregationsResponse, AggregationsQuery
+    showCitingClustersResponse, SearchQuery, Paper, Citation, Cluster, Aggregation, AggregationsResponse, AggregationBucket, AggregationsQuery
 
 from services.elastic_service import ElasticService
 from services.elasticsearch_adapters import PaperAdapter, CitationAdapter, ClusterAdapter
@@ -32,20 +32,18 @@ def perform_search(searchQuery: SearchQuery):
 
 @router.post('/search/aggregations', response_model=AggregationsResponse)
 def get_aggregations_from_query(aggsQuery: AggregationsQuery):
-    aggs_fields = [{'key': 'authors', 'field_name': 'authors.name.keyword'}]
 
-    response = paper_adapter.search_papers_aggregations(aggsQuery, aggs_fields)
+    response = paper_adapter.search_papers_aggregations(aggsQuery)
 
-    aggregations = {}
+    aggregations = []
     for key in response:
       aggs_list = []
       for aggs in response[key]['buckets']:
         aggs_list.append(build_aggregations_entity(aggs))
       
-      aggregations[key] = aggs_list
+      aggregations.append(AggregationBucket(key=key, items=aggs_list))
       
-    print(aggregations['authors'])
-    return AggregationsResponse(query_id=str(uuid4()), authors=aggregations['authors'])
+    return AggregationsResponse(query_id=str(uuid4()), aggs=aggregations)
 
 
 @router.get('/paper/{id}')
