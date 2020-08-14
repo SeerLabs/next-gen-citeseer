@@ -48,21 +48,26 @@ class ElasticService:
       
       query_filters = []
 
-      if filters:
-        if 'years' in filters:
+      print(filters)
+
+      if filters is not None:
+        if filters.years:
           year_filter = Q('range', year={'gte': filters.years.start, 'lte': filters.years.end})
           query_filters.append(year_filter)
 
-        if 'authors' in filters:
-          author_filter = Q('terms', authors__name__keyword=filters.authors)
-          query_filters.append(author_filter)
+        if filters.authors:
+          for author in filters.authors:
+            query_filters.append(Q('term', authors__name__keyword=author))
 
-      s.query = Q('bool', must=[doc_search], filter=query_filters)
-      s = s[start:pageSize]
+      print('Query Filters:', query_filters)
+      s.query = Q('bool', must=query_filters, filter=[doc_search])
+
+      start = (page-1)*pageSize
+      s = s[start : start+pageSize]
 
       response = s.execute()
 
-      self.print_response(response)
+      # self.print_response(response)
       return response
 
 
@@ -76,7 +81,7 @@ class ElasticService:
       start = (page-1)*pageSize
       s = s.query('ids', values=ids)
       s = s.sort(sort)
-      s = s[start:pageSize]
+      s = s[start:start + pageSize]
       
       response = s.execute()
       self.print_response(response)

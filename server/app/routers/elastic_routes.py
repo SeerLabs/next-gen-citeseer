@@ -18,7 +18,7 @@ cluster_adapter = ClusterAdapter(elastic_service)
 citation_adapter = CitationAdapter(elastic_service)
 
 
-@router.post('/search', response_model=SearchQueryResponse)
+@router.post('/search/papers', response_model=SearchQueryResponse)
 def perform_search(searchQuery: SearchQuery):
     docs_response = paper_adapter.search_papers(searchQuery)
     
@@ -30,8 +30,8 @@ def perform_search(searchQuery: SearchQuery):
     return SearchQueryResponse(query_id=str(uuid4()), total_results=total_results, response=result_list)
 
 
-@router.post('/aggregations', response_model=AggregationsResponse)
-def get_search_aggregations(aggsQuery: AggregationsQuery):
+@router.post('/search/aggregations', response_model=AggregationsResponse)
+def get_aggregations_from_query(aggsQuery: AggregationsQuery):
     aggs_fields = [{'key': 'authors', 'field_name': 'authors.name.keyword'}]
 
     response = paper_adapter.search_papers_aggregations(aggsQuery, aggs_fields)

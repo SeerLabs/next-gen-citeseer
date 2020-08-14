@@ -16,6 +16,7 @@ class PaperAdapter:
         return self.elastic_service.paginated_search('citeseerx', paperID, 1, 10, 'paper_id')
 
     def search_papers(self, searchQuery: SearchQuery):
+        print(searchQuery);
         return self.elastic_service.paginated_search('citeseerx', searchQuery.queryString, searchQuery.page,
                                                      searchQuery.pageSize, ['title', 'text'], filters=searchQuery.filters)
         
