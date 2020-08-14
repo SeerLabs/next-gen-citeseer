@@ -32,7 +32,7 @@ class ElasticService:
 
       start = (page-1)*pageSize
       s = s.query('multi_match', query=query, fields=fields_to_search)
-      s = s[start:pageSize]
+      s = s[start:start + pageSize]
 
       response = s.execute()
       self.print_response(response)
@@ -49,7 +49,7 @@ class ElasticService:
       start = (page-1)*pageSize
       s = s.query('ids', values=ids)
       s = s.sort(sort)
-      s = s[start:pageSize]
+      s = s[start:start + pageSize]
       
       response = s.execute()
       self.print_response(response)
