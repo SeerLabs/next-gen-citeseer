@@ -50,8 +50,6 @@ class ElasticService:
       
       query_filters = []
 
-      print(filters)
-
       if filters is not None:
         if filters.years:
           year_filter = Q('range', year={'gte': filters.years.start, 'lte': filters.years.end})
