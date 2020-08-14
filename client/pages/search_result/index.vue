@@ -24,7 +24,7 @@
                     class="mb-md-10"
                     :query-string="queryString"
                     @year-change="value => onYearFacetChange(value)"
-                    @author-change="value => onFacetChange('authors', value)"
+                    @facet-change="({key, value}) => onFacetChange(key, value)"
                 />
                 <search-results-external-links />
             </v-col>
@@ -99,12 +99,12 @@ export default {
                     this.pageSize,
                     this.filters
                 )
-                .then(response => {
+                .then((response) => {
                     this.documents = response.data.response;
                     this.totalPageResults = response.data.total_results;
                     this.loadingState = false;
                 })
-                .catch(error => {
+                .catch((error) => {
                     // eslint-disable-next-line
                     console.log(error.message);
                     this.error = true;

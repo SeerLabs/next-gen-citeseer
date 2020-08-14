@@ -14,29 +14,47 @@
                     class="align-center"
                     @change="$emit('year-change', yearRange)"
                 >
-                    <template v-slot:prepend>
-                        {{ yearRange[0] }}
-                    </template>
-                    <template v-slot:append>
-                        {{ yearRange[1] }}
-                    </template>
+                    <template v-slot:prepend>{{ yearRange[0] }}</template>
+                    <template v-slot:append>{{ yearRange[1] }}</template>
                 </v-range-slider>
             </div>
-            <div>
-                <h6>Authors</h6>
-                <div v-for="author in authors" :key="author.key">
-                    <input
-                        :id="author.key"
-                        v-model="authorFilter"
-                        type="checkbox"
-                        :value="author.key"
-                        @change="$emit('author-change', authorFilter)"
-                    />
-                    <label :for="author.key">
-                        {{ author.key }} ({{ author.doc_count }})
-                    </label>
-                </div>
-            </div>
+
+            <v-menu
+                v-for="facet in facets"
+                :key="facet.key"
+                v-model="facet.menu"
+                :close-on-content-click="false"
+                bottom
+                offset-y
+                transition="scale-transition"
+            >
+                <template v-slot:activator="{ on, attrs }">
+                    <v-btn
+                        color="indigo"
+                        dark
+                        v-bind="attrs"
+                        class="facet-menu"
+                        v-on="on"
+                    >{{facet.key.toUpperCase()}}</v-btn>
+                </template>
+                <v-card>
+                    <v-list>
+                        <v-list-item v-for="item in facet.items" :key="item.key">
+                            <v-list-item-action>
+                                <v-checkbox
+                                    :id="item.key"
+                                    v-model="facet.filter"
+                                    type="checkbox"
+                                    :value="item.key"
+                                    :label="`${item.key} (${item.doc_count})`"
+                                    class="facet-checkbox"
+                                    @change="$emit('facet-change', {key: facet.key, filter: facet.filter})"
+                                />
+                            </v-list-item-action>
+                        </v-list-item>
+                    </v-list>
+                </v-card>
+            </v-menu>
         </v-card-text>
     </v-card>
 </template>
@@ -60,8 +78,7 @@ export default {
             yearMax,
             yearRange: [yearMin, yearMax],
 
-            authors: [],
-            authorFilter: []
+            facets: []
         };
     },
     watch: {
@@ -79,11 +96,23 @@ export default {
 
             searchPaperService
                 .getAggregations(this.queryString)
-                .then(response => {
-                    this.authors = response.data.authors;
+                .then((response) => {
+                    response.data.aggs.forEach((agg) => {
+                        this.facets = [
+                            ...this.facets,
+                            {
+                                ...agg,
+                                filter: [],
+                                menu: false
+                            }
+                        ];
+                    });
+
+                    console.log(this.facets);
+
                     this.loadingState = false;
                 })
-                .catch(error => {
+                .catch((error) => {
                     // eslint-disable-next-line
                     console.log(error.message);
                     this.error = true;
@@ -94,11 +123,15 @@ export default {
 </script>
 
 <style scoped>
-#search-results-filter {
-    margin-bottom: 20px !important;
+.facet-menu {
+    margin-top: 1rem;
+    width: 7vw;
 }
+</style>
 
-#year-filter-value {
-    text-align: right;
+<style>
+.facet-checkbox .v-label {
+    margin-bottom: 0 !important;
+    margin-left: 0.5rem;
 }
 </style>
