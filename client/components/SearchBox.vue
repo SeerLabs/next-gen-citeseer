@@ -1,17 +1,23 @@
 <template>
-    <div id="searchbox">
-        <b-input-group prepend="All Fields" class="mt-3">
-            <b-form-input v-model="searchQuery" @input="handleInput" value="Test" />
-            <b-input-group-append>
-                <b-button variant="info" type="submit" @click="submitInput">Search</b-button>
-            </b-input-group-append>
-        </b-input-group>
-    </div>
+    <v-text-field
+        v-model="searchQuery"
+        placeholder="Search"
+        filled
+        clearable
+        type="text"
+        @keyup.enter="submitInput"
+    >
+        <template v-slot:append>
+            <div id="search-button" @click="submitInput">
+                <v-icon class="ml-3">
+                    search
+                </v-icon>
+            </div>
+        </template>
+    </v-text-field>
 </template>
 
 <script>
-// @TODO direct search bar to the search results page
-import SearchPaperService from '../api/SearchPaperService';
 export default {
     name: 'SearchBox',
     props: {},
@@ -20,23 +26,24 @@ export default {
             searchQuery: ''
         };
     },
-    created: function () {
+    created() {
         this.searchQuery = this.$route.query.query || '';
     },
     methods: {
-        handleInput() {
-            this.$emit('input', this.searchQuery);
-        },
         submitInput() {
-            console.log(this.searchQuery);
-            this.$router.push({
-                name: 'search_result',
-                query: { query: this.searchQuery }
-            });
+            if (this.searchQuery) {
+                this.$router.push({
+                    name: 'search_result',
+                    query: { query: this.searchQuery }
+                });
+            }
         }
     }
 };
 </script>
 
-<style>
+<style scoped>
+#search-button {
+    cursor: pointer;
+}
 </style>

@@ -3,74 +3,64 @@
     $ sudo sysctl -p-->
 
     <div id="doc-view-layout">
-        <b-container fluid>
-            <!-- Main Info Row -->
-            <b-row>
-                <b-col cols="5">
+        <!-- Main Info Row -->
+        <v-row no-gutters>
+            <v-col cols="12">
+                <div class="d-flex">
                     <h2>What papers cite this paper. . .</h2>
-                </b-col>
-                <b-col>
-                    <b-button
-                        v-b-tooltip.hover
-                        title="You are seeing this page because the summary page is not indexed"
-                        size="sm"
-                        pill
-                        variant="outline-secondary"
-                    >?</b-button>
-                </b-col>
-            </b-row>
-            <b-row id="abstract" align-h="center">
-                <b-col cols="9">
-                    <h1>{{ title }}</h1>
-                    <!-- <h5>{{ authors.join(', ')}}</h5> -->
-                    <h5>{{ venue }} - {{ year }}</h5>
-                    <br />
-                </b-col>
-            </b-row>
+                    <v-tooltip top>
+                        <template v-slot:activator="{ on, attrs }">
+                            <v-btn id="tooltip" icon v-bind="attrs" v-on="on">
+                                <v-icon>help</v-icon>
+                            </v-btn>
+                        </template>
+                        <span>You are seeing this page because the summary page is not indexed</span>
+                    </v-tooltip>
+                </div>
+            </v-col>
+        </v-row>
+        <v-row id="abstract" no-gutters align-h="center">
+            <v-col cols="12">
+                <h1>{{ title }}</h1>
+                <!-- <h5>{{ authors.join(', ')}}</h5> -->
+                <h5>{{ venue }} - {{ year }}</h5>
+                <br />
+            </v-col>
+        </v-row>
 
-            <b-row id="citation-card" class="citation-card" align-h="center">
-                <b-col cols="12">
-                    <document-results-container
-                        :documents="documents"
-                        :totalPageResults="totalPageResults"
-                        :page="page"
-                        :sortDropdown="sortDropdown"
-                        v-model="sortBy"
-                    />
-                    <b-pagination
-                        :total-rows="totalPageResults"
-                        v-model="page"
-                        :per-page="pageSize"
-                        @input="getCiting()"
-                    />
-                </b-col>
-            </b-row>
-            <!-- Citations Row -->
-            <!-- <b-row id ="citation-card" class="citation-card" align-h="center">
-                <b-col cols="12">
+        <v-row id="citation-card" no-gutters class="citation-card" align-h="center">
+            <v-col cols="12">
+                <doc-results-container
+                    v-model="sortBy"
+                    :documents="documents"
+                    :total-page-results="totalPageResults"
+                    :page="page"
+                    :sort-dropdown="sortDropdown"
+                />
+                <v-pagination
+                    v-model="page"
+                    :total-rows="totalPageResults"
+                    :per-page="pageSize"
+                    @input="getCiting()"
+                />
+            </v-col>
+        </v-row>
+        <!-- Citations Row -->
+        <!-- <v-row id ="citation-card" class="citation-card" align-h="center">
+                <v-col cols="12">
                     <citation-card id="citation-card" title="Citations" v-bind:doi="doi" v-bind:ncitation="nCitation"/>
-                </b-col>
-            </b-row>-->
-        </b-container>
+                </v-col>
+        </v-row>-->
     </div>
 </template>
 
 <script>
-import SearchBox from '~/components/SearchBox.vue';
-import CitationCard from '~/components/DocumentView/CitationCard.vue';
-import BaseCard from '~/components/Base/BaseCard.vue';
 import ShowCitingService from '~/api/ShowCitingService';
-import DocumentResultsList from '~/components/DocumentResults/DocumentResultsList.vue';
-import DocumentResultsContainer from '~/components/DocumentResults/DocumentResultsContainer.vue';
+import DocResultsContainer from '~/components/DocResults/DocResultsContainer.vue';
 
 export default {
     components: {
-        SearchBox,
-        CitationCard,
-        BaseCard,
-        DocumentResultsList,
-        ShowCitingService,
-        DocumentResultsContainer
+        DocResultsContainer
     },
 
     data() {
@@ -85,55 +75,52 @@ export default {
             totalPageResults: 1000,
             documents: [],
             sortBy: 'yearAsc',
-            sortDropdown: {
-                citCount: {
-                    displayName: 'Citation Count',
+            sortDropdown: [
+                {
+                    text: 'Citation Count',
                     sortByKey: 'citCount'
                 },
-                yearAsc: {
-                    displayName: 'Year (Ascending)',
+                {
+                    text: 'Year (Ascending)',
                     sortByKey: 'yearAsc'
                 },
-                yearDesc: {
-                    displayName: 'Year (Descending)',
+                {
+                    text: 'Year (Descending)',
                     sortByKey: 'yearDesc'
                 }
-            },
-            totalPageResults: 0,
+            ],
             pageSize: 10,
             page: 1
         };
     },
+    watch: {
+        sortBy() {
+            this.getCiting();
+        }
+    },
     mounted() {
-        this.getCiting(), console.log('API IS BEING CALLED');
+        this.getCiting();
     },
     methods: {
         getCiting() {
-            console.log(this.$route.params);
-
             ShowCitingService.getShowCiting(
                 this.$route.params.id,
                 this.page,
                 this.pageSize,
                 this.sortBy
-            ).then(
-                (response) => (
-                    (this.title = response.data.cluster.ctitle),
-                    (this.year = response.data.cluster.cyear),
-                    (this.authors = response.data.cluster.cauthors),
-                    (this.venue = response.data.cluster.cvenue),
-                    (this.documents = response.data.papers),
-                    (this.totalPageResults = response.data.total_results),
-                    console.log('id: ' + this.$route.params.id),
-                    console.log('page: ' + this.page),
-                    console.log('sort: ' + this.sortBy)
-                )
-            );
+            ).then((response) => {
+                this.title = response.data.cluster.ctitle;
+                this.year = response.data.cluster.cyear;
+                this.authors = response.data.cluster.cauthors;
+                this.venue = response.data.cluster.cvenue;
+                this.documents = response.data.papers;
+                this.totalPageResults = response.data.total_results;
+            });
 
             if (!this.title) {
                 this.title = 'Title Not Indexed';
             }
-            if (!this.year || year == 0) {
+            if (!this.year || this.year === 0) {
                 this.year = 'Year Not Indexed';
             }
             if (!this.authors) {
@@ -149,25 +136,6 @@ export default {
             );
         }
     },
-    watch: {
-        sortBy: function () {
-            this.getCiting();
-        }
-    },
-    // async fetch() {
-    //     const { data } = await ShowCitingService.getShowCiting(this.$route.params.id, this.page, this.pageSize)
-    //     this.title = response.data.cluster.ctitle,
-    //     this.year = response.data.cluster.cyear,
-    //     this.authors = response.data.cluster.cauthors,
-    //     this.venue = response.data.cluster.cvenue,
-
-    //     this.documents = response.data.papers,
-    //     this.totalPageResults = response.data.total_results,
-    //     console.log("id: " + this.$route.params.id),
-    //     console.log("page: " + this.page),
-    //     console.log("sort: " + this.sortBy)
-    // },
-
     layout: 'layout_search'
 };
 </script>
@@ -176,8 +144,11 @@ export default {
 #doc-view-layout {
     background: rgb(255, 255, 255);
 }
-#side-margine {
+
+#tooltip {
+    margin-left: 3em;
 }
+
 #abstract {
     margin-top: 4%;
     margin-bottom: 2%;

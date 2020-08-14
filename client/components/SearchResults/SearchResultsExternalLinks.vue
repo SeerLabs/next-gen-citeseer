@@ -1,32 +1,25 @@
 <template>
-  <div id="search-result-external-links">
-    <base-card :title="filter_title">
-        <b-row>
-          <b-col cols="12">
-            LINKS
-          </b-col>
-        </b-row>
-    </base-card>
-  </div>
+    <div id="search-results-external-links">
+        <v-card :title="filter_title">
+            <v-card-title>{{ filter_title }}</v-card-title>
+            <v-card-text>LINKS</v-card-text>
+        </v-card>
+    </div>
 </template>
 
 <script>
-    import BaseCard from "../Base/BaseCard.vue";
-
-    export default {
-        name: "SearchResultsExternalLinks",
-        components: {
-          BaseCard
-      },
-
-      data() {
-          return {
-            filter_title: "Try your query at",
-          }
-      }
+export default {
+    name: 'SearchResultsExternalLinks',
+    data() {
+        return {
+            filter_title: 'Try your query at'
+        };
     }
+};
 </script>
 
 <style scoped>
-
+#search-results-external-links {
+    margin-bottom: 20px !important;
+}
 </style>

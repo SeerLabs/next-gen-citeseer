@@ -1,6 +1,6 @@
 <template>
-    <div id="app">
-        <h1>CiteSeerX</h1>
+    <div id="homepage">
+        <img id="logo" src="../assets/img/csx_logo.png" alt="CiteSeerX" />
         <search-box />
     </div>
 </template>
@@ -16,12 +16,18 @@ export default {
 </script>
 
 <style>
-#app {
+#homepage {
     font-family: Avenir, Helvetica, Arial, sans-serif;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
     text-align: center;
     color: #2c3e50;
     margin: 10% auto;
+    width: 75vw;
+}
+
+#logo {
+    width: 20em;
+    margin-bottom: 1em;
 }
 </style>
