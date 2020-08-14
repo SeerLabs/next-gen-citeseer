@@ -20,7 +20,12 @@
                 />
             </v-col>
             <v-col id="search-results-cards">
-                <search-results-filter class="mb-md-10" />
+                <search-results-filter
+                    class="mb-md-10"
+                    :query-string="queryString"
+                    @year-change="value => onYearFacetChange(value)"
+                    @author-change="value => onFacetChange('authors', value)"
+                />
                 <search-results-external-links />
             </v-col>
         </v-row>
@@ -60,12 +65,16 @@ export default {
                 },
                 { text: 'Year', callback: () => (this.sortBy = 'year') }
             ],
-            error: false
+            error: false,
+            filters: {
+                years: { start: 0, end: new Date().getFullYear() },
+                authors: []
+            }
         };
     },
     computed: {
         totalNumRows() {
-            return this.totalPageResults / this.pageSize;
+            return Math.ceil(this.totalPageResults / this.pageSize);
         }
     },
     watch: {
@@ -84,7 +93,12 @@ export default {
             this.loadingState = true;
             // push params
             searchPaperService
-                .searchPaper(this.queryString, this.page, this.pageSize)
+                .searchPaper(
+                    this.queryString,
+                    this.page,
+                    this.pageSize,
+                    this.filters
+                )
                 .then(response => {
                     this.documents = response.data.response;
                     this.totalPageResults = response.data.total_results;
@@ -95,6 +109,18 @@ export default {
                     console.log(error.message);
                     this.error = true;
                 });
+        },
+
+        onYearFacetChange(value) {
+            this.filters.years.start = value[0];
+            this.filters.years.end = value[1];
+
+            this.searchQuery();
+        },
+
+        onFacetChange(key, value) {
+            this.filters.authors = value;
+            this.searchQuery();
         }
     },
     layout: 'layout_search'
