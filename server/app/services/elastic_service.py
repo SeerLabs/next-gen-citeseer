@@ -18,38 +18,33 @@ class ElasticService:
         parsed = json.loads(content)
         self.print_response(parsed)
 
-
     def print_response(self, response):
-      # print(json.dumps(response.json(), indent=4, sort_keys=True))
-      print(response['hits']['hits'])
-
+        # print(json.dumps(response.json(), indent=4, sort_keys=True))
+        print(response['hits']['hits'])
 
     def paginated_search(self, index, query, page, pageSize, fields_to_search, source=None):
-      s = Search(index=index, using=self.connection)
+        s = Search(index=index, using=self.connection)
 
-      if source:
-        s.source(includes=[source])
+        if source:
+            s.source(includes=[source])
 
-      start = (page-1)*pageSize
-      s = s.query('multi_match', query=query, fields=fields_to_search)
-      s = s[start:start + pageSize]
+        start = (page - 1) * pageSize
+        s = s.query('multi_match', query=query, fields=fields_to_search)
+        s = s[start:start + pageSize]
 
-      response = s.execute()
-      return response
-
+        response = s.execute()
+        print(response['hits']['hits'])
+        return response
 
     def paginated_search_with_ids(self, index, page, pageSize, ids, sort, source=None):
-      s = Search(index=index, using=self.connection)
+        s = Search(index=index, using=self.connection)
 
-      if source:
-        s.source(includes=[source])
-      print(ids)
-      
-      start = (page-1)*pageSize
-      s = s.query('ids', values=ids)
-      s = s.sort(sort)
-      s = s[start:start + pageSize]
-      
-      response = s.execute()
-      self.print_response(response)
-      return response
+        if source:
+            s.source(includes=[source])
+
+        start = (page - 1) * pageSize
+        s = s.query('ids', values=ids)
+        s = s.sort(sort)
+        s = s[start:start + pageSize]
+
+        return s.execute()

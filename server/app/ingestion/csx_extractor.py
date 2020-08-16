@@ -70,7 +70,7 @@ def extract_authors_from_tei_root(tei_root):
 
 def extract_title_from_tei_root(tei_root):
     title_node = tei_root.find('./teiHeader//titleStmt/title')
-    if title_node is not None:
+    if title_node is not None and title_node.text is not None:
         return title_node.text
     return ''
 
@@ -161,9 +161,14 @@ def extract_pub_info_from_bibil_node(bibilnode):
             pub_info.publisher = bibilnode.find('./monogr/imprint/publisher').text
         if bibilnode.find('./monogr/imprint/date') is not None:
             if 'when' in bibilnode.find('./monogr/imprint/date').keys():
-                pub_info.date = bibilnode.find('./monogr/imprint/date').get('when', default='')
+                date_found = bibilnode.find('./monogr/imprint/date').get('when', default=0)
+                pub_info.date = date_found
+                pub_info.year = date_found.split("-")[0]
             else:
-                pub_info.date = bibilnode.find('./monogr/imprint/date').text
+                date_found = bibilnode.find('./monogr/imprint/date').text
+                if date_found is not None:
+                    pub_info.date = date_found
+                    pub_info.year = date_found[-4:]
         if bibilnode.find('./monogr/meeting/address') is not None:
             addr_str = ""
             for each_node in bibilnode.findall('./monogr/meeting/address/addrLine'):
@@ -191,9 +196,13 @@ def extract_paper_pub_info_from_tei_root(tei_root):
 
         if pub_stmt_node.find('./date') is not None:
             if 'when' in pub_stmt_node.find('./date'):
-                pub_info.date = pub_stmt_node.find('./date').attrib['when']
+                date_found = pub_stmt_node.find('./date').attrib['when']
+                pub_info.date = date_found
+                pub_info.year = date_found.split("-")[0]
             else:
-                pub_info.date = pub_stmt_node.find('./date').text
+                date_found = pub_stmt_node.find('./date').text
+                pub_info.date = date_found
+                pub_info.year = date_found[-4:]
     return pub_info
 
 class CSXExtractorImpl(CSXExtractor):

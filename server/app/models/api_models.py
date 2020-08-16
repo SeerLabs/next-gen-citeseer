@@ -52,6 +52,15 @@ class Cluster(BaseModel):
     cpages: Optional[str]
     cventype: Optional[str]
 
+class Suggestion(BaseModel):
+    type: str
+    text: str
+    id: str
+
+class AutoCompleteResponse(BaseModel):
+    query_id: str
+    query: str
+    suggestions: List[Suggestion]
 
 class SearchQueryResponse(BaseModel):
     query_id: str

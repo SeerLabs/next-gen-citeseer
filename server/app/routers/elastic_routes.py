@@ -4,7 +4,9 @@ from uuid import uuid4
 from fastapi import APIRouter
 
 from models.api_models import SearchQueryResponse, PaperDetailResponse, CitationsResponse, ClusterDetailResponse, \
-    showCitingClustersResponse, SearchQuery, Paper, Citation, Cluster
+    showCitingClustersResponse, SearchQuery, Paper, Citation, Cluster, Suggestion, AutoCompleteResponse
+
+from models import elastic_models
 
 from services.elastic_service import ElasticService
 from services.elasticsearch_adapters import PaperAdapter, CitationAdapter, ClusterAdapter
@@ -37,10 +39,7 @@ def paper_info(id: str):
 
 @router.get('/citations/{id}')
 def citations(id: str, page: int = 1, pageSize: int = 10):
-    paper = paper_adapter.get_paper_info(paperID=id)
-    # paper_entity_response = build_paper_entity(id, paper['hits']['hits'][0]['_source'])
-    actual_key = paper['hits']['hits'][0]['_source']['paper_id']
-    es_citations_response = citation_adapter.get_citations_for_paper(actual_key, page, pageSize)
+    es_citations_response = citation_adapter.get_citations_for_paper(id, page, pageSize)
     result_list = []
     for doc_hit in es_citations_response['hits']['hits']:
         result_list.append(build_citation_entity(_id=doc_hit['_id'], doc=doc_hit['_source']))
@@ -57,21 +56,32 @@ def show_cluster_detail(cid: str):
 
 @router.get('/showCiting/{cid}')
 def show_citing(cid: str, sort: str, page: int, pageSize: int):
-    cluster_response = cluster_adapter.get_cluster_info(cid)
-    primary_cluster_detail = build_cluster_entity(cluster_response['_source'])
-    cid_list = cluster_response['_source']['cited_by']
-    response = cluster_adapter.get_paper_ids_for_clusters(cid_list=cid_list)
+    cluster = elastic_models.Cluster.get(id=cid, using=elastic_service.get_connection())
+    primary_cluster_detail = build_cluster_entity(id=cid, doc=cluster.to_dict(skip_empty=False))
+    clusters = elastic_models.Cluster.mget(using=elastic_service.get_connection(), docs=cluster.cited_by)
     papers_list = []
-    for each_hit in response['docs']:
-        if 'papers' in each_hit['_source'] and len(each_hit['_source']['papers']) != 0:
-            papers_list.append(each_hit['_source']['papers'][0])
+    for each_cluster in clusters:
+        if each_cluster.papers is not None:
+            papers_list.extend(each_cluster.papers)
     papers_response = paper_adapter.get_sorted_papers(papers_list=papers_list, page=page, pageSize=pageSize, sort=sort)
     result_list = []
     for each_paper_hit in papers_response['hits']['hits']:
-        result_list.append(build_paper_entity(doc=each_paper_hit['_source']))
+        print(each_paper_hit['_source'].to_dict().keys())
+        result_list.append(build_paper_entity(_id=each_paper_hit['_id'], doc=each_paper_hit['_source']))
     total_results = papers_response['hits']['total']['value']
     return showCitingClustersResponse(query_id=str(uuid4()), total_results=total_results,
                                       cluster=primary_cluster_detail, papers=result_list)
+
+
+@router.get('/suggest')
+def get_suggestions(query: str):
+    s = elastic_models.Paper.search(using=ElasticService().get_connection())
+    s = s.suggest('auto_complete', query, completion={'field': 'title_suggest'})
+    response = s.execute()
+    suggestions = []
+    for option in response.suggest.auto_complete[0].options:
+        suggestions.append(Suggestion(type="paper", text=option._source.title, id=option._id))
+    return AutoCompleteResponse(query_id=str(uuid4()), query=query, suggestions=suggestions)
 
 
 @router.get('/similar')
@@ -83,8 +93,8 @@ def similar_papers(paperID: str = ""):
 def build_paper_entity(_id, doc):
     return Paper(id=_id,
                  title=getKeyOrDefault(doc, 'title'),
-                 venue=getKeyOrDefault(getKeyOrDefault(doc, 'pub_info'), 'pub_place'),
-                 year=getKeyOrDefault(getKeyOrDefault(doc, 'pub_info'), 'date'),
+                 venue=getKeyOrDefault(getKeyOrDefault(doc, 'pub_info'), 'title'),
+                 year=getKeyOrDefault(getKeyOrDefault(doc, 'pub_info'), 'year'),
                  n_cited_by=getKeyOrDefault(doc, 'ncites', default=0),
                  n_self_cites=getKeyOrDefault(doc, 'selfCites', default=0),
                  abstract=getKeyOrDefault(doc, 'abstract'),
@@ -96,7 +106,8 @@ def build_paper_entity(_id, doc):
 
 
 def get_authors_in_list(doc, field) -> List[str]:
-    return [getKeyOrDefault(field, 'forename', default="") + " " + getKeyOrDefault(field, 'surname', default="") for field in getKeyOrDefault(doc, field, default={})]
+    return [getKeyOrDefault(field, 'forename', default="") + " " + getKeyOrDefault(field, 'surname', default="") for
+            field in getKeyOrDefault(doc, field, default={})]
 
 
 def build_citation_entity(_id, doc):
@@ -104,9 +115,9 @@ def build_citation_entity(_id, doc):
                     cluster=getKeyOrDefault(doc, 'cluster_id'),
                     authors=get_authors_in_list(doc, 'authors'),
                     title=getKeyOrDefault(doc, 'title'),
-                    venue=getKeyOrDefault(getKeyOrDefault(doc, 'pub_info'), 'pub_place'),
+                    venue=getKeyOrDefault(getKeyOrDefault(doc, 'pub_info'), 'title'),
                     venue_type=getKeyOrDefault(doc, 'venueType'),
-                    year=getKeyOrDefault(getKeyOrDefault(doc, 'pub_info'), 'date'),
+                    year=getKeyOrDefault(getKeyOrDefault(doc, 'pub_info'), 'year'),
                     pages=getKeyOrDefault(doc, 'pages'),
                     editors=getKeyOrDefault(doc, 'editors'),
                     publisher=getKeyOrDefault(getKeyOrDefault(doc, 'pub_info'), 'publisher'),
@@ -115,12 +126,12 @@ def build_citation_entity(_id, doc):
                     number=getKeyOrDefault(doc, 'number'),
                     tech=getKeyOrDefault(doc, 'tech'),
                     raw=getKeyOrDefault(doc, 'raw'),
-                    paper_id=getKeyOrDefault(doc, 'paperid'),
+                    paper_id=getKeyOrDefault(doc, 'paper_id'),
                     self=getKeyOrDefault(doc, 'self'))
 
 
-def build_cluster_entity(doc):
-    return Cluster(cluster_id=getKeyOrDefault(doc, 'cluster_id'),
+def build_cluster_entity(id, doc):
+    return Cluster(cluster_id=id,
                    incollection=getKeyOrDefault(doc, 'in_collection', default=0),
                    cpublisher=getKeyOrDefault(getKeyOrDefault(doc, 'pub_info'), 'publisher'),
                    cyear=getKeyOrDefault(getKeyOrDefault(doc, 'pub_info'), 'date', default=0),
