@@ -22,9 +22,9 @@ class PaperAdapter:
     def get_sorted_papers(self, papers_list, page, pageSize, sort):
         """Given Paper IDs get them sorted in desired order with Pagination support"""
         if sort == "yearAsc":
-            sort = 'year'
+            sort = 'pub_info.year.keyword'
         elif sort == "yearDsc":
-            sort = '-year'
+            sort = '-pub_info.year.keyword'
         elif sort == "citCount":
             sort = '-ncites'
         else:
@@ -39,9 +39,8 @@ class CitationAdapter:
         self.elastic_service = ElasticService()
 
     def get_citations_for_paper(self, id, page, pageSize):
-        print(id)
-        return self.elastic_service.paginated_search('citations_next', id, page, pageSize, 'paper_id')
-
+        return self.elastic_service.paginated_search(index='citations_next', query=id, page=page, pageSize=pageSize,
+                                                     fields_to_search='paper_id.keyword')
 
 class ClusterAdapter:
 
@@ -172,5 +171,7 @@ class ClusterAdapter:
             return
         citing_cluster = Cluster.get(id=paper_cluster_id, using=self.elastic_service.get_connection())
         cited_cluster = Cluster.get(id=citation_cluster_id, using=self.elastic_service.get_connection())
-        citing_cluster.add_cites(cited_cluster)
-        cited_cluster.add_cited_by(citing_cluster)
+        citing_cluster.add_cites(citation_cluster_id)
+        cited_cluster.add_cited_by(paper_cluster_id)
+        citing_cluster.save(using=self.elastic_service.get_connection())
+        cited_cluster.save(using=self.elastic_service.get_connection())

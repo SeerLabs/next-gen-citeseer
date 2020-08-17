@@ -45,7 +45,7 @@ class KeyMatcherClusterer(CSXClusterer):
     def _cluster_citations_for_paper(self, paper: Paper):
         for citation in paper.citations:
             citation_keys = self.key_generator.get_keys(citation.title, citation.authors)
-            citation.paper_id = paper.paper_id
+            citation.paper_id = paper.meta.id
             citation.cluster_id = self.cluster_adapter.cluster_citation(citation_keys, citation)
             self.cluster_adapter.relate_citing_clusters(citation.cluster_id, paper.cluster_id)
             # save the citation
