@@ -76,6 +76,11 @@ class CitationsResponse(BaseModel):
     total_results: int
     citations: List[Citation]
 
+class SimilarPapersResponse(BaseModel):
+    query_id: str
+    total_results: int
+    similar_papers: List[Citation]
+
 class ClusterDetailResponse(BaseModel):
     query_id: str
     cluster: Cluster

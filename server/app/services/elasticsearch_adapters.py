@@ -42,6 +42,7 @@ class CitationAdapter:
         return self.elastic_service.paginated_search(index='citations_next', query=id, page=page, pageSize=pageSize,
                                                      fields_to_search='paper_id.keyword')
 
+
 class ClusterAdapter:
 
     def __init__(self, elastic_service):
