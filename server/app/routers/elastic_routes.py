@@ -1,4 +1,4 @@
-from typing import List
+from typing import List, Optional
 from uuid import uuid4
 
 from fastapi import APIRouter
@@ -30,10 +30,18 @@ def perform_search(searchQuery: SearchQuery):
     return SearchQueryResponse(query_id=str(uuid4()), total_results=total_results, response=result_list)
 
 
-@router.get('/paper/{id}')
-def paper_info(id: str):
-    docs_response = paper_adapter.get_paper_info(id)
-    paper_entity_response = build_paper_entity(id, docs_response['hits']['hits'][0]['_source'])
+@router.get('/paper')
+def paper_info(paper_id: Optional[str] = None, cluster_id: Optional[str] = None):
+    paper_id_final = ""
+    if paper_id is not None:
+        paper_id_final = paper_id
+    elif cluster_id is not None:
+        cluster = elastic_models.Cluster.get(id=cluster_id, using=elastic_service.get_connection())
+        included_papers = cluster.papers
+        if included_papers is not None and len(included_papers) > 0:
+            paper_id_final = included_papers[0]
+    docs_response = paper_adapter.get_paper_info(paper_id_final)
+    paper_entity_response = build_paper_entity(paper_id_final, docs_response['hits']['hits'][0]['_source'])
     return PaperDetailResponse(query_id=str(uuid4()), paper=paper_entity_response)
 
 
@@ -42,7 +50,9 @@ def citations(id: str, page: int = 1, pageSize: int = 10):
     es_citations_response = citation_adapter.get_citations_for_paper(id, page, pageSize)
     result_list = []
     for doc_hit in es_citations_response['hits']['hits']:
-        result_list.append(build_citation_entity(_id=doc_hit['_id'], doc=doc_hit['_source']))
+        cluster = elastic_models.Cluster.get(doc_hit['_source']['cluster_id'], using=elastic_service.get_connection())
+        result_list.append(build_citation_entity(_id=doc_hit['_id'], in_collection=cluster.in_collection,
+                                                 doc=doc_hit['_source']))
     total_results = es_citations_response['hits']['total']['value']
     return CitationsResponse(query_id=str(uuid4()), total_results=total_results, citations=result_list)
 
@@ -123,9 +133,11 @@ def get_authors_in_list(doc, field) -> List[str]:
     return [getKeyOrDefault(field, 'forename', default="") + " " + getKeyOrDefault(field, 'surname', default="") for
             field in getKeyOrDefault(doc, field, default={})]
 
-def build_citation_entity(_id, doc):
+
+def build_citation_entity(_id, in_collection, doc):
     return Citation(id=_id,
                     cluster=getKeyOrDefault(doc, 'cluster_id'),
+                    in_collection=in_collection,
                     authors=get_authors_in_list(doc, 'authors'),
                     title=getKeyOrDefault(doc, 'title'),
                     venue=getKeyOrDefault(getKeyOrDefault(doc, 'pub_info'), 'title'),

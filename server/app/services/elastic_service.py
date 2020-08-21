@@ -33,7 +33,6 @@ class ElasticService:
         s = s[start:start + pageSize]
 
         response = s.execute()
-        print(response['hits']['hits'])
         return response
 
     def paginated_search_with_ids(self, index, page, pageSize, ids, sort, source=None):

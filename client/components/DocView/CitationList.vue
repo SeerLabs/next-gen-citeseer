@@ -13,6 +13,7 @@
                 :authors="citation.authors"
                 :venue="citation.venue"
                 :cid="citation.cluster"
+                :in-collection="citation.in_collection"
             />
 
             <p class="mt-3">Current Page: {{ currentPage }}</p>
