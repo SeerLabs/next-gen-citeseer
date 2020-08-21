@@ -95,11 +95,22 @@ def get_suggestions(query: str):
 
 
 @router.get('/similar/{id}')
-def similar_papers(id: str):
-    res = elastic_service.more_like_this_search("papers_next", id)
-    result_list = []
+def similar_papers(id: str, algo: str):
+    #res = elastic_models.Cluster.search(using=elastic_service.get_connection(), index='clusters_next').filter('term', cites=id)
     #print(res['hits']['hits'])
-    f = False
+    #return 
+    res = None
+    if algo == 'co-citation':
+        s = elastic_models.Cluster.search(using=elastic_service.get_connection(), index='clusters_next').filter('match', cites=id)
+        res = s.execute()
+    elif algo == 'active-bibliography':
+        s = elastic_models.Cluster.search(using=elastic_service.get_connection(), index='clusters_next').filter('match', cited_by=id) 
+        res = s.execute()
+    else:
+        res = elastic_service.more_like_this_search("papers_next", id)
+    result_list = []
+    print(res['hits']['hits'])
+    f = True
     for doc in res['hits']['hits']:
         if not f:
             f = True
@@ -126,8 +137,8 @@ def build_paper_entity(_id, doc):
                  authors=get_authors_in_list(doc, 'authors'),
                  journal=getKeyOrDefault(getKeyOrDefault(doc, 'pub_info'), 'publisher'),
                  publish_time=getKeyOrDefault(getKeyOrDefault(doc, 'pub_info'), 'date'),
-                 source="")
-
+                 source="",
+                 cluster_id=getKeyOrDefault(doc, 'cluster'))
 
 def get_authors_in_list(doc, field) -> List[str]:
     return [getKeyOrDefault(field, 'forename', default="") + " " + getKeyOrDefault(field, 'surname', default="") for
@@ -157,7 +168,7 @@ def build_citation_entity(_id, in_collection, doc):
 
 def build_similar_papers_entity(_id, doc):
     return Citation(id=_id,
-                    cluster=getKeyOrDefault(doc, 'cluster_id'),
+                    cluster=getKeyOrDefault(doc, _id),
                     authors=get_authors_in_list(doc, 'authors'),
                     title=getKeyOrDefault(doc, 'title'),
                     venue=getKeyOrDefault(getKeyOrDefault(doc, 'pub_info'), 'title'),
