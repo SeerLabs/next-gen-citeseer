@@ -62,6 +62,7 @@ class Citation(Document):
     created_at = Date(default_timezone='UTC')
     authors = Nested(Author)
     cluster_id = Keyword()
+    in_collection = Boolean()
     paper_id = Text()
     raw = Text()
     pub_info = Nested(PubInfo)
