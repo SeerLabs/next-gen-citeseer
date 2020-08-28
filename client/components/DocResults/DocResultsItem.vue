@@ -47,7 +47,7 @@ export default {
     },
     computed: {
         docUrl() {
-            return `/doc_view/${this.docId}`;
+            return `/doc_view/pid/${this.docId}`;
         },
 
         pdfUrl() {

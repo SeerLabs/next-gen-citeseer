@@ -23,6 +23,7 @@ class Citation(BaseModel):
     cluster: Optional[str]
     authors: List[str] = []
     title: Optional[str]
+    in_collection: bool
     venue: Optional[str]
     venue_type: Optional[str]
     year: Optional[str]
