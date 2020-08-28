@@ -20,22 +20,23 @@ class Paper(BaseModel):
 
 class Citation(BaseModel):
     id: str
-    cluster: int
-    authors: typing.Any
-    title: typing.Any
-    venue: typing.Any
-    venue_type: typing.Any
-    year: typing.Any
-    pages: typing.Any
-    editors: typing.Any
-    publisher: typing.Any
-    pub_address: typing.Any
-    volume: typing.Any
-    number: typing.Any
-    tech: typing.Any
-    raw: str
-    paper_id: str
-    self: typing.Any
+    cluster: Optional[str]
+    authors: List[str] = []
+    title: Optional[str]
+    in_collection: bool
+    venue: Optional[str]
+    venue_type: Optional[str]
+    year: Optional[str]
+    pages: Optional[str]
+    editors: Optional[str]
+    publisher: Optional[str]
+    pub_address: Optional[str]
+    volume: Optional[str]
+    number: Optional[str]
+    tech: Optional[str]
+    raw: Optional[str]
+    paper_id: Optional[str]
+    self: Optional[str]
 
 class Cluster(BaseModel):
     cluster_id: str
@@ -52,6 +53,15 @@ class Cluster(BaseModel):
     cpages: Optional[str]
     cventype: Optional[str]
 
+class Suggestion(BaseModel):
+    type: str
+    text: str
+    id: str
+
+class AutoCompleteResponse(BaseModel):
+    query_id: str
+    query: str
+    suggestions: List[Suggestion]
 
 class Aggregation(BaseModel):
     key: str
@@ -104,3 +114,4 @@ class SearchQuery(BaseModel):
 
 class AggregationsQuery(BaseModel):
     queryString: str
+

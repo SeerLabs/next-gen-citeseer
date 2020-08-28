@@ -1,6 +1,6 @@
 from typing import List
 
-from elasticsearch_dsl import Document, Text, Completion, Date, datetime, Keyword, Integer, Nested, Boolean
+from elasticsearch_dsl import Document, Text, Completion, Date, datetime, Keyword, Integer, Nested, Boolean, InnerDoc
 
 
 class Author(Document):
@@ -18,17 +18,18 @@ class Author(Document):
     class Index:
         name = 'authors_next'
 
-    class Meta:
-        doc_type = 'authors_next'
-
     def save(self, **kwargs):
         self.created_at = datetime.now()
+        self.author_suggest = {
+            'input': [self.forename, self.surname],
+        }
         return super().save(**kwargs)
 
 
 class PubInfo(Document):
     title: Text()
     date: Text()
+    year: Integer()
     publisher: Text()
     meeting: Text()
     pub_place: Text()
@@ -36,9 +37,6 @@ class PubInfo(Document):
 
     class Index:
         name = 'pub_info_next'
-
-    class Meta:
-        doc_type = 'pub_info_next'
 
 class CrawlMeta(Document):
     crawl_status: Boolean()
@@ -53,13 +51,10 @@ class CrawlMeta(Document):
     time = Text()
     doi = Text()
     status = Boolean()
-    #fields = Nested(Date())
+    # fields = Nested(Date)
 
     class Index:
         name = 'crawl_meta'
-
-    class Meta:
-        doc_type = 'crawl_meta'
 
 class Citation(Document):
     title = Text()
@@ -67,6 +62,7 @@ class Citation(Document):
     created_at = Date(default_timezone='UTC')
     authors = Nested(Author)
     cluster_id = Keyword()
+    in_collection = Boolean()
     paper_id = Text()
     raw = Text()
     pub_info = Nested(PubInfo)
@@ -74,16 +70,14 @@ class Citation(Document):
     class Index:
         name = 'citations_next'
 
-    class Meta:
-        doc_type = 'citations_next'
-
     def save(self, **kwargs):
         self.created_at = datetime.now()
         return super().save(**kwargs)
 
 
 class Paper(Document):
-    paper_id = Text()
+    paper_id = Keyword()
+    csx_doi = Keyword()
     title = Text()
     cluster_id = Keyword()
     title_suggest = Completion()
@@ -91,6 +85,8 @@ class Paper(Document):
     abstract = Text()
     created_at = Date(default_timezone='UTC')
     authors = Nested(Author)
+    self_cites = Integer()
+    num_cites = Integer()
     citations = Nested(Citation)
     keywords = Keyword(multi=True)
     pub_info = Nested(PubInfo)
@@ -98,11 +94,11 @@ class Paper(Document):
     class Index:
         name = 'papers_next'
 
-    class Meta:
-        doc_type = 'papers_next'
-
     def save(self, **kwargs):
         self.created_at = datetime.now()
+        self.title_suggest = {
+            'input': [self.title],
+        }
         return super().save(**kwargs)
 
 
@@ -121,9 +117,6 @@ class Cluster(Document):
 
     class Index:
         name = 'clusters_next'
-
-    class Meta:
-        doc_type = 'cluster_next'
 
     def save(self, **kwargs):
         self.created_at = datetime.now()

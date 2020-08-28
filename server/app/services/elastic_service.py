@@ -18,70 +18,66 @@ class ElasticService:
         parsed = json.loads(content)
         self.print_response(parsed)
 
-
     def print_response(self, response):
-      # print(json.dumps(response.json(), indent=4, sort_keys=True))
-      print(response['hits']['hits'])
+        # print(json.dumps(response.json(), indent=4, sort_keys=True))
+        print(response['hits']['hits'])
 
     
     def get_aggregations(self, index, query, query_fields, size=10, order={'_count': 'desc'}):
-      aggs_fields = [{'key': 'authors', 'field_name': 'authors.name.keyword'}]
+        aggs_fields = [{'key': 'authors', 'field_name': 'authors.name.keyword'}]
 
-      s = Search(index=index, using=self.connection)
-      s.query = Q('multi_match', query=query, fields=query_fields)
+        s = Search(index=index, using=self.connection)
+        s.query = Q('multi_match', query=query, fields=query_fields)
 
-      for item in aggs_fields:
-        a = A('terms', field=item['field_name'], size=10, order={'_count': 'desc'})
-        s.aggs.bucket(item['key'], a)
+        for item in aggs_fields:
+          a = A('terms', field=item['field_name'], size=10, order={'_count': 'desc'})
+          s.aggs.bucket(item['key'], a)
 
-      s = s[0:0]
+        s = s[0:0]
 
-      return s.execute()['aggregations']
+        return s.execute()['aggregations']
 
 
     def paginated_search(self, index, query, page, pageSize, fields_to_search, source=None, filters=None):
-      s = Search(index=index, using=self.connection)
+        s = Search(index=index, using=self.connection)
 
-      if source:
-        s.source(includes=[source])
+        if source:
+          s.source(includes=[source])
 
-      start = (page-1)*pageSize
-      doc_search = Q('multi_match', query=query, fields=fields_to_search)
-      
-      query_filters = []
+        start = (page-1)*pageSize
+        doc_search = Q('multi_match', query=query, fields=fields_to_search)
+        
+        query_filters = []
 
-      if filters is not None:
-        if filters.years:
-          year_filter = Q('range', year={'gte': filters.years.start, 'lte': filters.years.end})
-          query_filters.append(year_filter)
+        if filters is not None:
+          if filters.years:
+            year_filter = Q('range', year={'gte': filters.years.start, 'lte': filters.years.end})
+            query_filters.append(year_filter)
 
-        if filters.authors:
-          for author in filters.authors:
-            query_filters.append(Q('term', authors__name__keyword=author))
+          if filters.authors:
+            for author in filters.authors:
+              query_filters.append(Q('term', authors__name__keyword=author))
 
-      s.query = Q('bool', must=query_filters, filter=[doc_search])
+        s.query = Q('bool', must=query_filters, filter=[doc_search])
 
-      start = (page-1)*pageSize
-      s = s[start : start+pageSize]
+        start = (page-1)*pageSize
+        s = s[start : start+pageSize]
 
-      response = s.execute()
+        response = s.execute()
 
-      # self.print_response(response)
-      return response
+        # self.print_response(response)
+        return response
 
 
     def paginated_search_with_ids(self, index, page, pageSize, ids, sort, source=None):
-      s = Search(index=index, using=self.connection)
+        s = Search(index=index, using=self.connection)
 
-      if source:
-        s.source(includes=[source])
-      print(ids)
-      
-      start = (page-1)*pageSize
-      s = s.query('ids', values=ids)
-      s = s.sort(sort)
-      s = s[start:start + pageSize]
-      
-      response = s.execute()
-      self.print_response(response)
-      return response
+        if source:
+            s.source(includes=[source])
+
+        start = (page - 1) * pageSize
+        s = s.query('ids', values=ids)
+        s = s.sort(sort)
+        s = s[start:start + pageSize]
+
+        return s.execute()

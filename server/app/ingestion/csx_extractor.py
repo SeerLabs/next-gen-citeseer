@@ -70,7 +70,7 @@ def extract_authors_from_tei_root(tei_root):
 
 def extract_title_from_tei_root(tei_root):
     title_node = tei_root.find('./teiHeader//titleStmt/title')
-    if title_node is not None:
+    if title_node is not None and title_node.text is not None:
         return title_node.text
     return ''
 
@@ -160,14 +160,20 @@ def extract_pub_info_from_bibil_node(bibilnode):
         if bibilnode.find('./monogr/imprint/publisher') is not None:
             pub_info.publisher = bibilnode.find('./monogr/imprint/publisher').text
         if bibilnode.find('./monogr/imprint/date') is not None:
-            if 'when' in bibilnode.find('./monogr/imprint/date'):
-                pub_info.date = bibilnode.find('./monogr/imprint/date').attrib['when']
+            if 'when' in bibilnode.find('./monogr/imprint/date').keys():
+                date_found = bibilnode.find('./monogr/imprint/date').get('when', default=0)
+                pub_info.date = date_found
+                pub_info.year = date_found.split("-")[0]
             else:
-                pub_info.date = bibilnode.find('./monogr/imprint/date').text
+                date_found = bibilnode.find('./monogr/imprint/date').text
+                if date_found is not None:
+                    pub_info.date = date_found
+                    pub_info.year = date_found[-4:]
         if bibilnode.find('./monogr/meeting/address') is not None:
             addr_str = ""
             for each_node in bibilnode.findall('./monogr/meeting/address/addrLine'):
-                addr_str = addr_str + ";" + each_node.find('./addrLine').text
+                if each_node.find('./addrLine') is not None:
+                    addr_str = addr_str + ";" + each_node.find('./addrLine').text
             if bibilnode.findall('./monogr/meeting/address/addrLine') is not None:
                 for each_node in bibilnode.findall('./monogr/meeting/address/addrLine'):
                     addr_str = addr_str + " " + each_node.text
@@ -182,18 +188,21 @@ def extract_pub_info_from_bibil_node(bibilnode):
 
 
 def extract_paper_pub_info_from_tei_root(tei_root):
-    pub_info = extract_pub_info_from_bibil_node(tei_root.find('./teiHeader/sourceDesc/biblStruct'))
+    pub_info = extract_pub_info_from_bibil_node(tei_root.find('./teiHeader/fileDesc/sourceDesc/biblStruct'))
     pub_stmt_node = tei_root.find('./teiHeader/fileDesc/publicationStmt')
     if pub_stmt_node is not None:
         if pub_stmt_node.find('./publisher') is not None:
             pub_info.publisher = pub_stmt_node.find('./publisher').text
-        if pub_stmt_node.find('./date') is not None and 'when' in pub_stmt_node.find('./date'):
-            pub_info.date = pub_stmt_node.find('./date').attrib['when']
+
         if pub_stmt_node.find('./date') is not None:
             if 'when' in pub_stmt_node.find('./date'):
-                pub_info.date = pub_stmt_node.find('./date').attrib['when']
+                date_found = pub_stmt_node.find('./date').attrib['when']
+                pub_info.date = date_found
+                pub_info.year = date_found.split("-")[0]
             else:
-                pub_info.date = pub_stmt_node.find('./date').text
+                date_found = pub_stmt_node.find('./date').text
+                pub_info.date = date_found
+                pub_info.year = date_found[-4:]
     return pub_info
 
 class CSXExtractorImpl(CSXExtractor):
