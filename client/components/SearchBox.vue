@@ -9,7 +9,6 @@
         hide-no-data
         hide-selected
         item-text="description"
-        item-value="title"
         placeholder="Search"
         @keydown.enter="submitInput"
     >
@@ -38,13 +37,13 @@ export default {
     },
     computed: {
         items() {
-            return this.entries.map((entry) => {
+            return this.entries.map(({ type, text, id }) => {
                 const Description =
-                    entry.length > this.descriptionLimit
-                        ? entry.slice(0, this.descriptionLimit) + '...'
-                        : entry;
+                    text.length > this.descriptionLimit
+                        ? text.slice(0, this.descriptionLimit) + '...'
+                        : text;
 
-                return { title: entry, description: Description };
+                return { type, text, id, description: Description };
             });
         }
     },
@@ -60,10 +59,7 @@ export default {
             searchPaperService
                 .getSuggestions(this.textInput)
                 .then((response) => {
-                    console.log(response);
-                    this.entries = response.data.suggestions.map(
-                        (suggestion) => suggestion.text
-                    );
+                    this.entries = response.data.suggestions;
                 })
                 .catch((error) => {
                     // eslint-disable-next-line
@@ -73,10 +69,12 @@ export default {
                 .finally(() => (this.isLoading = false));
         },
         searchQuery() {
-            // Note, item-value is currently not working on v-combobox as a known issue with Vuetify
-            // As a workaround, we check to make sure that the searchQuery exists before pulling its value
-            this.textInput = this.searchQuery ? this.searchQuery.title : '';
-            this.submitInput();
+            const idType = this.searchQuery.type === 'paper' ? 'pid' : 'cid';
+
+            this.$router.push({
+                name: 'doc_view-idType-id',
+                params: { idType, id: this.searchQuery.id }
+            });
         }
     },
     created() {
