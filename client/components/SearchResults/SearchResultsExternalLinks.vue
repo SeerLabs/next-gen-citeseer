@@ -10,7 +10,7 @@
 <script>
 export default {
     name: 'SearchResultsExternalLinks',
-    data() {
+    data: function() {
         return {
             filter_title: 'Try your query at'
         };

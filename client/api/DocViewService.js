@@ -1,13 +1,16 @@
 import CoreApi from './CoreApi'
 
 export default {
-  getPaperWithPaperId (pid) {
+  getPaperWithPaperId: function (pid) {
     return CoreApi().get('/paper/', { params: {paper_id: pid}})
   },
-  getPaperWithClusterId (cid){
+  getPaperWithClusterId: function (cid){
     return CoreApi().get('/paper/', {params: {cluster_id: cid}})
   },
-  getCitationsEntities (id, page) {
-    return CoreApi().get('/citations/' + id, { params: { page, pageSize: 10 } })
+  getCitationsEntities: function (id, page) {
+    return CoreApi().get('/citations/' + id, { params: { page: page, pageSize: 10 } })
+  },
+  getSimilarPaper: function (id, algo) {
+    return CoreApi().get('/similar/' + id, { params: {algo: algo}})
   }
 }

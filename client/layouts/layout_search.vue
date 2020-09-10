@@ -26,11 +26,11 @@ import SearchBox from '~/components/SearchBox.vue';
 
 export default {
     components: {
-        NavBar,
-        FooterBar,
-        SearchBox
+        NavBar: NavBar,
+        FooterBar: FooterBar,
+        SearchBox: SearchBox
     },
-    data() {
+    data: function() {
         return {
             searchQuery: ''
         };

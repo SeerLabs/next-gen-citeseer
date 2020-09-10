@@ -24,7 +24,7 @@
 <script>
 export default {
     name: 'SearchResultsFilter',
-    data() {
+    data: function() {
         return {
             filter_title: 'Filter results',
             value: 2020

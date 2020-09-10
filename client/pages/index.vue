@@ -9,7 +9,7 @@
 import SearchBox from '~/components/SearchBox.vue';
 export default {
     components: {
-        SearchBox
+        SearchBox: SearchBox
     },
     layout: 'layout_default'
 };

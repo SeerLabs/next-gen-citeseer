@@ -33,21 +33,21 @@ export default {
     name: 'CitationItem',
     props: {
         title: { type: String, default: '' },
-        authors: { type: String, default: 'No authors available' },
+        authors: { type: Array[String], default: 'No authors available' },
         venue: { type: String, default: 'No venue available' },
-        year: { type: Number, default: 0 },
+        year: { type: String, default: '0' },
         numCitations: { type: Number, default: 0 },
-        cid: { type: Number, required: true },
+        cid: { type: String, required: true },
         inCollection: { type: Boolean, required: true }
     },
-    data() {
+    data: function() {
         return {
             readMoreToggle: false,
             url: ''
         };
     },
     methods: {
-        toggleReadMore() {
+        toggleReadMore: function() {
             this.readMoreFlag = true;
         }
     }

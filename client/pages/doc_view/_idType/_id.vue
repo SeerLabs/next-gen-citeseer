@@ -21,16 +21,16 @@
                         id="citations"
                         class="citation-card"
                         :doc-id="docId"
+                        :cid="cid"
                         title="Citations"
-                        :n-citations="nCitations"
                     />
 
                     <citation-card
                         id="similar-articles"
                         class="citation-card"
                         :doc-id="docId"
+                        :cid="cid"
                         title="Similar Articles"
-                        :n-citations="nCitations"
                     />
                     <version-history-card
                         id="version-history"
@@ -70,11 +70,11 @@ import VersionHistoryCard from '~/components/DocView/VersionHistoryCard.vue';
 
 export default {
     components: {
-        DocumentViewHeader,
-        CitationCard,
-        VersionHistoryCard
+        DocumentViewHeader: DocumentViewHeader,
+        CitationCard: CitationCard,
+        VersionHistoryCard: VersionHistoryCard
     },
-    async fetch() {
+    fetch: async function() {
         this.loading = true;
         let data = null;
         switch (this.idType){
@@ -90,6 +90,7 @@ export default {
                 this.loading = false;
                 return;
         }
+        this.cid = data.paper.cluster_id
         this.title = data.paper.title;
         this.year = data.paper.year;
         this.authors = data.paper.authors;
@@ -99,12 +100,13 @@ export default {
 
         this.loading = false;
     },
-    data() {
+    data: function() {
         return {
             loading: false,
             showAbstract: false,
             docId: this.$route.params.id,
             idType: this.$route.params.idType,
+            cid: '',
             title: '',
             year: '',
             authors: [],
@@ -142,11 +144,11 @@ export default {
         };
     },
     computed: {
-        getPDFUrl() {
+        getPDFUrl: function() {
             return '/pdf/' + this.docId;
         }
     },
-    mounted() {
+    mounted: function() {
         $('#table-of-contents a').on('click', function(e) {
             e.preventDefault();
             const hash = this.hash;
@@ -164,10 +166,10 @@ export default {
         });
     },
     methods: {
-        toggleReadMore() {
+        toggleReadMore: function() {
             this.readMoreFlag = true;
         },
-        scroll(id) {
+        scroll: function(id) {
             return null;
             // document.getElementById(id).scrollIntoView();
         }

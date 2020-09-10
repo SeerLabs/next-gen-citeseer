@@ -19,8 +19,8 @@ import FooterBar from '~/components/Navigation/FooterBar.vue';
 export default {
     name: 'LayoutDefault',
     components: {
-        NavBar,
-        FooterBar
+        NavBar: NavBar,
+        FooterBar: FooterBar
     }
 };
 </script>

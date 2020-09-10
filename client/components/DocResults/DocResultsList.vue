@@ -24,7 +24,7 @@ import DocResultsItem from './DocResultsItem';
 export default {
     name: 'DocResultsList',
     components: {
-        DocResultsItem
+        DocResultsItem: DocResultsItem
     },
     props: {
         documents: { type: Array, default: null }

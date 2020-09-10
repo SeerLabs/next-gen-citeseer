@@ -9,5 +9,7 @@ module.exports = {
     },
     extends: ['@nuxtjs', 'plugin:nuxt/recommended', 'prettier', 'prettier/vue'],
     // add your custom rules here
-    rules: {}
+    rules: {
+        "object-shorthand": ["error", "never"]
+    }
 };

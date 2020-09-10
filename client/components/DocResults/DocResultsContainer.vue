@@ -31,7 +31,7 @@ import DocResultsList from './DocResultsList.vue';
 export default {
     name: 'DocResultsContainer',
     components: {
-        DocResultsList
+        DocResultsList: DocResultsList
     },
     props: {
         documents: { type: Array, default: null },
@@ -39,19 +39,19 @@ export default {
         page: { type: Number, default: 0 },
         sortDropdown: { type: Array, required: true }
     },
-    data() {
+    data: function() {
         return {
             pageSize: 10,
             sortByDisplay: 'Relevance'
         };
     },
     computed: {
-        currentPageLocation() {
+        currentPageLocation: function() {
             return this.pageSize * (this.currentPage - 1) + 1;
         }
     },
     methods: {
-        sortResults(event) {
+        sortResults: function(event) {
             this.sortByDisplay = event.target.text;
             this.$emit('input', event.target.name);
         }

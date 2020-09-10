@@ -46,11 +46,11 @@ export default {
         nSelfCites: { type: Number, default: 0 }
     },
     computed: {
-        docUrl() {
+        docUrl: function() {
             return `/doc_view/pid/${this.docId}`;
         },
 
-        pdfUrl() {
+        pdfUrl: function() {
             return '/pdf/' + this.docId;
         }
     }
