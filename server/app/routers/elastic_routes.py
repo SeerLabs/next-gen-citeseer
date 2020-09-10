@@ -96,30 +96,18 @@ def get_suggestions(query: str):
 
 @router.get('/similar/{id}')
 def similar_papers(id: str, algo: str):
-    #res = elastic_models.Cluster.search(using=elastic_service.get_connection(), index='clusters_next').filter('term', cites=id)
-    #print(res['hits']['hits'])
-    #return 
     res = None
-    if algo == 'co-citation':
+    if algo == 'Co-Citation':
         s = elastic_models.Cluster.search(using=elastic_service.get_connection(), index='clusters_next').filter('match', cites=id)
         res = s.execute()
-    elif algo == 'active-bibliography':
+    elif algo == 'Active Bibliography':
         s = elastic_models.Cluster.search(using=elastic_service.get_connection(), index='clusters_next').filter('match', cited_by=id) 
         res = s.execute()
     else:
         res = elastic_service.more_like_this_search("papers_next", id)
+    
     result_list = []
-    print(res['hits']['hits'])
-    f = True
     for doc in res['hits']['hits']:
-        if not f:
-            f = True
-            for key in doc['_source']:
-                print('key:')
-                print(key)
-                if key != 'abstract' and  key != 'text':
-                    print(doc['_source'][key])
-                print()
         result_list.append(build_similar_papers_entity(_id=doc['_id'], doc=doc['_source']))
     total_results = res['hits']['total']['value']
     return SimilarPapersResponse(query_id=str(uuid4()), total_results=total_results, similar_papers=result_list)
@@ -168,7 +156,8 @@ def build_citation_entity(_id, in_collection, doc):
 
 def build_similar_papers_entity(_id, doc):
     return Citation(id=_id,
-                    cluster=getKeyOrDefault(doc, _id),
+                    cluster=getKeyOrDefault(doc, 'cluster') or _id,
+                    in_collection=getKeyOrDefault(doc, 'in_collection'),
                     authors=get_authors_in_list(doc, 'authors'),
                     title=getKeyOrDefault(doc, 'title'),
                     venue=getKeyOrDefault(getKeyOrDefault(doc, 'pub_info'), 'title'),
