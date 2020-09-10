@@ -21,16 +21,16 @@
 export default {
     name: 'SearchBox',
     props: {},
-    data: function() {
+    data() {
         return {
             searchQuery: ''
         };
     },
-    created: function() {
+    created() {
         this.searchQuery = this.$route.query.query || '';
     },
     methods: {
-        submitInput: function() {
+        submitInput() {
             if (this.searchQuery) {
                 this.$router.push({
                     name: 'search_result',

@@ -1,12 +1,12 @@
 import CoreApi from './CoreApi';
 
 export default {
-    searchPaper: function(queryString, page, pageSize) {
+    searchPaper(queryString, page, pageSize) {
         return CoreApi()
             .post('/search', {
-                queryString: queryString,
-                page: page,
-                pageSize: pageSize
+                queryString,
+                page,
+                pageSize
             })
             .then(function(response) {
                 return response;

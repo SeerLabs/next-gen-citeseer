@@ -70,11 +70,11 @@ import VersionHistoryCard from '~/components/DocView/VersionHistoryCard.vue';
 
 export default {
     components: {
-        DocumentViewHeader: DocumentViewHeader,
-        CitationCard: CitationCard,
-        VersionHistoryCard: VersionHistoryCard
+        DocumentViewHeader,
+        CitationCard,
+        VersionHistoryCard
     },
-    fetch: async function() {
+    async fetch() {
         this.loading = true;
         let data = null;
         switch (this.idType){
@@ -100,7 +100,7 @@ export default {
 
         this.loading = false;
     },
-    data: function() {
+    data() {
         return {
             loading: false,
             showAbstract: false,
@@ -144,11 +144,11 @@ export default {
         };
     },
     computed: {
-        getPDFUrl: function() {
+        getPDFUrl() {
             return '/pdf/' + this.docId;
         }
     },
-    mounted: function() {
+    mounted() {
         $('#table-of-contents a').on('click', function(e) {
             e.preventDefault();
             const hash = this.hash;
@@ -166,10 +166,10 @@ export default {
         });
     },
     methods: {
-        toggleReadMore: function() {
+        toggleReadMore() {
             this.readMoreFlag = true;
         },
-        scroll: function(id) {
+        scroll(id) {
             return null;
             // document.getElementById(id).scrollIntoView();
         }

@@ -35,7 +35,7 @@ import CitationItem from './CitationItem';
 export default {
     name: 'CitationList',
     components: {
-        CitationItem: CitationItem
+        CitationItem
     },
     props: {
         docId: { type: String, default: '' },
@@ -45,7 +45,7 @@ export default {
         citations: {type:Array, default: null},
         nCitations: { type: Number, default: 0}
     },
-    data: function() {
+    data() {
         return {
             // perPage: 10,
             // currentPage: 1,
@@ -59,7 +59,7 @@ export default {
         //     return this.nCitations / this.perPage;
         // }
     },
-    created: function() {
+    created() {
         // switch (this.title){
         //     case 'Citations':
         //         this.getCitationEntities();

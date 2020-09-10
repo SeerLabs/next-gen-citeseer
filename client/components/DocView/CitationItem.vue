@@ -40,14 +40,14 @@ export default {
         cid: { type: String, required: true },
         inCollection: { type: Boolean, required: true }
     },
-    data: function() {
+    data() {
         return {
             readMoreToggle: false,
             url: ''
         };
     },
     methods: {
-        toggleReadMore: function() {
+        toggleReadMore() {
             this.readMoreFlag = true;
         }
     }

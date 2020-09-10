@@ -60,10 +60,10 @@ import DocResultsContainer from '~/components/DocResults/DocResultsContainer.vue
 
 export default {
     components: {
-        DocResultsContainer: DocResultsContainer
+        DocResultsContainer
     },
 
-    data: function() {
+    data() {
         return {
             readMoreToggle: false,
             title: '',
@@ -99,11 +99,11 @@ export default {
             this.getCiting();
         }
     },
-    mounted: function() {
+    mounted() {
         this.getCiting();
     },
     methods: {
-        getCiting: function() {
+        getCiting() {
             ShowCitingService.getShowCiting(
                 this.$route.params.id,
                 this.page,
@@ -131,7 +131,7 @@ export default {
                 this.venue = 'Venue Not Indexed';
             }
         },
-        alert: function() {
+        alert() {
             window.alert(
                 'You are seeing this page because the summary page is not indexed.'
             );

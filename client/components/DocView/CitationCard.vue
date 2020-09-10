@@ -53,14 +53,14 @@ import docViewService from '~/api/DocViewService';
 export default {
     name: 'CitationCard',
     components: {
-        CitationList: CitationList
+        CitationList
     },
     props: {
         docId: { type: String, default: '' },
         cid: { type: String, default: ''},
         title: { type: String, default: '' }
     },
-    data: function() {
+    data() {
         return {
             sortByDisplay: '',
             sortDropdown: [],
@@ -73,11 +73,11 @@ export default {
         };
     },
     computed: {
-        totalNumRows: function() {
+        totalNumRows() {
             return Math.floor(this.nCitations / this.perPage);
         }
     },
-    created: function() {
+    created() {
         switch (this.title) {
             case 'Citations':
                 this.sortSelected = 'Relevance';
@@ -100,7 +100,7 @@ export default {
         }
     },
     methods: {
-        getCitations: function() {
+        getCitations() {
             switch (this.title) {
                 case 'Citations':
                     this.loading = true;

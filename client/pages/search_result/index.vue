@@ -36,11 +36,11 @@ import searchPaperService from '~/api/SearchPaperService';
 export default {
     name: 'SearchResults',
     components: {
-        DocResultsContainer: DocResultsContainer,
-        SearchResultsFilter: SearchResultsFilter,
-        SearchResultsExternalLinks: SearchResultsExternalLinks
+        DocResultsContainer,
+        SearchResultsFilter,
+        SearchResultsExternalLinks
     },
-    data: function() {
+    data() {
         return {
             queryString: '',
             documents: [],
@@ -64,23 +64,23 @@ export default {
         };
     },
     computed: {
-        totalNumRows: function() {
+        totalNumRows() {
             return this.totalPageResults / this.pageSize;
         }
     },
     watch: {
-        '$route.query.query': function() {
+        '$route.query.query'() {
             this.queryString = this.$route.query.query;
             this.searchQuery();
         }
     },
-    created: function() {
+    created() {
         // make search query immediately when page is loaded
         this.queryString = this.$route.query.query;
         this.searchQuery();
     },
     methods: {
-        searchQuery: function() {
+        searchQuery() {
             this.loadingState = true;
             // push params
             searchPaperService

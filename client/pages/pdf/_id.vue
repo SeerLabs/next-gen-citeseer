@@ -8,12 +8,12 @@
 <script>
 
 export default {
-  data: function () {
+  data () {
     return {
       pdfURL: 'http://localhost:8000/api/document?repid=rep1&type=pdf&doi='
     }
   },
-  mounted: function () {
+  mounted () {
     this.pdfURL += this.$route.params.id
   }
 }

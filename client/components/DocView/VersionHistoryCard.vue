@@ -42,7 +42,7 @@ export default {
         title: { type: String, default: '' },
         cardType: { type: String, default: '' }
     },
-    data: function() {
+    data() {
         return {
             sortByValues: ['Version 1', 'Version 2', 'Version 3'],
             items: [

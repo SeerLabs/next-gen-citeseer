@@ -70,18 +70,18 @@ export default {
         nCitation: { type: Number, default: 0 },
         abstract: { type: String, default: '' }
     },
-    data: function() {
+    data() {
         return {
             showAbstract: false
         };
     },
     computed: {
-        getPDFUrl: function() {
+        getPDFUrl() {
             return '/pdf/' + this.$route.params.id;
         }
     },
     methods: {
-        toggleReadMore: function() {
+        toggleReadMore() {
             this.showAbstract = !this.showAbstract;
         }
     }
