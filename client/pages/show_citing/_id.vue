@@ -93,12 +93,6 @@ export default {
             page: 1
         };
     },
-    watch: {
-        // eslint-disable-next-line
-        sortBy: function(){
-            this.getCiting();
-        }
-    },
     mounted() {
         this.getCiting();
     },

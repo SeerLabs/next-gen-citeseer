@@ -29,7 +29,7 @@ export default {
     },
     props: {
         docId: { type: String, default: '' },
-        cid: { type: String, default: null },
+        cid: { type: String, default: '' },
         doi: { type: String, default: '' },
         title: { type: String, default: '' },
         citations: {type:Array, default: null},
