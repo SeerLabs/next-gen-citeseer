@@ -4,7 +4,7 @@ from uuid import uuid4
 from fastapi import APIRouter
 
 from models.api_models import SearchQueryResponse, PaperDetailResponse, CitationsResponse, ClusterDetailResponse, \
-    showCitingClustersResponse, SearchQuery, Paper, Citation, Cluster, Suggestion, AutoCompleteResponse
+    showCitingClustersResponse, SimilarPapersResponse, SearchQuery, Paper, Citation, Cluster, Suggestion, AutoCompleteResponse
 
 from models import elastic_models
 
@@ -94,10 +94,23 @@ def get_suggestions(query: str):
     return AutoCompleteResponse(query_id=str(uuid4()), query=query, suggestions=suggestions)
 
 
-@router.get('/similar')
-def similar_papers(paperID: str = ""):
-    result = cluster_adapter.get_clustered_papers(paperID)
-    return result
+@router.get('/similar/{id}')
+def similar_papers(id: str, algo: str):
+    res = None
+    if algo == 'Co-Citation':
+        s = elastic_models.Cluster.search(using=elastic_service.get_connection(), index='clusters_next').filter('match', cites=id)
+        res = s.execute()
+    elif algo == 'Active Bibliography':
+        s = elastic_models.Cluster.search(using=elastic_service.get_connection(), index='clusters_next').filter('match', cited_by=id) 
+        res = s.execute()
+    else:
+        res = elastic_service.more_like_this_search("papers_next", id)
+    
+    result_list = []
+    for doc in res['hits']['hits']:
+        result_list.append(build_similar_papers_entity(_id=doc['_id'], doc=doc['_source']))
+    total_results = res['hits']['total']['value']
+    return SimilarPapersResponse(query_id=str(uuid4()), total_results=total_results, similar_papers=result_list)
 
 
 def build_paper_entity(_id, doc):
@@ -112,8 +125,8 @@ def build_paper_entity(_id, doc):
                  authors=get_authors_in_list(doc, 'authors'),
                  journal=getKeyOrDefault(getKeyOrDefault(doc, 'pub_info'), 'publisher'),
                  publish_time=getKeyOrDefault(getKeyOrDefault(doc, 'pub_info'), 'date'),
-                 source="")
-
+                 source="",
+                 cluster_id=getKeyOrDefault(doc, 'cluster'))
 
 def get_authors_in_list(doc, field) -> List[str]:
     return [getKeyOrDefault(field, 'forename', default="") + " " + getKeyOrDefault(field, 'surname', default="") for
@@ -124,6 +137,27 @@ def build_citation_entity(_id, in_collection, doc):
     return Citation(id=_id,
                     cluster=getKeyOrDefault(doc, 'cluster_id'),
                     in_collection=in_collection,
+                    authors=get_authors_in_list(doc, 'authors'),
+                    title=getKeyOrDefault(doc, 'title'),
+                    venue=getKeyOrDefault(getKeyOrDefault(doc, 'pub_info'), 'title'),
+                    venue_type=getKeyOrDefault(doc, 'venueType'),
+                    year=getKeyOrDefault(getKeyOrDefault(doc, 'pub_info'), 'year'),
+                    pages=getKeyOrDefault(doc, 'pages'),
+                    editors=getKeyOrDefault(doc, 'editors'),
+                    publisher=getKeyOrDefault(getKeyOrDefault(doc, 'pub_info'), 'publisher'),
+                    pub_address=getKeyOrDefault(getKeyOrDefault(doc, 'pub_info'), 'pub_address'),
+                    volume=getKeyOrDefault(doc, 'volume'),
+                    number=getKeyOrDefault(doc, 'number'),
+                    tech=getKeyOrDefault(doc, 'tech'),
+                    raw=getKeyOrDefault(doc, 'raw'),
+                    paper_id=getKeyOrDefault(doc, 'paper_id'),
+                    self=getKeyOrDefault(doc, 'self'))
+
+
+def build_similar_papers_entity(_id, doc):
+    return Citation(id=_id,
+                    cluster=getKeyOrDefault(doc, 'cluster') or _id,
+                    in_collection=getKeyOrDefault(doc, 'in_collection'),
                     authors=get_authors_in_list(doc, 'authors'),
                     title=getKeyOrDefault(doc, 'title'),
                     venue=getKeyOrDefault(getKeyOrDefault(doc, 'pub_info'), 'title'),

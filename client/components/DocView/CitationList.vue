@@ -15,22 +15,12 @@
                 :cid="citation.cluster"
                 :in-collection="citation.in_collection"
             />
-
-            <p class="mt-3">Current Page: {{ currentPage }}</p>
-
-            <v-pagination
-                v-model="currentPage"
-                :total-visible="6"
-                :length="totalNumRows"
-                @input="getCitationEntities"
-            />
         </div>
     </div>
 </template>
 
 <script>
 import CitationItem from './CitationItem';
-import docViewService from '~/api/DocViewService';
 
 export default {
     name: 'CitationList',
@@ -39,48 +29,12 @@ export default {
     },
     props: {
         docId: { type: String, default: '' },
+        cid: { type: String, default: '' },
         doi: { type: String, default: '' },
-        type: { type: String, default: '' }
+        title: { type: String, default: '' },
+        citations: {type:Array, default: null},
+        nCitations: { type: Number, default: 0}
     },
-    data() {
-        return {
-            perPage: 10,
-            currentPage: 1,
-            citations: [],
-            nCitations: 0,
-            loading: false
-        };
-    },
-    computed: {
-        totalNumRows() {
-            return this.nCitations / this.perPage;
-        }
-    },
-    created() {
-        this.getCitationEntities();
-    },
-    methods: {
-        getCitationEntities() {
-            this.loading = true;
-            docViewService
-                .getCitationsEntities(
-                    this.docId,
-                    this.currentPage,
-                    this.perPage
-                )
-                .then(response => {
-                    this.citations = response.data.citations;
-                    this.nCitations = response.data.total_results;
-                    this.loading = false;
-                })
-                .catch(error => {
-                    this.loading = false;
-
-                    // eslint-disable-next-line
-                    console.log(error);
-                });
-        }
-    }
 };
 </script>
 <style>
