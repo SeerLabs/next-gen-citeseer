@@ -69,12 +69,15 @@ export default {
                 .finally(() => (this.isLoading = false));
         },
         searchQuery() {
-            const idType = this.searchQuery.type === 'paper' ? 'pid' : 'cid';
+            if (this.searchQuery && this.searchQuery.type) {
+                const idType =
+                    this.searchQuery.type === 'paper' ? 'pid' : 'cid';
 
-            this.$router.push({
-                name: 'doc_view-idType-id',
-                params: { idType, id: this.searchQuery.id }
-            });
+                this.$router.push({
+                    name: 'doc_view-idType-id',
+                    params: { idType, id: this.searchQuery.id }
+                });
+            }
         }
     },
     created() {
@@ -88,7 +91,9 @@ export default {
 
                 this.$router.push({
                     name: 'search_result',
-                    query: { query: this.textInput }
+                    query: {
+                        query: this.textInput
+                    }
                 });
             }
         }
