@@ -1,0 +1,24 @@
+version: '3.8'
+
+services:
+    server:
+        # look for dockerfile and build the container
+        build: ./server
+        command: 'python app/main.py'
+        # mount the volumes so we can change the code and hot reload
+        volumes:
+            - './server:/server'
+        # expose port on the container, only to other ocntainers
+        expose:
+            - 8000
+    client:
+        build:
+            context: ./client
+        command: npm run client
+        volumes:
+            - './client:/client'
+            - node_modules:/bindmount/node_modules
+        ports:
+            - '3000:3000'
+volumes:
+    node_modules:
