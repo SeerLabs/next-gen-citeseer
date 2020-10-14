@@ -17,7 +17,7 @@ class Paper(BaseModel):
     publish_time: str = None
     source: str
     urls: List[str] = []
-    cluster_id: str
+    cluster_id: Optional[str]
 
 class Citation(BaseModel):
     id: str
