@@ -1,9 +1,10 @@
 version: '3.8'
 
 services:
-    server:
-        # look for dockerfile and build the container
+    server:        
+# look for dockerfile and build the container
         build: ./server
+        container_name: server
         command: 'python app/main.py'
         # mount the volumes so we can change the code and hot reload
         volumes:
@@ -19,12 +20,3 @@ services:
         ports:
             - '3000:3000'
         command: 'npm run start'
-    nginx:
-        image: nginx:1.13
-        container_name: nginx
-        ports:
-            - '80:80'
-        volumes:
-            - ./nginx:/etc/nginx/conf.d
-        depends_on:
-            - client
