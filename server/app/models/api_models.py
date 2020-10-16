@@ -2,6 +2,11 @@ from typing import Optional, List
 
 from pydantic import BaseModel, typing
 
+class Author(BaseModel):
+    name: str
+    affiliation: Optional[str]
+    address: Optional[str]
+    email: Optional[str]
 
 class Paper(BaseModel):
     id: Optional[str]
@@ -54,6 +59,20 @@ class Cluster(BaseModel):
     cpages: Optional[str]
     cventype: Optional[str]
 
+
+class PaperMetadataCorrection(BaseModel):
+    authors: List[Author]
+    abstract: str
+    venue: str
+    venue_type: str
+    year: str
+    volume:str
+    number:str
+    pages: str
+    publisher: str
+    pub_address: str
+    tech_report_num = str
+    
 class Suggestion(BaseModel):
     type: str
     text: str

@@ -101,6 +101,33 @@ class Paper(Document):
         }
         return super().save(**kwargs)
 
+class CorrectPaperMetadataES(Document):
+    paper_id = Keyword()
+    username = Keyword()
+    title = Text()
+    authors = Nested(Author)
+    abstract = Text()
+    pub_info = Nested(PubInfo)
+    
+    class Index:
+        name = 'paper_metadata_correction'
+
+class PaperMetadataCorrectionES(Document):
+    #authors: Nested(Author)
+    username: Keyword()
+    abstract: Text()
+    venue: Text()
+    venue_type: Text()
+    year: Integer()
+    volume: Text()
+    number: Text()
+    pages: Text()
+    publisher: Text()
+    pub_address: Text()
+    #tech_report_num = Text()
+
+    class Index:
+        name = 'paper_metadata_correction'
 
 class Cluster(Document):
     in_collection: Boolean()
