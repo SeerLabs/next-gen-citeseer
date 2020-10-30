@@ -1,4 +1,4 @@
-node 
+node {
   stage 'deploy'
   sh './deploy.sh'
 }
