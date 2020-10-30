@@ -1,8 +1,4 @@
-node {
-  stage 'build'
-  docker.build('server')
-  docker.build('client')
-
+node 
   stage 'deploy'
   sh './deploy.sh'
 }
