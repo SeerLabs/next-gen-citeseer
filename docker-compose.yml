@@ -5,14 +5,16 @@ services:
 # look for dockerfile and build the container
         build: ./server
         container_name: server
-        command: 'python app/main.py'
+        # command: 'python app/main.py'
         # mount the volumes so we can change the code and hot reload
-        volumes:
-            - './server:/usr/src/app'
+        # volumes:
+        #    - './server:/usr/src/app'
         # expose port on the container, only to other ocntainers
-        working_dir: /usr/src/app
+        # working_dir: /usr/src/app
         ports:
             - '8000:8000'
+        networks:
+            - internal
     client:
         build: ./client/
         container_name: client
@@ -20,3 +22,8 @@ services:
         ports:
             - '3000:3000'
         command: 'npm run start'
+        networks:
+            - internal
+networks:
+        internal:
+

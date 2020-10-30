@@ -1,15 +1,13 @@
-FROM python:3.8
+FROM python:3.8.1
+
 ENV PYTHONUNBUFFERED 1
-RUN mkdir /next-gen-seer
-WORKDIR /next-gen-seer
-ADD . /next-gen-seer/
-RUN apt-get update && apt-get install -y \
-  libsasl2-dev \
-  python3-dev \
-  libldap2-dev \
-  libssl-dev \
-  libcairo2-dev pango1.0-tests \
-  libxml2-dev \
-  libxmlsec1-dev \
-  libxmlsec1-openssl \
-  && pip install -r requirements.txt
+
+EXPOSE 8000
+
+COPY requirements.txt ./
+RUN pip install -r requirements.txt
+
+COPY . ./
+WORKDIR /app
+
+CMD python main.py
