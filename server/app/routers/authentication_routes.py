@@ -69,13 +69,19 @@ async def get_current_user_in_db(token: str = Depends(oauth2_scheme)) -> UserInD
 async def register(userData: UserRegistrationForm):
     is_user_created = authService.create_user(userData)
     if is_user_created:
+        
         return "success"
     else:
         return "failed"
 
+@router.get("/recaptcha")
+async def recaptcha(token: str):
+    res = authService.recaptcha(token)
+    return res
 
 @router.post("/login")
 async def login(form_data: OAuth2PasswordRequestForm = Depends()):
+    print(form_data.username )
     user_in_db = authService.authenticate_user(form_data.username, form_data.password)
     if not user_in_db:
         raise HTTPException(

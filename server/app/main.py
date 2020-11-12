@@ -3,7 +3,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
 from models.elastic_models import Paper
-from routers import document_routes, elastic_routes
+from routers import document_routes, elastic_routes, authentication_routes
 from services.elastic_service import ElasticService
 
 app = FastAPI()
@@ -21,7 +21,7 @@ app.add_middleware(
 
 app.include_router(document_routes.router, tags=['document_routes'], prefix="/api")
 app.include_router(elastic_routes.router, tags=['elastic_routes'], prefix="/api")
-
+app.include_router(authentication_routes.router, tags=['authentication_routes'], prefix="/api")
 @app.get("/")
 def pong():
     return {"ping": "pong!"}

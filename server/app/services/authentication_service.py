@@ -9,10 +9,14 @@ from datetime import datetime, timedelta
 import jwt
 import bcrypt
 from services.elastic_service import ElasticService
+import requests
+import os
 JWT_SUBJECT = "access"
 ALGORITHM = "HS256"
 ACCESS_TOKEN_EXPIRE_MINUTES = 60 * 3
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated = "auto")
+RECAPTCHA_SECRET_KEY = os.environ['RECAPTCHA_SECRET_KEY']
+RECAPTCHA_API_ENDPOINT = "https://www.google.com/recaptcha/api/siteverify"
 elastic_service = ElasticService()
 class AuthenticationService:        
     # JWT
@@ -28,7 +32,7 @@ class AuthenticationService:
             secret_key=secret_key,
             expires_delta=timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES),
         )
-
+ 
     def get_username_from_token(self, token: str, secret_key: str) -> str:
         try:
             return JWTUser(**jwt.decode(token, secret_key, algorithms=[ALGORITHM])).username
@@ -52,7 +56,10 @@ class AuthenticationService:
 
     def is_email_taken(self, email: str) -> bool:
         return False
-
+    def recaptcha(self, token):
+        body = { "secret": RECAPTCHA_SECRET_KEY, "response": token}
+        res = requests.post(url = RECAPTCHA_API_ENDPOINT, data = body)
+        return res.json()
     # Authentication
     def create_user(self, user_data: UserRegistrationForm):
         salt = self.generate_salt()
