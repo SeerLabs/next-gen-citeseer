@@ -66,13 +66,19 @@ async def get_current_user_in_db(token: str = Depends(oauth2_scheme)) -> UserInD
 
 
 @router.post("/register")
-async def register(userData: UserRegistrationForm):
+def register(userData: UserRegistrationForm):
     is_user_created = authService.create_user(userData)
-    if is_user_created:
-        
+    token = authService.create_user_access_token(userData.username, SECRET_KEY)
+    status = authService.send_verification_email(userData.full_name, userData.email, token) 
+    if is_user_created: 
         return "success"
     else:
         return "failed"
+
+@router.post("/verify_account")
+def verify_account(token: str):
+    status = authService.verify_account(token, SECRET_KEY)
+    return { "success": status }
 
 @router.get("/recaptcha")
 async def recaptcha(token: str):
@@ -89,7 +95,7 @@ async def login(form_data: OAuth2PasswordRequestForm = Depends()):
             detail="Incorrect username or password",
             headers={"WWW-Authenticate": "Bearer"},
         ) 
-    token = authService.create_user_access_token(user_in_db, SECRET_KEY)
+    token = authService.create_user_access_token(user_in_db.username, SECRET_KEY)
     user_in_db = user_in_db.to_dict()
     
     return UserWithToken(

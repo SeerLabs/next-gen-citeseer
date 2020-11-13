@@ -11,6 +11,8 @@ import bcrypt
 from services.elastic_service import ElasticService
 import requests
 import os
+import smtplib, ssl
+from email.message import EmailMessage
 JWT_SUBJECT = "access"
 ALGORITHM = "HS256"
 ACCESS_TOKEN_EXPIRE_MINUTES = 60 * 3
@@ -18,6 +20,17 @@ pwd_context = CryptContext(schemes=["bcrypt"], deprecated = "auto")
 RECAPTCHA_SECRET_KEY = os.environ['RECAPTCHA_SECRET_KEY']
 RECAPTCHA_API_ENDPOINT = "https://www.google.com/recaptcha/api/siteverify"
 elastic_service = ElasticService()
+SENDER_EMAIL = os.environ['SENDER_EMAIL']
+SENDER_PASSWORD = os.environ['SENDER_PASSWORD']
+verification_email_message ="""
+Hi %s,
+A CiteSeerX account has been automatically generated for you.  To activate this account please visit the following URL:
+
+http:localhost:3000/verify_account/%s
+
+Best,
+CiteSeerX
+"""
 class AuthenticationService:        
     # JWT
     def create_jwt_token(self, jwt_content: Dict[str, str], secret_key: str, expires_delta: timedelta) ->str:
@@ -26,9 +39,9 @@ class AuthenticationService:
         to_encode.update(JWTMeta(exp=expire, sub=JWT_SUBJECT).dict())
         return jwt.encode(to_encode, secret_key, algorithm=ALGORITHM).decode()
 
-    def create_user_access_token(self, user: User, secret_key: str) -> str:
+    def create_user_access_token(self, username: str, secret_key: str) -> str:
         return self.create_jwt_token(
-            jwt_content=JWTUser(username=user.username).dict(),
+            jwt_content=JWTUser(username=username).dict(),
             secret_key=secret_key,
             expires_delta=timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES),
         )
@@ -60,6 +73,28 @@ class AuthenticationService:
         body = { "secret": RECAPTCHA_SECRET_KEY, "response": token}
         res = requests.post(url = RECAPTCHA_API_ENDPOINT, data = body)
         return res.json()
+
+    def send_verification_email(self, full_name: str, email: str, token: str):
+        msg = EmailMessage()
+        email_body = verification_email_message % (full_name, token)
+        msg.set_content(email_body)
+        msg['Subject'] = f'Please verify your CiteSeerX Account'
+        msg['From'] = SENDER_EMAIL
+        msg['To'] = email
+        context = ssl.create_default_context()
+        # Send the message via our own SMTP server.
+        s = smtplib.SMTP_SSL('smtp.gmail.com',465, context=context)
+        
+        s.login(SENDER_EMAIL, SENDER_PASSWORD)
+        s.send_message(msg)
+        s.quit()
+        return True
+    def verify_account(self, token: str, secret_key: str):
+        try:
+            user_name = self.get_username_from_token(token, secret_key)
+            return True
+        except:
+            return False
     # Authentication
     def create_user(self, user_data: UserRegistrationForm):
         salt = self.generate_salt()
