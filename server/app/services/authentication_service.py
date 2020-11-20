@@ -20,13 +20,13 @@ pwd_context = CryptContext(schemes=["bcrypt"], deprecated = "auto")
 RECAPTCHA_SECRET_KEY = os.environ['RECAPTCHA_SECRET_KEY']
 RECAPTCHA_API_ENDPOINT = "https://www.google.com/recaptcha/api/siteverify"
 elastic_service = ElasticService()
-SENDER_EMAIL = os.environ['SENDER_EMAIL']
-SENDER_PASSWORD = os.environ['SENDER_PASSWORD']
+#SENDER_EMAIL = os.environ['SENDER_EMAIL']
+#SENDER_PASSWORD = os.environ['SENDER_PASSWORD']
 verification_email_message ="""
 Hi %s,
 A CiteSeerX account has been automatically generated for you.  To activate this account please visit the following URL:
 
-http:localhost:3000/verify_account/%s
+http://localhost:3000/verify_account/%s
 
 Best,
 CiteSeerX
@@ -79,14 +79,14 @@ class AuthenticationService:
         email_body = verification_email_message % (full_name, token)
         msg.set_content(email_body)
         msg['Subject'] = f'Please verify your CiteSeerX Account'
-        msg['From'] = SENDER_EMAIL
+        msg['From'] = 'test-csx@ist.psu.edu'
         msg['To'] = email
         context = ssl.create_default_context()
         # Send the message via our own SMTP server.
-        s = smtplib.SMTP_SSL('smtp.gmail.com',465, context=context)
-        
-        s.login(SENDER_EMAIL, SENDER_PASSWORD)
+        s = smtplib.SMTP('smtp.psu.edu', 25) 
+        #s.login(SENDER_EMAIL, SENDER_PASSWORD)
         s.send_message(msg)
+        #s.sendmail('test-csx@ist.psu.edu', '', 'test msg')
         s.quit()
         return True
     def verify_account(self, token: str, secret_key: str):
