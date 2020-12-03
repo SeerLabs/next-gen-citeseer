@@ -116,3 +116,6 @@ class SearchQuery(BaseModel):
     queryString: str
     page: int
     pageSize: int
+
+class MGetRequest(BaseModel):
+    paper_id_list: List[str]

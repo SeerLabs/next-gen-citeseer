@@ -4,7 +4,7 @@ from uuid import uuid4
 from fastapi import APIRouter
 
 from models.api_models import SearchQueryResponse, PaperDetailResponse, CitationsResponse, ClusterDetailResponse, \
-    showCitingClustersResponse, SimilarPapersResponse, SearchQuery, Paper, Citation, Cluster, Suggestion, AutoCompleteResponse
+    showCitingClustersResponse, SimilarPapersResponse, SearchQuery, Paper, Citation, Cluster, Suggestion, AutoCompleteResponse, MGetRequest
 
 from models import elastic_models
 
@@ -41,6 +41,17 @@ def paper_info(paper_id: Optional[str] = None, cluster_id: Optional[str] = None)
     response = s.execute()
     paper_entity_response = build_paper_entity(response['hits']['hits'][0]['_source'])
     return PaperDetailResponse(query_id=str(uuid4()), paper=paper_entity_response)
+@router.post('/mget_paper/')
+def paper_list(mget_request: MGetRequest):
+    s = elastic_models.Cluster.search(using=elastic_service.get_connection())
+    s = s.filter("terms", paper_id=mget_request.paper_id_list)
+    response = s.execute()
+    result_list = []
+    for doc_hit in response['hits']['hits']:
+        result_list.append(build_paper_entity(doc=doc_hit['_source']))
+    total_results = response['hits']['total']['value']
+    return SearchQueryResponse(query_id=str(uuid4()), total_results=total_results, response=result_list)
+
 
 @router.get('/citations/{id}')
 def citations(id: str, page: int = 1, pageSize: int = 10):
