@@ -2,8 +2,9 @@ import uvicorn as uvicorn
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
-from models.elastic_models import Paper
+from models.elastic_models import Cluster
 from routers import document_routes, elastic_routes, authentication_routes
+
 from services.elastic_service import ElasticService
 
 app = FastAPI()
@@ -28,4 +29,4 @@ def pong():
 
 
 if __name__ == "__main__":
-    uvicorn.run(app, host="localhost", port=8000)
+    uvicorn.run(app, host="localhost", port=8001)

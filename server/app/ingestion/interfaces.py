@@ -6,7 +6,7 @@ __maintainer__ = "Sai Raghav Keesara"
 __email__ = "sai@psu.edu"
 __status__ = "Development"
 
-from models.elastic_models import Paper
+from models.elastic_models import Cluster
 
 
 class CSXExtractor:
@@ -28,10 +28,13 @@ class CSXExtractor:
 
 class CSXClusterer:
 
-    def cluster_paper(self, paper: Paper):
+    def cluster_paper(self, paper: Cluster):
         raise NotImplementedError('Extend me!')
 
-    def recluster_paper(self, paper: Paper):
+    def cluster_papers(self, paper: Cluster):
+        raise NotImplementedError('Extend me!')
+
+    def recluster_paper(self, paper: Cluster):
         raise NotImplementedError('Extend me!')
 
 class CSXIngester:
