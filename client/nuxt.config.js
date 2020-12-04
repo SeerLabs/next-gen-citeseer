@@ -47,9 +47,14 @@ export default {
         '@nuxtjs/vuetify',
         // Doc: https://axios.nuxtjs.org/usage
         '@nuxtjs/axios',
-        '@nuxtjs/auth',
         '@nuxtjs/pwa',
-        '@nuxtjs/style-resources'
+        '@nuxtjs/style-resources',
+        ['@nuxtjs/recaptcha', {
+            hideBadge: true,
+            siteKey: '6LdjreIZAAAAACuiEgvWpl8EFFeI-EaO5x_Fozst',
+            version: 3,
+        }],
+        'nuxt-vuex-localstorage'
     ],
 
     /*
@@ -57,19 +62,6 @@ export default {
      ** See https://axios.nuxtjs.org/options
      */
     axios: {},
-
-    auth: {
-        strategies: {
-            local: {
-                endpoints: {
-                    register: { url: '/api/auth/register', method: 'post', propertyName: false },
-                    login: { url: '/api/auth/login', method: 'post', propertyName: stubFalse },
-                    usr: { url: 'profile', method: 'get', propertyName: 'data'},
-                    logout: false
-                }
-            }
-        }
-    },
 
     vuetify: {
         defaultAssets: {

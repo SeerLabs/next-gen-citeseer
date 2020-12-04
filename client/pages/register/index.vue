@@ -57,7 +57,7 @@
               </div>
             </div>
             <div class="control">
-              <v-btn>Register</v-btn>
+              <v-btn type="submit">Register</v-btn>
             </div>
           </form>
 
@@ -71,13 +71,14 @@
 </template>
 
 <script>
+import { mapGetters } from 'vuex'
 import Notification from '~/components/Notification'
+import authService from '~/api/AuthService'
 
 export default {
   components: {
     Notification,
   },
-
   data() {
     return {
       username: '',
@@ -87,26 +88,33 @@ export default {
       error: null
     }
   },
+  computed: {
+    ...mapGetters({
+        loggedIn: 'auth/loggedIn',
+  })},
+  created() {
+      if (this.loggedIn) {
+        this.$router.push("/myciteseer/profile")
+      }
+  },
 
   methods: {
     async register() {
       try {
-        await this.$axios.post('register', {
-          username: this.username,
-          email: this.email,
-          password: this.password
-        })
+        const token = await this.$recaptcha.execute('login');
+        const recaptchaStatus = (await authService.checkRecaptcha(token)).data.success;
 
-        await this.$auth.loginWith('local', {
-          data: {
-          email: this.email,
-          password: this.password
-          },
-        })
-
-        this.$router.push('/')
-      } catch (e) {
-        this.error = e.response.data.message
+        if (recaptchaStatus) {
+          await authService.registerUser(this.username, this.password, this.email, this.full_name)
+          .then((response) => {
+            if(response.status === 200) {
+              this.$router.push('/login');
+            }
+          });
+        }
+      } catch(error) {
+        // eslint-disable-next-line
+        console.log(error);
       }
     }
   },

@@ -7,13 +7,13 @@
 
           <Notification v-if="error" :message="error"/>
 
-          <form method="post" @submit.prevent="login">
+          <form method="post" @submit.prevent="submitLogin">
             <div class="field">
               <label class="label">Email</label>
               <div class="control">
                 <v-text-field
                   v-model="email"
-                  type="email"
+                  type="text"
                   class="input"
                   name="email"
                 />
@@ -46,13 +46,14 @@
 </template>
 
 <script>
+import { mapMutations } from 'vuex'
 import Notification from '~/components/Notification'
+import authService from '~/api/AuthService'
 
 export default {
   components: {
     Notification,
   },
-
   data() {
     return {
       email: '',
@@ -60,22 +61,42 @@ export default {
       error: null
     }
   },
+  async mounted() {
+    try {
+      await this.$recaptcha.init()
+    } catch(e) {
+      // eslint-disable-next-line
+      console.log(e);
+    }
+  },
+  created() {
+      if (this.$store.state.auth.loggedIn) {
+        this.$router.push("/myciteseer/profile")
+      }
+  },
 
   methods: {
-    async login() {
+    ...mapMutations('auth', ['login']),
+    async submitLogin() {
       try {
-        await this.$auth.loginWith('local', {
-          data: {
-          email: this.email,
-          password: this.password
-          }
-        })
+        const recaptchaToken = await this.$recaptcha.execute('login');
+        const recaptchaStatus = (await authService.checkRecaptcha(recaptchaToken)).data.success;
 
-        this.$router.push('/')
-      } catch (e) {
-        this.error = e.response.data.message
+        if (recaptchaStatus) {
+          await authService.loginUser(this.email, this.password)
+          .then((response) => {
+            if (response.status === 200) {
+              const user = response.data;
+              this.login(user);
+              this.$router.push('/')
+            }
+          });
+        }
+      } catch(error) {
+          // eslint-disable-next-line
+          console.log(error);
       }
-    }
+    },
   },
   layout: 'layout_default'
 }

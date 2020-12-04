@@ -7,7 +7,10 @@
 
 <script>
 import SearchBox from '~/components/SearchBox.vue';
+import store from '~/store'
+
 export default {
+    store,
     components: {
         SearchBox
     },

@@ -1,13 +1,9 @@
-export const state = () => ({
+export default {
+    state : () => ({
+        reCaptchaSiteKey: "6LdjreIZAAAAACuiEgvWpl8EFFeI-EaO5x_Fozst"
+    }),
 
-})
+    getters : {
 
-export const getters = {
-    isAuthenticated(state) {
-        return state.auth.loggedIn
-    },
-
-    loggedInUser(state) {
-        return state.auth.user
     }
 }

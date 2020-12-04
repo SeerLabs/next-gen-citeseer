@@ -9,8 +9,9 @@
 
             <v-spacer></v-spacer>
 
-            <div v-if="isAuthenticated">
-              {{ loggedInUser.username }}
+            <div v-if="loggedIn">
+              <nuxt-link class="navbar-home-link" to="/myciteseer/profile">{{ user.username }}</nuxt-link>
+              <v-btn class="navbar-home-link" @click="logout">Logout</v-btn>
             </div>
             <div v-else>
               <nuxt-link class="navbar-home-link" to="/register">Register</nuxt-link>
@@ -22,13 +23,24 @@
 
 
 <script>
-import { mapGetters } from 'vuex'
+import { mapMutations } from 'vuex'
 
 export default {
-  computed: {
-    ...mapGetters(['isAuthenticated', 'loggedInUser'])
-  }
-}
+    computed: {
+      loggedIn() {
+        return this.$store.state.auth.loggedIn
+      },
+      user() {
+        return this.$store.state.auth.user
+      }
+    },
+    methods: {
+      ...mapMutations({
+        logout: 'auth/logout'
+      })
+    }
+};
+
 </script>
 
 <style scoped>
