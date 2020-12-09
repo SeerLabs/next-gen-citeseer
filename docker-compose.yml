@@ -14,10 +14,11 @@ services:
         networks:
             - internal
     nginx:
+      container_name: nginx
       restart: always
       image: nginx:latest
       ports:
-        - 8080:8080
+        - 8000:80
       volumes:
         - .:/next-gen-seer
         - ./nginx.conf:/etc/nginx/conf.d/nginx.conf
