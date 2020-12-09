@@ -11,20 +11,31 @@ services:
         #    - './server:/usr/src/app'
         # expose port on the container, only to other ocntainers
         # working_dir: /usr/src/app
-        ports:
-            - '8000:8000'
         networks:
-            - proxy-net
+            - internal
+    nginx:
+        restart: always
+        build:
+            dockerfile: Dockerfile
+            context: ./controller
+        container_name: nginx
+        ports:
+            - '8080:80'
+        networks:
+            - internal
     client:
         build: ./client
         container_name: client
         restart: always
         ports:
-            - '3000:3000'
+           - '3000:3000'
         command: 'npm run start'
+        volumes:
+            - /app/node_modules
+            - ./client:/app
+        depends_on:
+            - server
         networks:
-            - proxy-net
+            - internal
 networks:
-    proxy-net:
-        external: true
-        driver: bridge
+    internal:
