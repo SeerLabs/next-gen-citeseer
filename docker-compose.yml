@@ -17,7 +17,7 @@ services:
       restart: always
       image: nginx:latest
       ports:
-        - 8080:8000
+        - 8080:8080
       volumes:
         - .:/next-gen-seer
         - ./nginx.conf:/etc/nginx/conf.d/nginx.conf
