@@ -1,8 +1,8 @@
 version: '2.3'
 
 services:
-    server:
-        # look for dockerfile and build the container
+    server:        
+# look for dockerfile and build the container
         build: ./server
         container_name: server
         # command: 'python app/main.py'
@@ -14,7 +14,7 @@ services:
         ports:
             - '8000:8000'
         networks:
-            - proxy-net
+            - internal
     client:
         build: ./client/
         container_name: client
@@ -23,8 +23,7 @@ services:
             - '3000:3000'
         command: 'npm run start'
         networks:
-            - proxy-net
+            - internal
 networks:
-    proxy-net:
-        external: true
-        driver: bridge
+        internal:
+
