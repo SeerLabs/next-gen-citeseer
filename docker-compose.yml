@@ -16,7 +16,7 @@ services:
         networks:
             - internal
     client:
-        build: ./client/
+        build: ./client
         container_name: client
         restart: always
         ports:
