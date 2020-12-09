@@ -14,7 +14,7 @@ services:
         ports:
             - '8000:8000'
         networks:
-            - internal
+            - proxy-net
     client:
         build: ./client
         container_name: client
@@ -23,7 +23,8 @@ services:
             - '3000:3000'
         command: 'npm run start'
         networks:
-            - internal
+            - proxy-net
 networks:
-        internal:
-
+    proxy-net:
+        external: true
+        driver: bridge
