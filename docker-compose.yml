@@ -14,15 +14,17 @@ services:
         networks:
             - internal
     nginx:
-        restart: always
-        build:
-            dockerfile: Dockerfile
-            context: ./controller
-        container_name: nginx
-        ports:
-            - '8080:80'
-        networks:
-            - internal
+      restart: always
+      image: nginx:latest
+      ports:
+        - 8080:8000
+      volumes:
+        - .:/next-gen-seer
+        - ./nginx.conf:/etc/nginx/conf.d/nginx.conf
+      depends_on:
+        - server
+      networks:
+        - internal
     client:
         build: ./client
         container_name: client
