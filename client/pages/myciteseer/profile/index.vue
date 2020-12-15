@@ -1,21 +1,29 @@
 <template>
     <div>
-    <h2>Token {{ auth.token }}</h2>
     <div v-if="profile" id="homepage">
         <h1>MyCiteSeer</h1>
-        <v-tab href="#profile">
-          Profile
-        </v-tab>
-        <v-tab-item key="profile">
-          Profile
-        </v-tab-item>
 
-        <v-tab href="#settings">
-          Settings
-        </v-tab>
-        <v-tab-item key="settings">
-          Settings
-        </v-tab-item>
+        <v-tabs v-model="tab" vertical>
+          <v-tab>
+            Profile
+          </v-tab>
+          <v-tab>
+            Settings
+          </v-tab>
+        
+        <v-tabs-items v-model="tab">
+          <v-tab-item>
+            <v-card flat>
+              Profile
+            </v-card>
+          </v-tab-item>
+          <v-tab-item>
+            <v-card flat>
+              Settings
+            </v-card>
+          </v-tab-item>
+        </v-tabs-items>
+        </v-tabs>
     </div>
     </div>
 </template>

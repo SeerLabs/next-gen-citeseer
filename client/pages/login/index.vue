@@ -46,7 +46,7 @@
 </template>
 
 <script>
-import { mapMutations } from 'vuex'
+import { mapMutations, mapState } from 'vuex'
 import Notification from '~/components/Notification'
 import authService from '~/api/AuthService'
 
@@ -61,20 +61,22 @@ export default {
       error: null
     }
   },
-  async mounted() {
-    try {
-      await this.$recaptcha.init()
-    } catch(e) {
-      // eslint-disable-next-line
-      console.log(e);
+  computed: {
+    ...mapState(['auth'])
+  },
+  async beforeCreate() {
+    if (this.auth && this.auth.token) {
+        this.$router.push("/myciteseer/profile")
+    }
+    else {
+      try {
+        await this.$recaptcha.init()
+      } catch(e) {
+        // eslint-disable-next-line
+        console.log(e);
+      }
     }
   },
-  created() {
-      if (this.$store.state.auth.loggedIn) {
-        this.$router.push("/myciteseer/profile")
-      }
-  },
-
   methods: {
     ...mapMutations('auth', ['login']),
     async submitLogin() {
@@ -99,5 +101,6 @@ export default {
     },
   },
   layout: 'layout_default'
+
 }
 </script>

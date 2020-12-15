@@ -25,7 +25,8 @@
         "nuxt": "^2.14.0",
         "nuxt-vuex-localstorage": "^1.2.7",
         "typescript": "^3.9.7",
-        "vue-material-design-icons": "^4.8.0"
+        "vue-material-design-icons": "^4.8.0",
+        "vuex-persistedstate": "^4.0.0-beta.1"
     },
     "devDependencies": {
         "@nuxtjs/eslint-config": "^2.0.0",
