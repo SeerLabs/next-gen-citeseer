@@ -15,5 +15,17 @@ export default {
                 // eslint-disable-next-line
                 console.log(error.response.data);
             });
+    },
+
+    getSuggestions(queryString) {
+        return CoreApi()
+            .get(`/suggest?query=${queryString}`)
+            .then(function(response) {
+                return response;
+            })
+            .catch(function(error) {
+                // eslint-disable-next-line
+                console.log(error);
+            });
     }
 };
