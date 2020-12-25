@@ -4,32 +4,30 @@ from uuid import uuid4
 from fastapi import APIRouter
 
 from models.api_models import SearchQueryResponse, PaperDetailResponse, CitationsResponse, ClusterDetailResponse, \
-    showCitingClustersResponse, SearchQuery, Paper, Citation, Cluster, Aggregation, AggregationsResponse, AggregationBucket, AggregationsQuery, \
-    Suggestion, AutoCompleteResponse
+    showCitingClustersResponse, SimilarPapersResponse, SearchQuery, Paper, Citation, Cluster, Suggestion, AutoCompleteResponse
 
 from models import elastic_models
 
 from services.elastic_service import ElasticService
-from services.elasticsearch_adapters import PaperAdapter, CitationAdapter, ClusterAdapter
 
 from utils.helpers import getKeyOrDefault
 
 router = APIRouter()
 elastic_service = ElasticService()
-paper_adapter = PaperAdapter(elastic_service)
-cluster_adapter = ClusterAdapter(elastic_service)
-citation_adapter = CitationAdapter(elastic_service)
 
 
 @router.post('/search/papers', response_model=SearchQueryResponse)
 def perform_search(searchQuery: SearchQuery):
-    docs_response = paper_adapter.search_papers(searchQuery)
-    
+    s = elastic_models.Cluster.search(using=elastic_service.get_connection())
+    start = (searchQuery.page - 1) * searchQuery.pageSize
+    s = s.filter('term', has_pdf=True)
+    s = s.query('multi_match', query=searchQuery.queryString, fields=['title', 'text'])
+    s = s[start:start + searchQuery.pageSize]
+    response = s.execute()
     result_list = []
-    for doc_hit in docs_response['hits']['hits']:
-        result_list.append(build_paper_entity(_id=doc_hit['_id'], doc=doc_hit['_source']))
-    total_results = docs_response['hits']['total']['value']
-
+    for doc_hit in response['hits']['hits']:
+        result_list.append(build_paper_entity(doc=doc_hit['_source']))
+    total_results = response['hits']['total']['value']
     return SearchQueryResponse(query_id=str(uuid4()), total_results=total_results, response=result_list)
 
 
@@ -51,60 +49,53 @@ def get_aggregations_from_query(aggsQuery: AggregationsQuery):
 
 @router.get('/paper')
 def paper_info(paper_id: Optional[str] = None, cluster_id: Optional[str] = None):
-    paper_id_final = ""
-    if paper_id is not None:
-        paper_id_final = paper_id
-    elif cluster_id is not None:
+    if cluster_id is not None:
         cluster = elastic_models.Cluster.get(id=cluster_id, using=elastic_service.get_connection())
-        included_papers = cluster.papers
-        if included_papers is not None and len(included_papers) > 0:
-            paper_id_final = included_papers[0]
-    docs_response = paper_adapter.get_paper_info(paper_id_final)
-    paper_entity_response = build_paper_entity(paper_id_final, docs_response['hits']['hits'][0]['_source'])
+        paper_id = cluster.paper_id[0]
+    s = elastic_models.Cluster.search(using=elastic_service.get_connection())
+    s = s.filter("term", paper_id=paper_id)
+    response = s.execute()
+    paper_entity_response = build_paper_entity(response['hits']['hits'][0]['_source'])
     return PaperDetailResponse(query_id=str(uuid4()), paper=paper_entity_response)
-
 
 @router.get('/citations/{id}')
 def citations(id: str, page: int = 1, pageSize: int = 10):
-    es_citations_response = citation_adapter.get_citations_for_paper(id, page, pageSize)
+    s = elastic_models.Cluster.search(using=elastic_service.get_connection())
+    start = (page - 1) * pageSize
+    s = s.filter('term', cites=id)
+    s = s[start:start + pageSize]
+    response = s.execute()
     result_list = []
-    for doc_hit in es_citations_response['hits']['hits']:
-        cluster = elastic_models.Cluster.get(doc_hit['_source']['cluster_id'], using=elastic_service.get_connection())
-        result_list.append(build_citation_entity(_id=doc_hit['_id'], in_collection=cluster.in_collection,
+    for doc_hit in response['hits']['hits']:
+        result_list.append(build_citation_entity(_id=doc_hit['_id'],
                                                  doc=doc_hit['_source']))
-    total_results = es_citations_response['hits']['total']['value']
+    total_results = response['hits']['total']['value']
     return CitationsResponse(query_id=str(uuid4()), total_results=total_results, citations=result_list)
-
-
-@router.get('/cluster/{cid}')
-def show_cluster_detail(cid: str):
-    cluster_detail_response = cluster_adapter.get_cluster_info(cid)
-    return ClusterDetailResponse(query_id=str(uuid4()),
-                                 cluster=build_cluster_entity(cluster_detail_response['_source']))
 
 
 @router.get('/showCiting/{cid}')
 def show_citing(cid: str, sort: str, page: int, pageSize: int):
     cluster = elastic_models.Cluster.get(id=cid, using=elastic_service.get_connection())
     primary_cluster_detail = build_cluster_entity(id=cid, doc=cluster.to_dict(skip_empty=False))
-    clusters = elastic_models.Cluster.mget(using=elastic_service.get_connection(), docs=cluster.cited_by)
-    papers_list = []
-    for each_cluster in clusters:
-        if each_cluster.papers is not None:
-            papers_list.extend(each_cluster.papers)
-    papers_response = paper_adapter.get_sorted_papers(papers_list=papers_list, page=page, pageSize=pageSize, sort=sort)
+    papers_that_cite = []
     result_list = []
-    for each_paper_hit in papers_response['hits']['hits']:
-        print(each_paper_hit['_source'].to_dict().keys())
-        result_list.append(build_paper_entity(_id=each_paper_hit['_id'], doc=each_paper_hit['_source']))
-    total_results = papers_response['hits']['total']['value']
-    return showCitingClustersResponse(query_id=str(uuid4()), total_results=total_results,
-                                      cluster=primary_cluster_detail, papers=result_list)
+    total_results = 0
+    for paper in cluster.cites:
+        papers_that_cite.append(paper)
+    if len(papers_that_cite)>0:
+        search = elastic_models.Cluster.search(using=elastic_service.connection).filter('terms', paper_id=papers_that_cite)
+        start = (page - 1) * pageSize
+        search = search[start:start + pageSize]
+        response = search.execute()
+        for doc_hit in response['hits']['hits']:
+            result_list.append(build_paper_entity(doc=doc_hit['_source']))
+        total_results = response['hits']['total']['value']
+    return showCitingClustersResponse(query_id=str(uuid4()), total_results=total_results, cluster=primary_cluster_detail, papers=result_list)
 
 
 @router.get('/suggest')
 def get_suggestions(query: str):
-    s = elastic_models.Paper.search(using=ElasticService().get_connection())
+    s = elastic_models.Cluster.search(using=ElasticService().get_connection())
     s = s.suggest('auto_complete', query, completion={'field': 'title_suggest'})
     response = s.execute()
     suggestions = []
@@ -113,14 +104,28 @@ def get_suggestions(query: str):
     return AutoCompleteResponse(query_id=str(uuid4()), query=query, suggestions=suggestions)
 
 
-@router.get('/similar')
-def similar_papers(paperID: str = ""):
-    result = cluster_adapter.get_clustered_papers(paperID)
-    return result
+@router.get('/similar/{id}')
+def similar_papers(id: str, algo: str):
+    res = None
+    if algo == 'Co-Citation':
+        s = elastic_models.Cluster.search(using=elastic_service.get_connection(), index='clusters_next').filter('match', cites=id)
+        res = s.execute()
+    elif algo == 'Active Bibliography':
+        s = elastic_models.Cluster.search(using=elastic_service.get_connection(), index='clusters_next').filter('match', cited_by=id)
+        res = s.execute()
+    else:
+        res = elastic_service.more_like_this_search("papers_next", id)
+
+    result_list = []
+    for doc in res['hits']['hits']:
+        result_list.append(build_similar_papers_entity(_id=doc['_id'], doc=doc['_source']))
+    total_results = res['hits']['total']['value']
+    return SimilarPapersResponse(query_id=str(uuid4()), total_results=total_results, similar_papers=result_list)
 
 
-def build_paper_entity(_id, doc):
-    return Paper(id=_id,
+def build_paper_entity(doc):
+    print(getKeyOrDefault(doc, 'paper_id'))
+    return Paper(id=getKeyOrDefault(doc, 'paper_id')[0],
                  title=getKeyOrDefault(doc, 'title'),
                  venue=getKeyOrDefault(getKeyOrDefault(doc, 'pub_info'), 'title'),
                  year=getKeyOrDefault(getKeyOrDefault(doc, 'pub_info'), 'year'),
@@ -131,21 +136,39 @@ def build_paper_entity(_id, doc):
                  authors=get_authors_in_list(doc, 'authors'),
                  journal=getKeyOrDefault(getKeyOrDefault(doc, 'pub_info'), 'publisher'),
                  publish_time=getKeyOrDefault(getKeyOrDefault(doc, 'pub_info'), 'date'),
-                 source="")
-
-def build_aggregations_entity(aggs):
-    return Aggregation(key=getKeyOrDefault(aggs, 'key'),
-                        doc_count=getKeyOrDefault(aggs, 'doc_count'))
+                 source="",
+                 cluster_id=getKeyOrDefault(doc, 'cluster'))
 
 def get_authors_in_list(doc, field) -> List[str]:
     return [getKeyOrDefault(field, 'forename', default="") + " " + getKeyOrDefault(field, 'surname', default="") for
             field in getKeyOrDefault(doc, field, default={})]
 
 
-def build_citation_entity(_id, in_collection, doc):
+def build_citation_entity(_id, doc):
     return Citation(id=_id,
-                    cluster=getKeyOrDefault(doc, 'cluster_id'),
-                    in_collection=in_collection,
+                    cluster=_id,
+                    in_collection=getKeyOrDefault(doc, 'has_pdf', default=False),
+                    authors=get_authors_in_list(doc, 'authors'),
+                    title=getKeyOrDefault(doc, 'title'),
+                    venue=getKeyOrDefault(getKeyOrDefault(doc, 'pub_info'), 'title'),
+                    venue_type=getKeyOrDefault(doc, 'venueType'),
+                    year=getKeyOrDefault(getKeyOrDefault(doc, 'pub_info'), 'year'),
+                    pages=getKeyOrDefault(doc, 'pages'),
+                    editors=getKeyOrDefault(doc, 'editors'),
+                    publisher=getKeyOrDefault(getKeyOrDefault(doc, 'pub_info'), 'publisher'),
+                    pub_address=getKeyOrDefault(getKeyOrDefault(doc, 'pub_info'), 'pub_address'),
+                    volume=getKeyOrDefault(doc, 'volume'),
+                    number=getKeyOrDefault(doc, 'number'),
+                    tech=getKeyOrDefault(doc, 'tech'),
+                    raw=getKeyOrDefault(doc, 'raw'),
+                    paper_id=getKeyOrDefault(doc, 'paper_id', default=[""])[0],
+                    self=getKeyOrDefault(doc, 'self'))
+
+
+def build_similar_papers_entity(_id, doc):
+    return Citation(id=_id,
+                    cluster=getKeyOrDefault(doc, 'cluster') or _id,
+                    in_collection=getKeyOrDefault(doc, 'in_collection'),
                     authors=get_authors_in_list(doc, 'authors'),
                     title=getKeyOrDefault(doc, 'title'),
                     venue=getKeyOrDefault(getKeyOrDefault(doc, 'pub_info'), 'title'),

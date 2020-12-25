@@ -21,16 +21,16 @@
                         id="citations"
                         class="citation-card"
                         :doc-id="docId"
+                        :cid="cid"
                         title="Citations"
-                        :n-citations="nCitations"
                     />
 
                     <citation-card
                         id="similar-articles"
                         class="citation-card"
                         :doc-id="docId"
+                        :cid="cid"
                         title="Similar Articles"
-                        :n-citations="nCitations"
                     />
                     <version-history-card
                         id="version-history"
@@ -90,6 +90,7 @@ export default {
                 this.loading = false;
                 return;
         }
+        this.cid = data.paper.cluster_id
         this.title = data.paper.title;
         this.year = data.paper.year;
         this.authors = data.paper.authors;
@@ -105,6 +106,7 @@ export default {
             showAbstract: false,
             docId: this.$route.params.id,
             idType: this.$route.params.idType,
+            cid: '',
             title: '',
             year: '',
             authors: [],

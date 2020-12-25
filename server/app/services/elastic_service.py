@@ -1,5 +1,6 @@
 from elasticsearch import Elasticsearch
 from elasticsearch_dsl import Search, MultiSearch, Q, A
+from elasticsearch_dsl.query import MoreLikeThis
 
 import requests
 import json
@@ -81,3 +82,10 @@ class ElasticService:
         s = s[start:start + pageSize]
 
         return s.execute()
+
+
+    def more_like_this_search(self, index, id):
+        s = Search(index=index, using=self.connection)
+        s = s.query(MoreLikeThis(like={'_id': id, '_index': index}, fields=["title", "abstract"], min_term_freq=3, min_word_length=6, max_query_terms=12))
+        response = s.execute()
+        return response

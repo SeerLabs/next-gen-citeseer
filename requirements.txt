@@ -9,3 +9,4 @@ elasticsearch-dsl==7.2.1
 attrdict~=2.0.1
 zeep~=3.4.0
 nltk~=3.5
+simhash~=1.11.0

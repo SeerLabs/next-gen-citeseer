@@ -93,11 +93,6 @@ export default {
             page: 1
         };
     },
-    watch: {
-        sortBy() {
-            this.getCiting();
-        }
-    },
     mounted() {
         this.getCiting();
     },

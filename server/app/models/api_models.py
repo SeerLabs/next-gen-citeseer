@@ -17,13 +17,14 @@ class Paper(BaseModel):
     publish_time: str = None
     source: str
     urls: List[str] = []
+    cluster_id: Optional[str]
 
 class Citation(BaseModel):
     id: str
     cluster: Optional[str]
     authors: List[str] = []
     title: Optional[str]
-    in_collection: bool
+    in_collection: Optional[bool]
     venue: Optional[str]
     venue_type: Optional[str]
     year: Optional[str]
@@ -87,6 +88,11 @@ class CitationsResponse(BaseModel):
     query_id: str
     total_results: int
     citations: List[Citation]
+
+class SimilarPapersResponse(BaseModel):
+    query_id: str
+    total_results: int
+    similar_papers: List[Citation]
 
 class ClusterDetailResponse(BaseModel):
     query_id: str

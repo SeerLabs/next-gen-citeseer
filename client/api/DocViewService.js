@@ -9,5 +9,8 @@ export default {
   },
   getCitationsEntities (id, page) {
     return CoreApi().get('/citations/' + id, { params: { page, pageSize: 10 } })
+  },
+  getSimilarPaper (id, algo) {
+    return CoreApi().get('/similar/' + id, { params: {algo}})
   }
 }
