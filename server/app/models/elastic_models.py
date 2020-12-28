@@ -1,6 +1,6 @@
 from typing import List
 
-from elasticsearch_dsl import Document, Text, Completion, Date, datetime, Keyword, Integer, Nested, Boolean, InnerDoc
+from elasticsearch_dsl import Document, Text, Completion, Date, Keyword, Integer, Nested, Boolean, InnerDoc
 
 class Author(InnerDoc):
     author_suggest: Completion()
@@ -18,7 +18,6 @@ class Author(InnerDoc):
         name = 'authors'
 
     def save(self, **kwargs):
-        self.created_at = datetime.now()
         self.author_suggest = {
             'input': [self.forename, self.surname],
         }
@@ -40,7 +39,7 @@ class PubInfo(InnerDoc):
 class KeyMap(Document):
     paper_id = Text()
     class Index:
-        name = 'key_map'
+        name = 'key_mapv8'
 
 class Cluster(Document):
     paper_id = Keyword(multi=True)
@@ -62,14 +61,13 @@ class Cluster(Document):
     pub_info = Nested(type='pub_info')
 
     class Index:
-        name = 'acl_papers'
+        name = 'acl_papersv8'
 
     def add_cites(self, paper_id: str):
         if not self.__contains__("cites"):
             self.__setitem__("cites", [paper_id])
             return
         self.cites.append(paper_id)
-        self.modified_at = datetime.now()
 
     def get_cites(self):
         if not self.__contains__("cites"):
@@ -88,21 +86,18 @@ class Cluster(Document):
             self.__setitem__("keys", [key])
             return
         self.keys.append(key)
-        self.modified_at = datetime.now()
 
     def add_paper_id(self, paper_id: str):
         if not self.__contains__("paper_id"):
             self.__setitem__("paper_id", [paper_id])
             return
         self.paper_id.append(paper_id)
-        self.modified_at = datetime.now()
 
     def extend_keys(self, keys: List[str]):
         if not self.__contains__("keys"):
             self.__setitem__("keys", keys)
             return
         self.keys.extend(keys)
-        self.modified_at = datetime.now()
 
     def save(self, **kwargs):
         self.created_at = datetime.now()
