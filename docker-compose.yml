@@ -2,43 +2,43 @@ version: '2.3'
 
 services:
     server:        
-# look for dockerfile and build the container
-        build: ./server
-        container_name: server
-        # command: 'python app/main.py'
-        # mount the volumes so we can change the code and hot reload
-        # volumes:
-        #    - './server:/usr/src/app'
-        # expose port on the container, only to other ocntainers
-        # working_dir: /usr/src/app
-        networks:
-            - internal
+      build: ./server
+      container_name: server
+      volumes:
+        - ./server:/api
+      networks:
+        - backend
+    client:
+      build: ./client
+      container_name: client
+      restart: always
+      command: 'npm run start'
+      ports:
+        - 3000:3000
+      volumes:
+          - /app/node_modules
+          - ./client:/app
+      depends_on:
+          - server
+      networks:
+        - backend
+        - frontend
     nginx:
-      container_name: nginx
+      container_name: web
       restart: always
       image: nginx:latest
       ports:
-        - 8000:8080
+        - 8081:8080
       volumes:
         - .:/next-gen-seer
         - ./nginx.conf:/etc/nginx/conf.d/nginx.conf
       depends_on:
         - server
+        - client
       networks:
-        - internal
-    client:
-        build: ./client
-        container_name: client
-        restart: always
-        ports:
-           - '3000:3000'
-        command: 'npm run start'
-        volumes:
-            - /app/node_modules
-            - ./client:/app
-        depends_on:
-            - server
-        networks:
-            - internal
+        - frontend
+
 networks:
-    internal:
+    frontend:
+    backend:
+      driver: bridge
