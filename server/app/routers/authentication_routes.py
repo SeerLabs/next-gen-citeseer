@@ -13,17 +13,16 @@ SECRET_KEY = ""
 
 async def get_current_user(token: str = Depends(oauth2_scheme)):
     try:
-        username = authService.get_username_from_token(token, SECRET_KEY)
+        email = authService.get_email_from_token(token, SECRET_KEY)
     except ValueError:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="Invalid authentication credentials or malformed jwt token",
             headers={"WWW-Authenticate": "Bearer"},
         )
-    user_in_db = authService.get_user(username).to_dict()
+    user_in_db = authService.get_user(email).to_dict()
     if user_in_db:
         return User(
-            username=getKeyOrDefault(user_in_db, 'username'),
             email=getKeyOrDefault(user_in_db, 'email'),
             full_name=getKeyOrDefault(user_in_db, 'full_name'),
             organization=getKeyOrDefault(user_in_db, 'organization'),
@@ -31,7 +30,7 @@ async def get_current_user(token: str = Depends(oauth2_scheme)):
             web_page=getKeyOrDefault(user_in_db, 'web_page'),
             country=getKeyOrDefault(user_in_db, 'country'),
             state=getKeyOrDefault(user_in_db, 'state'),
-            collections=getKeyOrDefault(user_in_db, 'collections', default={}),
+            collections=getKeyOrDefault(user_in_db, 'collections', default=[]),
             monitered_papers=getKeyOrDefault(user_in_db, 'monitered_papers', default=[]),
             liked_papers=getKeyOrDefault(user_in_db, 'liked_papers', default=[])
         ) 
@@ -46,14 +45,14 @@ async def get_current_user(token: str = Depends(oauth2_scheme)):
 # NOTE: UserInDB contain hashed password, don't ever return this to user!!
 async def get_current_user_in_db(token: str = Depends(oauth2_scheme)) -> UserInDB:
     try:
-        username = authService.get_username_from_token(token, SECRET_KEY)
+        email = authService.get_email_from_token(token, SECRET_KEY)
     except ValueError:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="Invalid authentication credentials or malformed jwt token",
             headers={"WWW-Authenticate": "Bearer"},
         )
-    user_in_db = authService.get_user(username)
+    user_in_db = authService.get_user(email)
     if user_in_db:
         return user_in_db 
     else:
@@ -68,16 +67,16 @@ async def get_current_user_in_db(token: str = Depends(oauth2_scheme)) -> UserInD
 @router.post("/register")
 def register(userData: UserRegistrationForm):
     is_user_created = authService.create_user(userData)
-    token = authService.create_user_access_token(userData.username, SECRET_KEY)
+    token = authService.create_user_access_token(userData.email, SECRET_KEY)
     status = authService.send_verification_email(userData.full_name, userData.email, token) 
     if is_user_created: 
         return "success"
     else:
         return "failed"
 
-@router.post("/verify_account")
+@router.post("/activate_account")
 def verify_account(token: str):
-    status = authService.verify_account(token, SECRET_KEY)
+    status = authService.activate_account(token, SECRET_KEY)
     return { "success": status }
 
 @router.get("/recaptcha")
@@ -87,19 +86,22 @@ async def recaptcha(token: str):
 
 @router.post("/login")
 async def login(form_data: OAuth2PasswordRequestForm = Depends()):
-    print(form_data.username )
-    user_in_db = authService.authenticate_user(form_data.username, form_data.password)
-    if not user_in_db:
+    auth_status, user_in_db = authService.authenticate_user(form_data.username, form_data.password)
+    error_msg = ""
+    if auth_status == -1:
+        error_msg = "Inccorect username or password"
+    elif auth_status == -2:
+        error_msg = "Account not activated"
+    if error_msg != "":
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="Incorrect username or password",
+            detail=error_msg,
             headers={"WWW-Authenticate": "Bearer"},
-        ) 
-    token = authService.create_user_access_token(user_in_db.username, SECRET_KEY)
+        )
+    token = authService.create_user_access_token(user_in_db.email, SECRET_KEY)
     user_in_db = user_in_db.to_dict()
     
     return UserWithToken(
-        username=getKeyOrDefault(user_in_db, 'username'),
         email=getKeyOrDefault(user_in_db, 'email'),
         full_name=getKeyOrDefault(user_in_db, 'full_name'),
         organization=getKeyOrDefault(user_in_db, 'organization'),
@@ -107,7 +109,7 @@ async def login(form_data: OAuth2PasswordRequestForm = Depends()):
         web_page=getKeyOrDefault(user_in_db, 'web_page'),
         country=getKeyOrDefault(user_in_db, 'country'),
         state=getKeyOrDefault(user_in_db, 'state'),
-        collections=getKeyOrDefault(user_in_db, 'collections', default={}),
+        collections=getKeyOrDefault(user_in_db, 'collections', default=[]),
         monitered_papers=getKeyOrDefault(user_in_db, 'monitered_papers', default=[]),
         liked_papers=getKeyOrDefault(user_in_db, 'liked_papers', default=[]),
         access_token=token
@@ -118,32 +120,49 @@ async def login(form_data: OAuth2PasswordRequestForm = Depends()):
 async def get_user_profile(current_user: User = Depends(get_current_user)):
     return current_user
 
+@router.get("/password_reset_email")
+async def password_reset_email(email: str):
+    token = authService.create_user_access_token(email, SECRET_KEY)
+    authService.send_password_reset_email(email, token)
+    return "success" 
 
-@router.put("/change_password")
-async def change_password(new_password, user: User = Depends(get_current_user)):
-    authService.change_password(user.username, new_password)
+@router.put("/reset_password")
+async def loged_in_reset_password(new_password, token: str):
+    email = authService.get_email_from_token(token, SECRET_KEY)
+    authService.reset_password(email, new_password)
     return "success"
 
-
-@router.post("/collection")
-async def collection_add_paper(pid: str, collection: str = None, user_in_db: UserInDB = Depends(get_current_user_in_db)):
-     authService.collection_add_paper(user_in_db, pid, collection)
+@router.put("/collection")
+async def add_collection_paper(pid: str, collection: str = None, user_in_db: UserInDB = Depends(get_current_user_in_db)):
+     authService.add_collection_paper(user_in_db, pid, collection)
      return "success"
+@router.delete("/collection")
+async def delete_collection_paper(pid: str, collection: str, user_in_db: UserInDB = Depends(get_current_user_in_db)):
+     authService.delete_collection_paper(user_in_db, pid, collection)
+     return "sucess"
 
-
-@router.post("/moniter_paper/{pid}")
+@router.put("/moniter_paper/{pid}")
 async def add_moniter_paper(pid: str, user_in_db: UserInDB = Depends(get_current_user_in_db)):
     authService.add_moniter_paper(user_in_db, pid)
     return "success"
 
+@router.delete("/moniter_paper/{pid}")
+async def delete_moniter_paper(pid: str, user_in_db: UserInDB = Depends(get_current_user_in_db)):
+    authService.delete_moniter_paper(user_in_db, pid)
+    return "success"
 
 @router.post("/liked_paper/{pid}")
 async def add_liked_paper(pid: str, user_in_db: UserInDB = Depends(get_current_user_in_db)):
     authService.add_liked_paper(user_in_db, pid)
     return "success"
 
+@router.delete("/liked_paper/{pid}")
+async def delete_liked_paper(pid: str, user_in_db: UserInDB = Depends(get_current_user_in_db)):
+    authService.delete_liked_paper(user_in_db, pid)
+    return "success"
 
 @router.post("/correct_metadata")
-async def correct_metadata_request(correct_meta: PaperMetadataCorrection, user_in_db: UserInDB = Depends(get_current_user_in_db)):
-    authService.correct_metadata_request(correct_meta, user_in_db)
+async def correct_metadata_request(correct_meta: PaperMetadataCorrection, token = Depends(oauth2_scheme)):
+    user_email = authService.get_email_from_token(token, SECRET_KEY)
+    authService.correct_metadata_request(correct_meta, user_email)
     return "success"

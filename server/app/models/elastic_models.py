@@ -63,28 +63,37 @@ class KeyMap(Document):
 
 class CorrectPaperMetadataES(Document):
     paper_id = Keyword()
-    username = Keyword()
+    user_email = Keyword()
     title = Text()
     authors = Nested(Author)
     abstract = Text()
-    pub_info = Nested(PubInfo)
-    
+    pub_venue = Text()
+    venue_type =Keyword()
+    pub_year = Keyword()
+    volume = Keyword()
+    number = Keyword()
+    pages = Keyword()
+    publisher = Text()
+    pub_address = Text()
+    tech_report_num = Keyword()
     class Index:
         name = 'paper_metadata_correction'
 
 class PaperMetadataCorrectionES(Document):
-    #authors: Nested(Author)
-    username: Keyword()
-    abstract: Text()
-    venue: Text()
-    venue_type: Text()
-    year: Integer()
-    volume: Text()
-    number: Text()
-    pages: Text()
-    publisher: Text()
-    pub_address: Text()
-    #tech_report_num = Text()
+    user_email = Keyword()
+    paper_id = Keyword()
+    title = Text()
+    authors = Nested(Author)
+    abstract = Text()
+    venue = Text()
+    venue_type = Text()
+    year = Integer()
+    volume = Text()
+    number = Text()
+    pages = Text()
+    publisher = Text()
+    pub_address = Text()
+    tech_report_num = Text()
 
     class Index:
         name = 'paper_metadata_correction'

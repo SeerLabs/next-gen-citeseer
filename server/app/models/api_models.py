@@ -61,6 +61,8 @@ class Cluster(BaseModel):
 
 
 class PaperMetadataCorrection(BaseModel):
+    id: str
+    title: str
     authors: List[Author]
     abstract: str
     venue: str
@@ -71,7 +73,7 @@ class PaperMetadataCorrection(BaseModel):
     pages: str
     publisher: str
     pub_address: str
-    tech_report_num = str
+    tech_report_num: str
     
 class Suggestion(BaseModel):
     type: str
