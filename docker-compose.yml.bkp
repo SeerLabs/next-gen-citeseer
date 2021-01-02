@@ -1,16 +1,16 @@
 version: '2.3'
 
 services:
-    server:
+    server:        
       build: ./server
       container_name: server
-      network_mode: "host"
       volumes:
         - ./server:/api
+      networks:
+        - backend
     client:
       build: ./client
       container_name: client
-      network_mode: "host"
       restart: always
       command: 'npm run start'
       ports:
@@ -20,9 +20,11 @@ services:
           - ./client:/app
       depends_on:
           - server
+      networks:
+        - backend
+        - frontend
     nginx:
       container_name: web
-      network_mode: "host"
       restart: always
       image: nginx:latest
       ports:
@@ -33,4 +35,10 @@ services:
       depends_on:
         - server
         - client
+      networks:
+        - frontend
 
+networks:
+    frontend:
+    backend:
+      driver: bridge
