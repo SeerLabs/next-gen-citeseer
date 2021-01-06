@@ -6,6 +6,8 @@ services:
       container_name: server
       volumes:
         - ./server:/api
+      networks:
+        - backend
     client:
       build: ./client
       container_name: client
@@ -14,13 +16,14 @@ services:
       ports:
         - 3000:3000
       volumes:
-          - /app/node_modules
-          - ./client:/app
+        - /app/node_modules
+        - ./client:/app
       depends_on:
-          - server
+        - server
+      networks:
+        - frontend
     nginx:
       container_name: web
-      network_mode: "host"
       restart: always
       image: nginx:latest
       ports:
@@ -31,4 +34,11 @@ services:
       depends_on:
         - server
         - client
+      networks:
+        - frontend
+        - backend
 
+networks:
+    frontend:
+    backend:
+      driver: bridge
