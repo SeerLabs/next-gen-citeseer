@@ -4,13 +4,11 @@ services:
     server:
       build: ./server
       container_name: server
-      network_mode: "host"
       volumes:
         - ./server:/api
     client:
       build: ./client
       container_name: client
-      network_mode: "host"
       restart: always
       command: 'npm run start'
       ports:
