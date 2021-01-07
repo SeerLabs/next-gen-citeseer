@@ -8,9 +8,10 @@ app = FastAPI()
 
 origins = [
     "http://localhost:3000",
-    "http://localhost:8081"
-    "http://localhost:8000",
-    "http://0.0.0.0:3000/"
+    "http://0.0.0.0:8080"
+    "http://0.0.0.0:8000",
+    "http://0.0.0.0:3000/",
+    "http://istcsxfe01.ist.psu.edu"
 ]
 app.add_middleware(
     CORSMiddleware,
