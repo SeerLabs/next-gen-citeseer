@@ -35,16 +35,8 @@ def perform_search(searchQuery: SearchQuery):
 
 @router.post('/search/aggregations', response_model=AggregationsResponse)
 def get_aggregations_from_query(aggsQuery: AggregationsQuery):
-    aggs_fields = [{'key': 'authors', 'field_name': 'authors.name.keyword'}]
-    s = elastic_models.Cluster.search(using=elastic_service.get_connection())
-    
-    s.query = Q('multi_match', query=aggsQuery.queryString, fields=['title', 'text'])
-    for item in aggs_fields:
-      a = A('terms', field=item['field_name'], size=10, order={'_count': 'desc'})
-      s.aggs.bucket(item['key'], a)
-    s = s[0:0]
-    response = s.execute()['aggregations']
-    
+    s = elastic_service.get_aggregations('citeseerx', aggsQuery.queryString, ['title', 'text'])
+
     aggregations = []
     for key in response:
       aggs_list = []
