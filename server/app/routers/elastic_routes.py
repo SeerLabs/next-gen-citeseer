@@ -10,6 +10,7 @@ from models.api_models import SearchQueryResponse, PaperDetailResponse, Citation
 from models import elastic_models
 
 from services.elastic_service import ElasticService
+from elasticsearch_dsl import Q, A
 
 from utils.helpers import getKeyOrDefault
 
