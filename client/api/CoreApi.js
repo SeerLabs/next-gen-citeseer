@@ -1,6 +1,6 @@
 import axios from 'axios'
 
-const API_URL
+var API_URL
 
 if (process.NODE_ENV === 'production') {
     // SWAP OUT WITH PUBLIC API
