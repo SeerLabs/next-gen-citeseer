@@ -13,5 +13,4 @@ RUN apt-get update && apt-get install -y nodejs
 RUN npm install
 RUN npm run build
 
-ENV NODE_ENV production
 ENV HOST 0.0.0.0

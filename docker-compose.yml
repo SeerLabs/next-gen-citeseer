@@ -4,10 +4,10 @@ services:
     server:        
       build: ./server
       container_name: server
+      ports:
+        - 8000:8000
       volumes:
         - ./server:/api
-      networks:
-        - frontend
     client:
       build: ./client
       container_name: client
@@ -20,25 +20,19 @@ services:
           - ./client:/app
       depends_on:
           - server
-      networks:
-        - backend
-        - frontend
+      environment:
+        - NODE_ENV
     nginx:
       container_name: web
       restart: always
       image: nginx:latest
       ports:
-        - 8000:8080
+        - 8080:8080
       volumes:
         - .:/next-gen-seer
         - ./nginx.conf:/etc/nginx/conf.d/nginx.conf
       depends_on:
         - server
         - client
-      networks:
-        - frontend
-        - backend
 
-networks:
-    frontend:
-    backend:
+
