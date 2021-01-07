@@ -35,7 +35,7 @@ def perform_search(searchQuery: SearchQuery):
 
 @router.post('/search/aggregations', response_model=AggregationsResponse)
 def get_aggregations_from_query(aggsQuery: AggregationsQuery):
-    s = elastic_service.get_aggregations('citeseerx', aggsQuery.queryString, ['title', 'text'])
+    response = elastic_service.get_aggregations('citeseerx', aggsQuery.queryString, ['title', 'text'])
 
     aggregations = []
     for key in response:
