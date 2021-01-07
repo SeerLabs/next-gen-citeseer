@@ -1,13 +1,13 @@
 version: '2.3'
 
 services:
-    server:
+    server:        
       build: ./server
       container_name: server
       volumes:
         - ./server:/api
       networks:
-        - backend
+        - frontend
     client:
       build: ./client
       container_name: client
@@ -16,18 +16,19 @@ services:
       ports:
         - 3000:3000
       volumes:
-        - /app/node_modules
-        - ./client:/app
+          - /app/node_modules
+          - ./client:/app
       depends_on:
-        - server
+          - server
       networks:
+        - backend
         - frontend
     nginx:
       container_name: web
       restart: always
       image: nginx:latest
       ports:
-        - 8081:8080
+        - 8000:8080
       volumes:
         - .:/next-gen-seer
         - ./nginx.conf:/etc/nginx/conf.d/nginx.conf
@@ -41,4 +42,3 @@ services:
 networks:
     frontend:
     backend:
-      driver: bridge
