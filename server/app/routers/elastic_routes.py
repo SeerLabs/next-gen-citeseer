@@ -4,8 +4,8 @@ from uuid import uuid4
 from fastapi import APIRouter
 
 from models.api_models import SearchQueryResponse, PaperDetailResponse, CitationsResponse, ClusterDetailResponse, \
-    showCitingClustersResponse, SimilarPapersResponse, SearchQuery, Paper, Citation, Cluster, Suggestion, AutoCompleteResponse, \ 
-    AggregationsResponse
+    showCitingClustersResponse, SimilarPapersResponse, SearchQuery, Paper, Citation, Cluster, Suggestion, AutoCompleteResponse, \
+    Aggregation, AggregationsResponse, AggregationBucket, AggregationsQuery
 
 from models import elastic_models
 
@@ -34,8 +34,8 @@ def perform_search(searchQuery: SearchQuery):
 
 @router.post('/search/aggregations', response_model=AggregationsResponse)
 def get_aggregations_from_query(aggsQuery: AggregationsQuery):
-
-    response = paper_adapter.search_papers_aggregations(aggsQuery)
+    s = elastic_models.Cluster.search(using=elastic_service.get_connection())
+    response = s.search_papers_aggregations(aggsQuery)
 
     aggregations = []
     for key in response:
@@ -144,6 +144,9 @@ def get_authors_in_list(doc, field) -> List[str]:
     return [getKeyOrDefault(field, 'forename', default="") + " " + getKeyOrDefault(field, 'surname', default="") for
             field in getKeyOrDefault(doc, field, default={})]
 
+def build_aggregations_entity(aggs):
+    return Aggregation(key=getKeyOrDefault(aggs, 'key'),
+                        doc_count=getKeyOrDefault(aggs, 'doc_count'))
 
 def build_citation_entity(_id, doc):
     return Citation(id=_id,
