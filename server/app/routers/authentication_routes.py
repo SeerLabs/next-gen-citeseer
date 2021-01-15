@@ -5,6 +5,8 @@ from models.schemas.user import User, UserWithToken, UserRegistrationForm
 from models.api_models import PaperMetadataCorrection
 from services.authentication_service import AuthenticationService
 from utils.helpers import getKeyOrDefault
+from services.elastic_service import ElasticService
+elastic_service = ElasticService()
 router = APIRouter()
 authService = AuthenticationService()
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl = "api/login")
@@ -131,15 +133,65 @@ async def loged_in_reset_password(new_password, token: str):
     email = authService.get_email_from_token(token, SECRET_KEY)
     authService.reset_password(email, new_password)
     return "success"
-
 @router.put("/collection")
-async def add_collection_paper(pid: str, collection: str = None, user_in_db: UserInDB = Depends(get_current_user_in_db)):
-     authService.add_collection_paper(user_in_db, pid, collection)
-     return "success"
+async def create_collection(collection_name: str = None, user_in_db: UserInDB = Depends(get_current_user_in_db)):
+    res_status = user_in_db.create_collection(collection_name)    
+    if res_status == -1:
+        raise HTTPException(
+            status_code=404,
+            detail="Collection already exist",
+        )
+
+    user_in_db.save(using=elastic_service.get_connection())
+    return {"success": True}
+
+@router.put("/collection_rename")
+async def rename_collection(collection_name, new_collection_name, user_in_db: UserInDB = Depends(get_current_user_in_db)):
+    res_status = user_in_db.rename_collection(collection_name, new_collection_name)    
+    if res_status == -1:
+        raise HTTPException(
+            status_code=404,
+            detail="collection_name not found",
+        )
+
+    user_in_db.save(using=elastic_service.get_connection())
+    return {"success": True}
+
 @router.delete("/collection")
-async def delete_collection_paper(pid: str, collection: str, user_in_db: UserInDB = Depends(get_current_user_in_db)):
-     authService.delete_collection_paper(user_in_db, pid, collection)
-     return "sucess"
+async def delete_collection(collection_name: str, user_in_db: UserInDB = Depends(get_current_user_in_db)):
+    res_status = user_in_db.delete_collection(collection_name)    
+    if res_status == -1:
+        raise HTTPException(
+            status_code=404,
+            detail="collection_name not found",
+        )
+
+    user_in_db.save(using=elastic_service.get_connection())
+    return {"success": True}
+
+
+@router.put("/collection_paper")
+async def add_collection_paper(pid: str, collection_name: str = None, user_in_db: UserInDB = Depends(get_current_user_in_db)):
+    res_status = user_in_db.add_collection_paper(collection_name, pid)    
+    if res_status == -1:
+        raise HTTPException(
+            status_code=404,
+            detail="collection_name not found or pid already in collection",
+        )
+
+    user_in_db.save(using=elastic_service.get_connection())
+    return {"success": True}
+@router.delete("/collection_paper")
+async def delete_collection_paper(pid: str, collection_name: str, user_in_db: UserInDB = Depends(get_current_user_in_db)):
+    res_status = user_in_db.delete_collection_paper(collection_name, pid)    
+    if res_status == -1:
+        raise HTTPException(
+            status_code=404,
+            detail="collection_name not found or pid not found",
+        )
+
+    user_in_db.save(using=elastic_service.get_connection())
+    return {"success": True}
 
 @router.put("/moniter_paper/{pid}")
 async def add_moniter_paper(pid: str, user_in_db: UserInDB = Depends(get_current_user_in_db)):
