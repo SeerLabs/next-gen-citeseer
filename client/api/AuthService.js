@@ -34,8 +34,7 @@ export default {
             return response;
         })
         .catch(function(error) {
-            // eslint-disable-next-line
-            console.error(error);
+            return error;
         });
     },
 
@@ -44,9 +43,14 @@ export default {
             'content-type': 'application/x-www-form-urlencoded;charset=utf-8'
         }}
         
-        console.log("Logging in user");
-        console.log(username, password);
         return CoreApi().post('/login', qs.stringify({username, password, grant_type, scope, client_id, client_secret}), config)
+            .then(function(response) {
+                return response
+            })
+    },
+
+    activateUser(token) {
+        return CoreApi().post(`/activate_account?token=${token}`)
             .then(function(response) {
                 return response
             })
@@ -54,6 +58,20 @@ export default {
                 // eslint-disable-next-line
                 console.error(error);
             })
+    },
+
+    sendPasswordResetEmail(email) {
+        return CoreApi().get(`/password_reset_email?email=${email}`)
+        .then(function(response) {
+            return response
+        })
+    },
+
+    resetPassword(newPassword, token) {
+        return CoreApi().put(`/reset_password?new_password=${newPassword}&token=${token}`)
+        .then(function(response) {
+            return response
+        })
     },
 
     getUserProfile(token) {
@@ -74,7 +92,26 @@ export default {
     },
 
     addToCollection(token, pid, collection="") {
-        return CoreApi().post('/collection', pid, collection)
+        const options = {
+            headers: {
+                "Authorization": `Bearer ${token}`
+            }
+        }
+
+        return CoreApi().put(`/collection?pid=${pid}&collection=${collection}`, options)
+        .then(function(response) {
+            return response
+        })
+    },
+
+    deleteFromCollection(token, pid, collection="") {
+        const options = {
+            headers: {
+                "Authorization": `Bearer ${token}`
+            }
+        }
+
+        return CoreApi().delete(`/collection?pid=${pid}&collection=${collection}`, options)
         .then(function(response) {
             return response
         })
@@ -84,26 +121,56 @@ export default {
         })
     },
 
-    addMoniterPaper(token, pid) {
-        return CoreApi().post(`/user_profile/${pid}`)
+    addMoniteredPaper(token, pid) {
+        const options = {
+            headers: {
+                "Authorization": `Bearer ${token}`
+            }
+        }
+
+        return CoreApi().put(`/moniter_paper/${pid}`, {}, options)
         .then(function(response) {
             return response
         })
-        .catch(function(error) {
-            // eslint-disable-next-line
-            console.error(error);
+    },
+
+    deleteMoniteredPaper(token, pid) {
+        const options = {
+            headers: {
+                "Authorization": `Bearer ${token}`
+            }
+        }
+        
+        return CoreApi().delete(`/moniter_paper/${pid}`, options)
+        .then(function(response) {
+            return response
         })
     },
 
     addLikedPaper(token, pid) {
-        return CoreApi().post(`/user_profile/${pid}`)
+        const options = {
+            headers: {
+                "Authorization": `Bearer ${token}`
+            }
+        }
+
+        return CoreApi().post(`/liked_paper/${pid}`, {}, options)
         .then(function(response) {
             return response
         })
-        .catch(function(error) {
-            // eslint-disable-next-line
-            console.error(error);
-        })
     },
+
+    deleteLikedPaper(token, pid) {
+        const options = {
+            headers: {
+                "Authorization": `Bearer ${token}`
+            }
+        }
+        
+        return CoreApi().delete(`/liked_paper/${pid}`, options)
+        .then(function(response) {
+            return response
+        })
+    }
 }
 

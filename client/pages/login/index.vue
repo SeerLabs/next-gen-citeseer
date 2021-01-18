@@ -38,6 +38,9 @@
             <p>
               Don't have an account? <nuxt-link to="/register">Register</nuxt-link>
             </p>
+            <p>
+              Forgot password? <nuxt-link to="/forgot_password">Click here</nuxt-link>
+            </p>
           </div>
         </div>
       </div>
@@ -79,6 +82,7 @@ export default {
   },
   methods: {
     ...mapMutations('auth', ['login']),
+    ...mapMutations(['showNotification']),
     async submitLogin() {
       try {
         const recaptchaToken = await this.$recaptcha.execute('login');
@@ -92,6 +96,22 @@ export default {
               this.login(user);
               this.$router.push('/')
             }
+            else if (response.status === 401) {
+              this.showNotification({
+                text: "Login unsuccessful, invalid email address or password.",
+                type: "error"
+              })
+            }
+          })
+          .catch((error) => {
+              this.showNotification({
+                text: `Error: ${error.message}`, 
+                type: "error"
+              })
+
+              // eslint-disable-next-line
+              console.log(error);
+
           });
         }
       } catch(error) {
@@ -100,7 +120,5 @@ export default {
       }
     },
   },
-  layout: 'layout_default'
-
 }
 </script>

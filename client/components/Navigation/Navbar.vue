@@ -10,12 +10,12 @@
             <v-spacer></v-spacer>
 
             <div v-if="loggedIn">
-              <nuxt-link class="navbar-home-link" to="/myciteseer/profile">{{ user.username }}</nuxt-link>
-              <v-btn class="navbar-home-link" @click="logout">Logout</v-btn>
+              <nuxt-link class="navbar-home-link" to="/myciteseer/profile"><v-btn>Profile</v-btn></nuxt-link>
+              <v-btn class="navbar-home-link" @click="logoutUser">Logout</v-btn>
             </div>
             <div v-else>
-              <nuxt-link class="navbar-home-link" to="/register">Register</nuxt-link>
-              <nuxt-link class="navbar-home-link" to="/login">Login</nuxt-link>
+              <nuxt-link class="navbar-home-link" to="/register"><v-btn>Register</v-btn></nuxt-link>
+              <nuxt-link class="navbar-home-link" to="/login"><v-btn>Login</v-btn></nuxt-link>
             </div>
         </v-app-bar>
     </header>
@@ -36,8 +36,18 @@ export default {
     },
     methods: {
       ...mapMutations({
-        logout: 'auth/logout'
-      })
+        logout: 'auth/logout',
+        showNotification: 'showNotification'
+      }),
+
+      logoutUser() {
+          this.logout();
+          this.$router.push("/login");
+          this.showNotification({
+            text: "Logged out successfully",
+            type: "success"
+        });
+      }
     }
 };
 

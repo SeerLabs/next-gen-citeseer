@@ -174,7 +174,7 @@ export default {
             // document.getElementById(id).scrollIntoView();
         }
     },
-    layout: 'layout_search'
+    layout: 'search'
 };
 </script>
 

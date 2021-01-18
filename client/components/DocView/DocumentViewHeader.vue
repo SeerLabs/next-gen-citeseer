@@ -21,8 +21,8 @@
             </v-btn>
         </v-col>
         <v-col cols="3">
-            <v-card id="document-options">
-                <v-card-text>
+            <v-card v-if="!loading" id="document-options">
+                <v-card-text class="d-flex flex-column mb-6">
                     <!-- PDF Button -->
                     <v-btn
                         id="pdf-btn"
@@ -34,25 +34,14 @@
                         View PDF
                     </v-btn>
 
-                    <!-- Download Links Drop Down -->
-                    <!--
-                    <v-dropdown
-                        id="download-links-dropdown"
-                        text="Download Links"
-                        variant="outline-secondary"
-                        class="mv-md-4"
-                        size="sm"
-                    >
-                        <v-dropdown-item>Link 1</v-dropdown-item>
-                        <v-dropdown-item>Link 2</v-dropdown-item>
-                        <v-dropdown-item>Link 3</v-dropdown-item>
-                    </v-dropdown>
-                    -->
-                    <h6>Cite This</h6>
-                    <h6>Save</h6>
-                    <h6>Add to Collection</h6>
-                    <h6>Add to MetaCart</h6>
-                    <h6>Correct Errors</h6>
+                    <v-btn @click="toggleMoniterPaper">
+                      {{ monitered ? "Unmoniter Paper" : "Moniter Paper" }}
+                    </v-btn>
+
+                    <v-btn @click="toggleLikePaper">
+                      {{ liked ? "Unlike Paper" : "Like Paper" }}
+                    </v-btn>
+
                 </v-card-text>
             </v-card>
         </v-col>
@@ -60,6 +49,9 @@
 </template>
 
 <script>
+import { mapState } from 'vuex'
+import authService from '~/api/AuthService'
+
 export default {
     props: {
         docId: { type: String, default: '' },
@@ -72,17 +64,59 @@ export default {
     },
     data() {
         return {
-            showAbstract: false
+            showAbstract: false,
+            liked: false,
+            monitered: false,
+            loading: true
         };
     },
     computed: {
+        ...mapState(['auth']),
+
         getPDFUrl() {
             return '/pdf/' + this.$route.params.id;
         }
     },
+    beforeMount() {
+      if (this.auth.loggedIn) {
+        authService.getUserProfile(this.auth.token)
+        .then((response) => {
+          const profile = response.data;
+          this.liked = profile.liked_papers.includes(this.$route.params.id)
+          this.monitered = profile.monitered_papers.includes(this.$route.params.id)
+          this.loading = false;
+        })
+      }
+      else {
+        this.liked = false;
+        this.monitered = false;
+
+        this.loading = false;
+      }
+    },
     methods: {
         toggleReadMore() {
             this.showAbstract = !this.showAbstract;
+        },
+
+        toggleLikePaper() {
+          if (!this.liked) {
+            authService.addLikedPaper(this.auth.token, this.$route.params.id)
+          }
+          else {
+            authService.deleteLikedPaper(this.auth.token, this.$route.params.id)
+          }
+          this.liked = !this.liked
+        },
+
+        toggleMoniterPaper() {
+          if (!this.monitered) {
+            authService.addMoniteredPaper(this.auth.token, this.$route.params.id)
+          }
+          else {
+            authService.deleteMoniteredPaper(this.auth.token, this.$route.params.id)
+          }
+          this.monitered = !this.monitered
         }
     }
 };

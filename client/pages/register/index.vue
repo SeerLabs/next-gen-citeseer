@@ -71,7 +71,7 @@
 </template>
 
 <script>
-import { mapGetters } from 'vuex'
+import { mapGetters, mapMutations } from 'vuex'
 import Notification from '~/components/Notification'
 import authService from '~/api/AuthService'
 
@@ -99,6 +99,7 @@ export default {
   },
 
   methods: {
+    ...mapMutations(['showNotification']),
     async register() {
       try {
         const token = await this.$recaptcha.execute('login');
@@ -109,6 +110,16 @@ export default {
           .then((response) => {
             if(response.status === 200) {
               this.$router.push('/login');
+              this.showNotification({ 
+                  text: "Account successfully created. Please check your inbox for a confirmation email to login.", 
+                  type: "success"
+                })
+            }
+            else {
+              this.showNotification({
+                  text: "Error creating account. Please try again.",
+                  type: "error"
+                })
             }
           });
         }
@@ -117,7 +128,6 @@ export default {
         console.log(error);
       }
     }
-  },
-  layout: 'layout_default'
+  }
 }
 </script>

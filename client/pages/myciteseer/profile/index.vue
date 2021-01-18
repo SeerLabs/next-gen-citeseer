@@ -1,7 +1,7 @@
 <template>
     <div>
-    <div v-if="profile" id="homepage">
-        <h1>MyCiteSeer</h1>
+    <div v-if="profile" id="profile">
+        <div class="text-h2 mb-10 text-center">MyCiteSeer</div>
 
         <v-tabs v-model="tab" vertical>
           <v-tab>
@@ -11,11 +11,43 @@
             Settings
           </v-tab>
         
-        <v-tabs-items v-model="tab">
+        <v-tabs-items v-model="tab" class="ml-10">
           <v-tab-item>
+
             <v-card flat>
-              Profile
+              <v-card-title>
+                Liked Papers 
+              </v-card-title>
+
+              <v-card-text>
+                <doc-results-list
+                  v-if="likedPapers.length"
+                  class="profile-documents-list"
+                  :documents="likedPapers" 
+                />
+                <div v-else class="text-body1 filler-text">
+                  No liked papers added
+                </div>
+              </v-card-text>
             </v-card>
+
+            <v-card flat>
+              <v-card-title>
+                Monitered Papers 
+              </v-card-title>
+
+              <v-card-text>
+                <doc-results-list 
+                  v-if="moniteredPapers.length" 
+                  class="profile-documents-list"
+                  :documents="moniteredPapers" 
+                />
+                <div v-else class="text-body1 filler-text">
+                  No monitered papers added
+                </div>
+              </v-card-text>
+            </v-card>
+            
           </v-tab-item>
           <v-tab-item>
             <v-card flat>
@@ -32,53 +64,69 @@
 /* eslint-disable */
 import { mapState } from 'vuex'
 import authService from '~/api/AuthService'
+import docViewService from '~/api/DocViewService'
+
+import DocResultsList from '~/components/DocResults/DocResultsList'
 
 export default {
+    components: { DocResultsList },
     data() {
       return {
         tab: null,
         items: ['Profile', 'Settings'],
-        profile: null
+        profile: null,
+        likedPapers: [],
+        moniteredPapers: [],
       }
     },
     computed: {
       ...mapState(['auth'])
     },
-    created() {
-      console.log(this.auth);
-      console.log(this.auth.loggedIn)
+    methods: {
+      
+    },
+    mounted() {
 
       if (!this.auth.loggedIn) {
-        console.log("Not logged in");
         this.$router.push("/login");
       }
       else {
-        console.log("Logged in");
         authService.getUserProfile(this.auth.token)
-        .then((response) => {
-          console.log(response)
+        .then(async (response) => {
           this.profile = response.data;
+
+          this.likedPapers = await docViewService.getPaperswithPaperIds(this.profile.liked_papers)
+          this.moniteredPapers = await docViewService.getPaperswithPaperIds(this.profile.monitered_papers)
+
+          console.log(this.likedPapers);
+          console.log(this.moniteredPapers);
         });
         console.log(this.profile)
       }
     },
-    layout: 'layout_default'
 };
 </script>
 
-<style>
-#homepage {
+<style scoped>
+#profile {
     font-family: Avenir, Helvetica, Arial, sans-serif;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
-    text-align: center;
     color: #2c3e50;
-    margin: 10% auto;
     width: 75vw;
+    margin: auto;
 }
 
-#logo {
-    width: 20em;
-    margin-bottom: 1em;
+.profile-documents-list {
+  background: lightgray;
+  padding: 1rem;
+}
+
+
+.filler-text {
+  font-size: 1.25rem;
+  font-weight: 500;
+  text-align: center;
+  padding: 2rem;
 }
 </style>

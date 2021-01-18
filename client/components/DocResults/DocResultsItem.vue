@@ -14,7 +14,7 @@
         <v-row no-gutters>
             <v-col class="result-info">
                 <h6>{{ authors.join(', ') }} - {{ year }}</h6>
-                <p>{{ abstract.slice(0, 200) }}...</p>
+                <p v-if="abstract">{{ abstract.slice(0, 200) }}...</p>
             </v-col>
         </v-row>
 

@@ -131,7 +131,7 @@ export default {
             );
         }
     },
-    layout: 'layout_search'
+    layout: 'search'
 };
 </script>
 

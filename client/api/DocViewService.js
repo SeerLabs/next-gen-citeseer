@@ -4,6 +4,18 @@ export default {
   getPaperWithPaperId (pid) {
     return CoreApi().get('/paper/', { params: {paper_id: pid}})
   },
+
+  async getPaperswithPaperIds (pids) {
+    const papers = [];
+
+    for (const pid of pids) {
+        const paper = (await this.getPaperWithPaperId(pid)).data.paper;
+        papers.push(paper);
+    }
+    
+    return papers;
+  },
+
   getPaperWithClusterId (cid){
     return CoreApi().get('/paper/', {params: {cluster_id: cid}})
   },

@@ -10,6 +10,7 @@
             </v-col>
             <v-col sm="3">
                 <v-select
+                    v-if="sortDropdown"
                     class="my-2 results-dropdown"
                     :items="sortDropdown"
                     :value="sortDropdown[0]"
@@ -37,7 +38,7 @@ export default {
         documents: { type: Array, default: null },
         totalPageResults: { type: Number, default: 0 },
         page: { type: Number, default: 0 },
-        sortDropdown: { type: Array, required: true }
+        sortDropdown: { type: Array, required: false }
     },
     data() {
         return {
