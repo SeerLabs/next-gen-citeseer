@@ -1,7 +1,10 @@
 import requests
 from pathlib import Path
 
-
+"""
+This Service is to interact with old Repo Server for Legacy CiteSeerX
+and won't be used for next gen seer
+"""
 class RepositoryService:
     def __init__(self):
         # TODO: create a service endpoint that can be configured.

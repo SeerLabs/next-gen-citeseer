@@ -2,20 +2,20 @@ from typing import List
 
 from elasticsearch_dsl import Document, Text, Completion, Date, Keyword, Integer, Nested, Boolean, InnerDoc
 
-class Author(InnerDoc):
-    author_suggest: Completion()
-    cluster_id: Keyword()
-    forename: Text()
-    surname: Text()
-    fullname: Text()
-    affiliation: Text()
-    address: Text()
-    email: Keyword()
-    ord: Integer()
-    created_at = Date(default_timezone='UTC')
+import settings
 
-    class Index:
-        name = 'authors'
+
+class Author(InnerDoc):
+    author_suggest = Completion()
+    cluster_id = Keyword()
+    forename = Text()
+    surname = Text()
+    fullname = Text()
+    affiliation = Text()
+    address = Text()
+    email = Keyword()
+    ord = Integer()
+    created_at = Date(default_timezone='UTC')
 
     def save(self, **kwargs):
         self.author_suggest = {
@@ -25,21 +25,21 @@ class Author(InnerDoc):
 
 
 class PubInfo(InnerDoc):
-    title: Text()
-    date: Text()
-    year: Integer()
-    publisher: Text()
-    meeting: Text()
-    pub_place: Text()
-    pub_address: Text()
+    title = Text()
+    date = Text()
+    year = Integer()
+    publisher = Text()
+    meeting = Text()
+    pub_place = Text()
+    pub_address = Text()
 
-    class Index:
-        name = 'pub_info'
 
 class KeyMap(Document):
     paper_id = Text()
+
     class Index:
-        name = 'key_mapv8'
+        name = settings.KEYMAP_INDEX
+
 
 class Cluster(Document):
     paper_id = Keyword(multi=True)
@@ -52,16 +52,16 @@ class Cluster(Document):
     abstract = Text()
     is_citation = Boolean()
     created_at = Date(default_timezone='UTC')
-    authors = Nested(type='authors')
+    authors = Nested(Author)
     self_cites = Integer()
     num_cites = Integer()
     cites = Keyword(multi=True)
-    keys: Keyword(multi=True)
+    keys = Keyword(multi=True)
     keywords = Keyword(multi=True)
-    pub_info = Nested(type='pub_info')
+    pub_info = Nested(PubInfo)
 
     class Index:
-        name = 'acl_papersv8'
+        name = settings.CLUSTERS_INDEX
 
     def add_cites(self, paper_id: str):
         if not self.__contains__("cites"):
@@ -100,7 +100,6 @@ class Cluster(Document):
         self.keys.extend(keys)
 
     def save(self, **kwargs):
-        self.created_at = datetime.now()
         if self.title is not None:
             self.title_suggest = {
                 'input': [self.title],
