@@ -1,12 +1,13 @@
-fastapi==0.54.2
+fastapi==0.62.0
 uvicorn==0.11.5
 pathlib==1.0.1
 requests==2.23.0
 elasticsearch==7.7.0
 pydantic~=1.5.1
 starlette~=0.13.2
-elasticsearch-dsl==7.2.1
+elasticsearch-dsl==7.3.0
 attrdict~=2.0.1
 zeep~=3.4.0
 nltk~=3.5
-simhash~=1.11.0
+web.py==0.62
+aiofiles==0.6.0

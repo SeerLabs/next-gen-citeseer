@@ -1,0 +1,19 @@
+FROM python:3.8
+ENV PYTHONUNBUFFERED 1
+
+WORKDIR /usr/src/app
+
+ADD . /usr/src/app
+
+RUN apt-get update && apt-get install -y \
+  libsasl2-dev \
+  python3-dev \
+  libldap2-dev \
+  libssl-dev \
+  libcairo2-dev pango1.0-tests \
+  libxml2-dev \
+  libxmlsec1-dev \
+  libxmlsec1-openssl \
+  && pip install -r requirements.txt
+
+EXPOSE 8000:8000
