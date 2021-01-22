@@ -10,8 +10,7 @@ else {
     API_URL = 'http://localhost:8000/api'
 }
 
-export default () => {
-  return axios.create({
+const instance = axios.create({
     baseURL: API_URL,
     withCredentials: false,
     headers: {
@@ -19,4 +18,11 @@ export default () => {
       'Content-Type': 'application/json'
     }
   })
-}
+
+instance.interceptors.request.use((config) => {
+    console.log(config.headers);
+    }, (error) => {
+    return Promise.reject(error);
+});
+
+export default instance
