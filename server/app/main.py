@@ -27,6 +27,8 @@ app.include_router(elastic_routes.router, tags=['elastic_routes'], prefix="/api"
 
 @app.middleware("http")
 async def recaptcha_check(request: Request, call_next):
+    if request.method == "OPTIONS":
+        return
     token = request.headers['token']
     body = { "secret": RECAPTCHA_SECRET_KEY, "response": token}
     res = requests.post(url = RECAPTCHA_API_ENDPOINT, data = body).json()
