@@ -52,6 +52,11 @@ port: "3000"
         // Doc: https://axios.nuxtjs.org/usage
         '@nuxtjs/axios',
         '@nuxtjs/pwa',
+        ['@nuxtjs/recaptcha', {
+            hideBadge: true,
+            siteKey: '6LdjreIZAAAAACuiEgvWpl8EFFeI-EaO5x_Fozst',
+            version: 3,
+        }],
         '@nuxtjs/style-resources'
     ],
 
