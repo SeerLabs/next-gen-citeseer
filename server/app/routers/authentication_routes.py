@@ -128,12 +128,13 @@ async def password_reset_email(email: str):
     authService.send_password_reset_email(email, token)
     return "success" 
 
-@router.put("/reset_password")
+@router.post("/reset_password")
 async def loged_in_reset_password(new_password, token: str):
     email = authService.get_email_from_token(token, SECRET_KEY)
     authService.reset_password(email, new_password)
     return "success"
-@router.put("/collection")
+
+@router.put("/collection/name")
 async def create_collection(collection_name: str = None, user_in_db: UserInDB = Depends(get_current_user_in_db)):
     res_status = user_in_db.create_collection(collection_name)    
     if res_status == -1:
@@ -145,7 +146,7 @@ async def create_collection(collection_name: str = None, user_in_db: UserInDB = 
     user_in_db.save(using=elastic_service.get_connection())
     return {"success": True}
 
-@router.put("/collection_rename")
+@router.put("/collection/rename")
 async def rename_collection(collection_name, new_collection_name, user_in_db: UserInDB = Depends(get_current_user_in_db)):
     res_status = user_in_db.rename_collection(collection_name, new_collection_name)    
     if res_status == -1:
@@ -157,7 +158,7 @@ async def rename_collection(collection_name, new_collection_name, user_in_db: Us
     user_in_db.save(using=elastic_service.get_connection())
     return {"success": True}
 
-@router.delete("/collection")
+@router.delete("/collection/name")
 async def delete_collection(collection_name: str, user_in_db: UserInDB = Depends(get_current_user_in_db)):
     res_status = user_in_db.delete_collection(collection_name)    
     if res_status == -1:
@@ -170,7 +171,7 @@ async def delete_collection(collection_name: str, user_in_db: UserInDB = Depends
     return {"success": True}
 
 
-@router.put("/collection_paper")
+@router.put("/collection/paper")
 async def add_collection_paper(pid: str, collection_name: str = None, user_in_db: UserInDB = Depends(get_current_user_in_db)):
     res_status = user_in_db.add_collection_paper(collection_name, pid)    
     if res_status == -1:
@@ -181,7 +182,7 @@ async def add_collection_paper(pid: str, collection_name: str = None, user_in_db
 
     user_in_db.save(using=elastic_service.get_connection())
     return {"success": True}
-@router.delete("/collection_paper")
+@router.delete("/collection/paper")
 async def delete_collection_paper(pid: str, collection_name: str, user_in_db: UserInDB = Depends(get_current_user_in_db)):
     res_status = user_in_db.delete_collection_paper(collection_name, pid)    
     if res_status == -1:
@@ -203,7 +204,7 @@ async def delete_moniter_paper(pid: str, user_in_db: UserInDB = Depends(get_curr
     authService.delete_moniter_paper(user_in_db, pid)
     return "success"
 
-@router.post("/liked_paper/{pid}")
+@router.put("/liked_paper/{pid}")
 async def add_liked_paper(pid: str, user_in_db: UserInDB = Depends(get_current_user_in_db)):
     authService.add_liked_paper(user_in_db, pid)
     return "success"
@@ -213,7 +214,7 @@ async def delete_liked_paper(pid: str, user_in_db: UserInDB = Depends(get_curren
     authService.delete_liked_paper(user_in_db, pid)
     return "success"
 
-@router.post("/correct_metadata")
+@router.put("/correct_metadata")
 async def correct_metadata_request(correct_meta: PaperMetadataCorrection, token = Depends(oauth2_scheme)):
     user_email = authService.get_email_from_token(token, SECRET_KEY)
     authService.correct_metadata_request(correct_meta, user_email)
