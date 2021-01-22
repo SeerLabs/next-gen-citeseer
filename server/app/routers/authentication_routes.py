@@ -214,7 +214,7 @@ async def delete_liked_paper(pid: str, user_in_db: UserInDB = Depends(get_curren
     authService.delete_liked_paper(user_in_db, pid)
     return "success"
 
-@router.put("/correct_metadata")
+@router.post("/correct_metadata")
 async def correct_metadata_request(correct_meta: PaperMetadataCorrection, token = Depends(oauth2_scheme)):
     user_email = authService.get_email_from_token(token, SECRET_KEY)
     authService.correct_metadata_request(correct_meta, user_email)
