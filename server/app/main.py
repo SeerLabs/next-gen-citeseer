@@ -26,22 +26,19 @@ app.add_middleware(
 app.include_router(document_routes.router, tags=['document_routes'], prefix="/api")
 app.include_router(elastic_routes.router, tags=['elastic_routes'], prefix="/api")
 
-
 @app.middleware("http")
 async def recaptcha_check(request: Request, call_next):
-    if request.method == "OPTIONS":
-        return
-    token = request.headers['token']
-    body = { "secret": RECAPTCHA_SECRET_KEY, "response": token}
-    res = requests.post(url = RECAPTCHA_API_ENDPOINT, data = body).json()
-    if res["success"] != True:
-        raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="recaptcha failed"
-        )
-    res = await call_next(request)
-    return res
-    
+    if request.method != "OPTIONS":
+        token = request.headers['token']
+        body = { "secret": RECAPTCHA_SECRET_KEY, "response": token}
+        res = requests.post(url = RECAPTCHA_API_ENDPOINT, data = body).json()
+        if res["success"] != False:
+            raise HTTPException(
+                status_code=status.HTTP_401_UNAUTHORIZED,
+                detail="recaptcha failed"
+            )
+    response = await call_next(request)
+    return response
 @app.get("/")
 def pong():
     return {"ping": "pong!"}
