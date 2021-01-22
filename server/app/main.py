@@ -1,9 +1,10 @@
 import uvicorn as uvicorn
-from fastapi import FastAPI
+from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
-
+import os
 from routers import document_routes, elastic_routes
-
+RECAPTCHA_SECRET_KEY = os.environ['RECAPTCHA_SECRET_KEY']
+RECAPTCHA_API_ENDPOINT = "https://www.google.com/recaptcha/api/siteverify"
 app = FastAPI()
 
 origins = [
@@ -24,6 +25,17 @@ app.add_middleware(
 app.include_router(document_routes.router, tags=['document_routes'], prefix="/api")
 app.include_router(elastic_routes.router, tags=['elastic_routes'], prefix="/api")
 
+@app.middleware("http")
+async def recaptcha_check(request: Request, call_next):
+    token = request.headers['token']
+    body = { "secret": RECAPTCHA_SECRET_KEY, "response": token}
+    res = requests.post(url = RECAPTCHA_API_ENDPOINT, data = body).json()
+    if res["success"] != True:
+        raise HTTPException(
+            status_code=404,
+            detail="recaptcha failed",
+        )
+    return
 @app.get("/")
 def pong():
     return {"ping": "pong!"}
