@@ -1,5 +1,5 @@
 import uvicorn as uvicorn
-from fastapi import FastAPI, Request
+from fastapi import FastAPI, Request, HTTPException, status
 from fastapi.middleware.cors import CORSMiddleware
 import os
 from routers import document_routes, elastic_routes
@@ -33,10 +33,11 @@ async def recaptcha_check(request: Request, call_next):
     token = request.headers['token']
     body = { "secret": RECAPTCHA_SECRET_KEY, "response": token}
     res = requests.post(url = RECAPTCHA_API_ENDPOINT, data = body).json()
+    print(res["success"])
     if res["success"] != True:
         raise HTTPException(
-            status_code=404,
-            detail="recaptcha failed",
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="recaptcha failed"
         )
     return
 @app.get("/")
