@@ -1,6 +1,7 @@
 import axios from 'axios'
+import { load } from 'recaptcha-v3'
 
-var API_URL
+let API_URL
 
 if (process.env.NODE_ENV === 'production') {
     // SWAP OUT WITH PUBLIC API
@@ -19,10 +20,15 @@ const instance = axios.create({
     }
   })
 
-instance.interceptors.request.use((config) => {
-    console.log(config.headers);
+instance.interceptors.request.use(async (config) => {
+    const recaptcha = await load('6LdjreIZAAAAACuiEgvWpl8EFFeI-EaO5x_Fozst')
+    const token = await recaptcha.execute('login')
+
+    config.headers.common.token = token;
+    
+    return config;
     }, (error) => {
     return Promise.reject(error);
 });
 
-export default instance
+export default () => { return instance }
