@@ -3,6 +3,7 @@ from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
 import os
 from routers import document_routes, elastic_routes
+import requests
 RECAPTCHA_SECRET_KEY = os.environ['RECAPTCHA_SECRET_KEY']
 RECAPTCHA_API_ENDPOINT = "https://www.google.com/recaptcha/api/siteverify"
 app = FastAPI()
@@ -27,6 +28,8 @@ app.include_router(elastic_routes.router, tags=['elastic_routes'], prefix="/api"
 
 @app.middleware("http")
 async def recaptcha_check(request: Request, call_next):
+    if request.method == "OPTIONS":
+        return
     token = request.headers['token']
     body = { "secret": RECAPTCHA_SECRET_KEY, "response": token}
     res = requests.post(url = RECAPTCHA_API_ENDPOINT, data = body).json()
