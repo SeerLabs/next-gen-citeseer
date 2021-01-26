@@ -63,6 +63,7 @@
 
 <script>
 import $ from 'jquery';
+
 import DocumentViewHeader from '~/components/DocView/DocumentViewHeader.vue';
 import CitationCard from '~/components/DocView/CitationCard.vue';
 import DocViewService from '~/api/DocViewService';
@@ -75,30 +76,8 @@ export default {
         VersionHistoryCard
     },
     async fetch() {
-        this.loading = true;
-        let data = null;
-        switch (this.idType){
-            case 'pid':
-                ({ data } = await DocViewService.getPaperWithPaperId(this.docId));
-                break;
-            case 'cid':
-                ({ data } = await DocViewService.getPaperWithClusterId(this.docId));
-                // set docID from cluster id back to paper id
-                this.docId = data.paper.id
-                break;
-            default:
-                this.loading = false;
-                return;
-        }
-        this.cid = data.paper.cluster_id
-        this.title = data.paper.title;
-        this.year = data.paper.year;
-        this.authors = data.paper.authors;
-        this.venue = data.paper.venue;
-        this.abstract = data.paper.abstract;
-        this.nCitation = data.paper.n_citation;
-
-        this.loading = false;
+      // const res = await axios.get('https://facebook.com');
+      // console.log(res);
     },
     data() {
         return {
@@ -147,6 +126,32 @@ export default {
         getPDFUrl() {
             return '/pdf/' + this.docId;
         }
+    },
+    async created() {
+        this.loading = true;
+        let data = null;
+        switch (this.idType){
+            case 'pid':
+                ({ data } = await DocViewService.getPaperWithPaperId(this.docId));
+                break;
+            case 'cid':
+                ({ data } = await DocViewService.getPaperWithClusterId(this.docId));
+                // set docID from cluster id back to paper id
+                this.docId = data.paper.id
+                break;
+            default:
+                this.loading = false;
+                return;
+        }
+        this.cid = data.paper.cluster_id
+        this.title = data.paper.title;
+        this.year = data.paper.year;
+        this.authors = data.paper.authors;
+        this.venue = data.paper.venue;
+        this.abstract = data.paper.abstract;
+        this.nCitation = data.paper.n_citation;
+
+        this.loading = false;
     },
     mounted() {
         $('#table-of-contents a').on('click', function(e) {

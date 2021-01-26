@@ -21,8 +21,8 @@ const instance = axios.create({
   })
 
 instance.interceptors.request.use(async (config) => {
-    const recaptcha = await load('6LdjreIZAAAAACuiEgvWpl8EFFeI-EaO5x_Fozst')
-    const token = await recaptcha.execute('login')
+    const recaptcha = await load('6LdjreIZAAAAACuiEgvWpl8EFFeI-EaO5x_Fozst');
+    const token = await recaptcha.execute('login');
 
     config.headers.common.token = token;
     

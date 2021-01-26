@@ -31,7 +31,7 @@
 import DocResultsContainer from '../../components/DocResults/DocResultsContainer';
 import SearchResultsFilter from '../../components/SearchResults/SearchResultsFilter.vue';
 import SearchResultsExternalLinks from '../../components/SearchResults/SearchResultsExternalLinks';
-import searchPaperService from '~/api/SearchPaperService';
+// import searchPaperService from '~/api/SearchPaperService';
 
 export default {
     name: 'SearchResults',
@@ -83,11 +83,10 @@ export default {
         searchQuery() {
             this.loadingState = true;
             // push params
-            searchPaperService
-                .searchPaper(this.queryString, this.page, this.pageSize)
-                .then(response => {
-                    this.documents = response.data.response;
-                    this.totalPageResults = response.data.total_results;
+            this.$axios.$post('/search', {queryString: this.queryString, page: this.page, pageSize: this.pageSize} )
+                .then(res => {
+                    this.documents = res.response;
+                    this.totalPageResults = res.total_results;
                     this.loadingState = false;
                 })
                 .catch(error => {

@@ -21,6 +21,14 @@ export default {
     components: {
         NavBar,
         FooterBar
+    },
+    async mounted() {
+      try {
+        await this.$recaptcha.init()
+      } catch (e) {
+        // eslint-disable-next-line
+        console.log(e);
+      }
     }
 };
 </script>
