@@ -27,7 +27,7 @@ def perform_search(searchQuery: SearchQuery):
     response = s.execute()
     result_list = []
     for doc_hit in response['hits']['hits']:
-        result_list.append(build_paper_entity(doc=doc_hit['_source']))
+        result_list.append(build_paper_entity(cluster_id=doc_hit['_id'], doc=doc_hit['_source']))
     total_results = response['hits']['total']['value']
     return SearchQueryResponse(query_id=str(uuid4()), total_results=total_results, response=result_list)
 
@@ -40,7 +40,7 @@ def paper_info(paper_id: Optional[str] = None, cluster_id: Optional[str] = None)
     s = elastic_models.Cluster.search(using=elastic_service.get_connection())
     s = s.filter("term", paper_id=paper_id)
     response = s.execute()
-    paper_entity_response = build_paper_entity(response['hits']['hits'][0]['_source'])
+    paper_entity_response = build_paper_entity(cluster_id=response['hits']['hits'][0]['_id'], doc=response['hits']['hits'][0]['_source'])
     return PaperDetailResponse(query_id=str(uuid4()), paper=paper_entity_response)
 
 
@@ -75,7 +75,7 @@ def show_citing(cid: str, sort: str, page: int, pageSize: int):
         search = search[start:start + pageSize]
         response = search.execute()
         for doc_hit in response['hits']['hits']:
-            result_list.append(build_paper_entity(doc=doc_hit['_source']))
+            result_list.append(build_paper_entity(cluster_id=doc_hit['_id'], doc=doc_hit['_source']))
         total_results = response['hits']['total']['value']
     return showCitingClustersResponse(query_id=str(uuid4()), total_results=total_results,
                                       cluster=primary_cluster_detail, papers=result_list)
@@ -113,13 +113,13 @@ def similar_papers(id: str, algo: str):
     return SimilarPapersResponse(query_id=str(uuid4()), total_results=total_results, similar_papers=result_list)
 
 
-def build_paper_entity(doc):
+def build_paper_entity(cluster_id, doc):
     print(getKeyOrDefault(doc, 'paper_id'))
     return Paper(id=getKeyOrDefault(doc, 'paper_id')[0],
                  title=getKeyOrDefault(doc, 'title'),
                  venue=getKeyOrDefault(getKeyOrDefault(doc, 'pub_info'), 'title'),
                  year=getKeyOrDefault(getKeyOrDefault(doc, 'pub_info'), 'year'),
-                 n_cited_by=getKeyOrDefault(doc, 'ncites', default=0),
+                 n_cited_by=len(getKeyOrDefault(doc, 'cited_by', default=[])),
                  n_self_cites=getKeyOrDefault(doc, 'selfCites', default=0),
                  abstract=getKeyOrDefault(doc, 'abstract'),
                  bibtex="test_bibtex",
@@ -127,7 +127,7 @@ def build_paper_entity(doc):
                  journal=getKeyOrDefault(getKeyOrDefault(doc, 'pub_info'), 'publisher'),
                  publish_time=getKeyOrDefault(getKeyOrDefault(doc, 'pub_info'), 'date'),
                  source="",
-                 cluster_id=getKeyOrDefault(doc, 'cluster'))
+                 cluster_id=cluster_id)
 
 
 def get_authors_in_list(doc, field) -> List[str]:
