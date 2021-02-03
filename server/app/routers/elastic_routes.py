@@ -66,7 +66,7 @@ def show_citing(cid: str, sort: str, page: int, pageSize: int):
     papers_that_cite = []
     result_list = []
     total_results = 0
-    for paper in cluster.cites:
+    for paper in cluster.cited_by:
         papers_that_cite.append(paper)
     if len(papers_that_cite) > 0:
         search = elastic_models.Cluster.search(using=elastic_service.connection).filter('terms', paper_id=papers_that_cite)
@@ -187,7 +187,7 @@ def build_cluster_entity(id, doc):
     return Cluster(cluster_id=id,
                    incollection=getKeyOrDefault(doc, 'in_collection', default=0),
                    cpublisher=getKeyOrDefault(getKeyOrDefault(doc, 'pub_info'), 'publisher'),
-                   cyear=getKeyOrDefault(getKeyOrDefault(doc, 'pub_info'), 'date', default=0),
+                   cyear=getKeyOrDefault(getKeyOrDefault(doc, 'pub_info'), 'year', default=0),
                    observations=getKeyOrDefault(doc, 'observations'),
                    selfCites=getKeyOrDefault(doc, 'selfCites'),
                    ctitle=getKeyOrDefault(doc, 'title'),
