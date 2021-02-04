@@ -64,9 +64,9 @@
 <script>
 import $ from 'jquery';
 
+import { mapActions } from 'vuex';
 import DocumentViewHeader from '~/components/DocView/DocumentViewHeader.vue';
 import CitationCard from '~/components/DocView/CitationCard.vue';
-import DocViewService from '~/api/DocViewService';
 import VersionHistoryCard from '~/components/DocView/VersionHistoryCard.vue';
 
 export default {
@@ -132,10 +132,10 @@ export default {
         let data = null;
         switch (this.idType){
             case 'pid':
-                ({ data } = await DocViewService.getPaperWithPaperId(this.docId));
+                ({ data } = await this.getPaperWithPaperId({id: this.docId}));
                 break;
             case 'cid':
-                ({ data } = await DocViewService.getPaperWithClusterId(this.docId));
+                ({ data } = await this.getPaperWithClusterId({id: this.docId}));
                 // set docID from cluster id back to paper id
                 this.docId = data.paper.id
                 break;
@@ -171,6 +171,8 @@ export default {
         });
     },
     methods: {
+        ...mapActions(['getPaperWithPaperId']),
+
         toggleReadMore() {
             this.readMoreFlag = true;
         },

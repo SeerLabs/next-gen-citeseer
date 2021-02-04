@@ -48,8 +48,9 @@
 </template>
 
 <script>
+import { mapActions } from 'vuex';
 import CitationList from './CitationList.vue';
-import docViewService from '~/api/DocViewService';
+
 export default {
     name: 'CitationCard',
     components: {
@@ -100,16 +101,17 @@ export default {
         }
     },
     methods: {
+        ...mapActions(['getCitationsEntities', 'getSimilarPaper']),
+
         getCitations() {
             switch (this.title) {
                 case 'Citations':
                     this.loading = true;
-                    docViewService
-                        .getCitationsEntities(
-                            this.docId,
-                            this.currentPage,
-                            this.perPage
-                        )
+                    this.getCitationsEntities({
+                            id: this.docId,
+                            page: this.currentPage,
+                            pageSize: this.perPage
+                        })
                         .then(response => {
                             this.citations = response.data.citations;
                             this.nCitations = response.data.total_results;
@@ -128,11 +130,10 @@ export default {
                         queryId = this.docId;
                     }
                     
-                    docViewService
-                        .getSimilarPaper(
-                            queryId,
-                            this.sortSelected
-                        )
+                    this.getSimilarPaper({
+                        id: queryId,
+                        algo: this.sortSelected
+                    })
                         .then(response => {
                             this.citations = response.data.similar_papers;
                             this.nCitations = response.data.total_results;

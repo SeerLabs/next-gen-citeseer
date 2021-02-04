@@ -21,7 +21,7 @@
 </template>
 
 <script>
-import searchPaperService from '~/api/SearchPaperService';
+import { mapActions } from 'vuex';
 
 export default {
     name: 'SearchBox',
@@ -48,23 +48,16 @@ export default {
         }
     },
     watch: {
-        textInput(val) {
+        textInput() {
             // Items have already been requested
             if (this.textInput === this.searchQuery) return;
-
             if (this.isLoading) return;
 
             this.isLoading = true;
 
-            searchPaperService
-                .getSuggestions(this.textInput)
+            this.getSuggestions({queryString: this.textInput})
                 .then((response) => {
-                    this.entries = response.data.suggestions;
-                })
-                .catch((error) => {
-                    // eslint-disable-next-line
-                    console.log(error.message);
-                    this.error = true;
+                    this.entries = response.suggestions;
                 })
                 .finally(() => (this.isLoading = false));
         },
@@ -85,6 +78,7 @@ export default {
         this.searchQuery = this.textInput;
     },
     methods: {
+        ...mapActions(['getSuggestions']),
         submitInput() {
             if (this.textInput) {
                 this.entries = [];

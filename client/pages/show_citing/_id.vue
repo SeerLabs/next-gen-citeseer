@@ -55,7 +55,7 @@
 </template>
 
 <script>
-import ShowCitingService from '~/api/ShowCitingService';
+import { mapActions } from 'vuex';
 import DocResultsContainer from '~/components/DocResults/DocResultsContainer.vue';
 
 export default {
@@ -97,19 +97,20 @@ export default {
         this.getCiting();
     },
     methods: {
+        ...mapActions(['getShowCiting']),
         getCiting() {
-            ShowCitingService.getShowCiting(
-                this.$route.params.id,
-                this.page,
-                this.pageSize,
-                this.sortBy
-            ).then((response) => {
-                this.title = response.data.cluster.ctitle;
-                this.year = response.data.cluster.cyear;
-                this.authors = response.data.cluster.cauthors;
-                this.venue = response.data.cluster.cvenue;
-                this.documents = response.data.papers;
-                this.totalPageResults = response.data.total_results;
+            this.getShowCiting({
+                id: this.$route.params.id,
+                page: this.page,
+                pageSize: this.pageSize,
+                sortBy: this.sortBy
+            }).then((response) => {
+                this.title = response.cluster.ctitle;
+                this.year = response.cluster.cyear;
+                this.authors = response.cluster.cauthors;
+                this.venue = response.cluster.cvenue;
+                this.documents = response.papers;
+                this.totalPageResults = response.total_results;
             });
 
             if (!this.title) {

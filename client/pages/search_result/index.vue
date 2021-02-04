@@ -28,10 +28,11 @@
 </template>
 
 <script>
+import { mapActions } from 'vuex';
 import DocResultsContainer from '../../components/DocResults/DocResultsContainer';
 import SearchResultsFilter from '../../components/SearchResults/SearchResultsFilter.vue';
 import SearchResultsExternalLinks from '../../components/SearchResults/SearchResultsExternalLinks';
-// import searchPaperService from '~/api/SearchPaperService';
+
 
 export default {
     name: 'SearchResults',
@@ -80,10 +81,11 @@ export default {
         this.searchQuery();
     },
     methods: {
+        ...mapActions(['searchPaper']),
         searchQuery() {
             this.loadingState = true;
             // push params
-            this.$axios.$post('/search', {queryString: this.queryString, page: this.page, pageSize: this.pageSize} )
+            this.searchPaper( {queryString: this.queryString, page: this.page, pageSize: this.pageSize} )
                 .then(res => {
                     this.documents = res.response;
                     this.totalPageResults = res.total_results;
