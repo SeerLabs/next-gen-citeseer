@@ -22,12 +22,12 @@ def perform_search(searchQuery: SearchQuery):
     s = elastic_models.Cluster.search(using=elastic_service.get_connection())
     start = (searchQuery.page - 1) * searchQuery.pageSize
     s = s.filter('term', has_pdf=True)
-    s = s.query('multi_match', query=searchQuery.queryString, fields=['title'])
+    s = s.query('multi_match', query=searchQuery.queryString, fields=['title', 'text'])
     s = s[start:start + searchQuery.pageSize]
     response = s.execute()
     result_list = []
     for doc_hit in response['hits']['hits']:
-        result_list.append(build_paper_entity(doc=doc_hit['_source']))
+        result_list.append(build_paper_entity(cluster_id=doc_hit['_id'], doc=doc_hit['_source']))
     total_results = response['hits']['total']['value']
     return SearchQueryResponse(query_id=str(uuid4()), total_results=total_results, response=result_list)
 
@@ -40,7 +40,8 @@ def paper_info(paper_id: Optional[str] = None, cluster_id: Optional[str] = None)
     s = elastic_models.Cluster.search(using=elastic_service.get_connection())
     s = s.filter("term", paper_id=paper_id)
     response = s.execute()
-    paper_entity_response = build_paper_entity(response['hits']['hits'][0]['_source'])
+    paper_entity_response = build_paper_entity(cluster_id=response['hits']['hits'][0]['_id'],
+                                               doc=response['hits']['hits'][0]['_source'])
     return PaperDetailResponse(query_id=str(uuid4()), paper=paper_entity_response)
 
 
@@ -48,7 +49,7 @@ def paper_info(paper_id: Optional[str] = None, cluster_id: Optional[str] = None)
 def citations(id: str, page: int = 1, pageSize: int = 10):
     s = elastic_models.Cluster.search(using=elastic_service.get_connection())
     start = (page - 1) * pageSize
-    s = s.filter('term', cites=id)
+    s = s.filter('term', cited_by=id)
     s = s[start:start + pageSize]
     response = s.execute()
     result_list = []
@@ -66,19 +67,36 @@ def show_citing(cid: str, sort: str, page: int, pageSize: int):
     papers_that_cite = []
     result_list = []
     total_results = 0
-    for paper in cluster.cites:
+    for paper in cluster.cited_by:
         papers_that_cite.append(paper)
     if len(papers_that_cite) > 0:
-        search = elastic_models.Cluster.search(using=elastic_service.connection).sort("pub_info.year", {'order': "asc"}).filter('terms',
-                                                                                        paper_id=papers_that_cite)
+        search = elastic_models.Cluster.search(using=elastic_service.connection) \
+            .sort(_get_sort_param(sort)) \
+            .filter('terms', paper_id=papers_that_cite)
         start = (page - 1) * pageSize
         search = search[start:start + pageSize]
         response = search.execute()
         for doc_hit in response['hits']['hits']:
-            result_list.append(build_paper_entity(doc=doc_hit['_source']))
+            result_list.append(build_paper_entity(cluster_id=doc_hit['_id'], doc=doc_hit['_source']))
         total_results = response['hits']['total']['value']
     return showCitingClustersResponse(query_id=str(uuid4()), total_results=total_results,
                                       cluster=primary_cluster_detail, papers=result_list)
+
+
+def _get_sort_param(param: str) -> dict:
+    if param == "yearAsc":
+        return {"pub_info.year": {'order': "asc", "nested": {"path": "pub_info"}}}
+    elif param == "yearDesc":
+        return {"pub_info.year": {'order': "desc", "nested": {"path": "pub_info"}}}
+    elif param == "citCount":
+        return {"_script": {"type" : "number",
+                            "script" : {
+                                "lang": "painless",
+                                "source": "doc.cited_by.length"},
+                            "order" : "desc"}}
+    else:
+        # default sort by year desc
+        return {"pub_info.year": {'order': "desc", "nested": {"path": "pub_info"}}}
 
 
 @router.get('/suggest')
@@ -97,7 +115,7 @@ def similar_papers(id: str, algo: str):
     res = None
     if algo == 'Co-Citation':
         s = elastic_models.Cluster.search(using=elastic_service.get_connection(), index='clusters_next').filter('match',
-                                                                                                                cites=id)
+                                                                                                                cited_by=id)
         res = s.execute()
     elif algo == 'Active Bibliography':
         s = elastic_models.Cluster.search(using=elastic_service.get_connection(), index='clusters_next').filter('match',
@@ -113,13 +131,12 @@ def similar_papers(id: str, algo: str):
     return SimilarPapersResponse(query_id=str(uuid4()), total_results=total_results, similar_papers=result_list)
 
 
-def build_paper_entity(doc):
-    print(getKeyOrDefault(doc, 'paper_id'))
+def build_paper_entity(cluster_id, doc):
     return Paper(id=getKeyOrDefault(doc, 'paper_id')[0],
                  title=getKeyOrDefault(doc, 'title'),
                  venue=getKeyOrDefault(getKeyOrDefault(doc, 'pub_info'), 'title'),
                  year=getKeyOrDefault(getKeyOrDefault(doc, 'pub_info'), 'year'),
-                 n_cited_by=getKeyOrDefault(doc, 'ncites', default=0),
+                 n_cited_by=len(getKeyOrDefault(doc, 'cited_by', default=[])),
                  n_self_cites=getKeyOrDefault(doc, 'selfCites', default=0),
                  abstract=getKeyOrDefault(doc, 'abstract'),
                  bibtex="test_bibtex",
@@ -127,7 +144,7 @@ def build_paper_entity(doc):
                  journal=getKeyOrDefault(getKeyOrDefault(doc, 'pub_info'), 'publisher'),
                  publish_time=getKeyOrDefault(getKeyOrDefault(doc, 'pub_info'), 'date'),
                  source="",
-                 cluster_id=getKeyOrDefault(doc, 'cluster'))
+                 cluster_id=cluster_id)
 
 
 def get_authors_in_list(doc, field) -> List[str]:
@@ -188,7 +205,7 @@ def build_cluster_entity(id, doc):
     return Cluster(cluster_id=id,
                    incollection=getKeyOrDefault(doc, 'in_collection', default=0),
                    cpublisher=getKeyOrDefault(getKeyOrDefault(doc, 'pub_info'), 'publisher'),
-                   cyear=getKeyOrDefault(getKeyOrDefault(doc, 'pub_info'), 'date', default=0),
+                   cyear=getKeyOrDefault(getKeyOrDefault(doc, 'pub_info'), 'year', default=0),
                    observations=getKeyOrDefault(doc, 'observations'),
                    selfCites=getKeyOrDefault(doc, 'selfCites'),
                    ctitle=getKeyOrDefault(doc, 'title'),
