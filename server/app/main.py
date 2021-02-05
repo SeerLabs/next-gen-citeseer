@@ -48,7 +48,10 @@ async def recaptcha_check(request: Request, call_next):
 
 @app.get("/")
 def pong():
-    return {"ping": "pong!"}
+    if DEBUG:
+      return {"message": "Running in debug mode."}
+    else:
+      return {"message": "Running in production mode."}
 
 
 if __name__ == "__main__":
