@@ -35,8 +35,8 @@ export default {
 
 <style>
 #page-container {
-    margin: auto;
-    margin-bottom: 450px;
+    margin: auto auto;
+    margin-bottom: 400px;
 }
 
 #app {
