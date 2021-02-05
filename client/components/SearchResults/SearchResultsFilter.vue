@@ -8,13 +8,12 @@
             </div>
             <v-row>
                 <v-col cols="12">
-                    <v-form-input
+                    <!-- <v-range-slider
                         id="year-filter"
                         v-model="value"
-                        type="range"
-                        min="1999"
-                        max="2020"
-                    />
+                        :min="1999"
+                        :max="2020"
+                    /> -->
                 </v-col>
             </v-row>
         </v-card-text>

@@ -132,10 +132,10 @@ export default {
         let data = null;
         switch (this.idType){
             case 'pid':
-                ({ data } = await this.getPaperWithPaperId({id: this.docId}));
+                data = await this.getPaperWithPaperId({pid: this.docId});
                 break;
             case 'cid':
-                ({ data } = await this.getPaperWithClusterId({id: this.docId}));
+                data = await this.getPaperWithClusterId({cid: this.docId});
                 // set docID from cluster id back to paper id
                 this.docId = data.paper.id
                 break;

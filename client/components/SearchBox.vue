@@ -4,9 +4,9 @@
         :items="items"
         :loading="isLoading"
         :search-input.sync="textInput"
+        :hide-no-data="!textInput"
         filled
         clearable
-        hide-no-data
         hide-selected
         item-text="description"
         placeholder="Search"
@@ -53,13 +53,15 @@ export default {
             if (this.textInput === this.searchQuery) return;
             if (this.isLoading) return;
 
-            this.isLoading = true;
-
-            this.getSuggestions({queryString: this.textInput})
-                .then((response) => {
-                    this.entries = response.suggestions;
-                })
-                .finally(() => (this.isLoading = false));
+            if (this.textInput) {
+              this.isLoading = true;
+              
+              this.getSuggestions({queryString: this.textInput})
+                  .then((response) => {
+                      this.entries = response.suggestions;
+                  })
+                  .finally(() => (this.isLoading = false));
+            }
         },
         searchQuery() {
             if (this.searchQuery && this.searchQuery.type) {

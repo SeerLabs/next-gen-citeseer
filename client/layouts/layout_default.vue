@@ -3,7 +3,7 @@
         <v-app v-cloak>
             <nav-bar />
             <v-main>
-                <v-container>
+                <v-container id="page-container">
                     <nuxt keep-alive />
                 </v-container>
             </v-main>
@@ -36,6 +36,7 @@ export default {
 <style>
 #page-container {
     margin: auto;
+    margin-bottom: 450px;
 }
 
 #app {

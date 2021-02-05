@@ -14,7 +14,7 @@
                 />
                 <v-pagination
                     v-model="page"
-                    :length="totalNumRows"
+                    :length="totalPageResults"
                     :total-visible="8"
                     @input="searchQuery"
                 />

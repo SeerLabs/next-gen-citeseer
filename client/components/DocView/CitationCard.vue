@@ -30,6 +30,7 @@
                         :title="title"
                         :citations="citations"
                         :n-citations="nCitations"
+                        :loading="loading"
                     />
                     <v-pagination
                         v-model="currentPage"
@@ -113,8 +114,8 @@ export default {
                             pageSize: this.perPage
                         })
                         .then(response => {
-                            this.citations = response.data.citations;
-                            this.nCitations = response.data.total_results;
+                            this.citations = response.citations;
+                            this.nCitations = response.total_results;
                             this.loading = false;
                         })
                         .catch(error => {
@@ -135,8 +136,8 @@ export default {
                         algo: this.sortSelected
                     })
                         .then(response => {
-                            this.citations = response.data.similar_papers;
-                            this.nCitations = response.data.total_results;
+                            this.citations = response.similar_papers;
+                            this.nCitations = response.total_results;
                             this.loading = false;
                         })
                         .catch(error => {
