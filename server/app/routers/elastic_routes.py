@@ -22,7 +22,7 @@ def perform_search(searchQuery: SearchQuery):
     s = elastic_models.Cluster.search(using=elastic_service.get_connection())
     start = (searchQuery.page - 1) * searchQuery.pageSize
     s = s.filter('term', has_pdf=True)
-    s = s.query('multi_match', query=searchQuery.queryString, fields=['title'])
+    s = s.query('multi_match', query=searchQuery.queryString, fields=['title', 'text'])
     s = s[start:start + searchQuery.pageSize]
     response = s.execute()
     result_list = []
@@ -49,7 +49,7 @@ def paper_info(paper_id: Optional[str] = None, cluster_id: Optional[str] = None)
 def citations(id: str, page: int = 1, pageSize: int = 10):
     s = elastic_models.Cluster.search(using=elastic_service.get_connection())
     start = (page - 1) * pageSize
-    s = s.filter('term', cites=id)
+    s = s.filter('term', cited_by=id)
     s = s[start:start + pageSize]
     response = s.execute()
     result_list = []
@@ -67,7 +67,7 @@ def show_citing(cid: str, sort: str, page: int, pageSize: int):
     papers_that_cite = []
     result_list = []
     total_results = 0
-    for paper in cluster.cites:
+    for paper in cluster.cited_by:
         papers_that_cite.append(paper)
     if len(papers_that_cite) > 0:
         search = elastic_models.Cluster.search(using=elastic_service.connection) \
@@ -89,8 +89,13 @@ def _get_sort_param(param: str) -> dict:
     elif param == "yearDesc":
         return {"pub_info.year": {'order': "desc", "nested": {"path": "pub_info"}}}
     elif param == "citCount":
-        return {"_script": {"script": "doc['cited_by'].values.size()"}}
-    else: #default
+        return {"_script": {"type" : "number",
+                            "script" : {
+                                "lang": "painless",
+                                "source": "doc.cited_by.length"},
+                            "order" : "desc"}}
+    else:
+        # default sort by year desc
         return {"pub_info.year": {'order': "desc", "nested": {"path": "pub_info"}}}
 
 
@@ -110,7 +115,7 @@ def similar_papers(id: str, algo: str):
     res = None
     if algo == 'Co-Citation':
         s = elastic_models.Cluster.search(using=elastic_service.get_connection(), index='clusters_next').filter('match',
-                                                                                                                cites=id)
+                                                                                                                cited_by=id)
         res = s.execute()
     elif algo == 'Active Bibliography':
         s = elastic_models.Cluster.search(using=elastic_service.get_connection(), index='clusters_next').filter('match',
@@ -131,7 +136,7 @@ def build_paper_entity(cluster_id, doc):
                  title=getKeyOrDefault(doc, 'title'),
                  venue=getKeyOrDefault(getKeyOrDefault(doc, 'pub_info'), 'title'),
                  year=getKeyOrDefault(getKeyOrDefault(doc, 'pub_info'), 'year'),
-                 n_cited_by=len(getKeyOrDefault(doc, 'cites', default=[])),
+                 n_cited_by=len(getKeyOrDefault(doc, 'cited_by', default=[])),
                  n_self_cites=getKeyOrDefault(doc, 'selfCites', default=0),
                  abstract=getKeyOrDefault(doc, 'abstract'),
                  bibtex="test_bibtex",
