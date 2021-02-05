@@ -76,7 +76,6 @@ def show_citing(cid: str, sort: str, page: int, pageSize: int):
         start = (page - 1) * pageSize
         search = search[start:start + pageSize]
         response = search.execute()
-        print(response)
         for doc_hit in response['hits']['hits']:
             result_list.append(build_paper_entity(cluster_id=doc_hit['_id'], doc=doc_hit['_source']))
         total_results = response['hits']['total']['value']
@@ -128,7 +127,6 @@ def similar_papers(id: str, algo: str):
 
 
 def build_paper_entity(cluster_id, doc):
-    print(getKeyOrDefault(doc, 'paper_id'))
     return Paper(id=getKeyOrDefault(doc, 'paper_id')[0],
                  title=getKeyOrDefault(doc, 'title'),
                  venue=getKeyOrDefault(getKeyOrDefault(doc, 'pub_info'), 'title'),
