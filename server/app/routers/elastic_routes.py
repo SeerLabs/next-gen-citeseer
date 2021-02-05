@@ -40,7 +40,8 @@ def paper_info(paper_id: Optional[str] = None, cluster_id: Optional[str] = None)
     s = elastic_models.Cluster.search(using=elastic_service.get_connection())
     s = s.filter("term", paper_id=paper_id)
     response = s.execute()
-    paper_entity_response = build_paper_entity(cluster_id=response['hits']['hits'][0]['_id'], doc=response['hits']['hits'][0]['_source'])
+    paper_entity_response = build_paper_entity(cluster_id=response['hits']['hits'][0]['_id'],
+                                               doc=response['hits']['hits'][0]['_source'])
     return PaperDetailResponse(query_id=str(uuid4()), paper=paper_entity_response)
 
 
@@ -66,18 +67,32 @@ def show_citing(cid: str, sort: str, page: int, pageSize: int):
     papers_that_cite = []
     result_list = []
     total_results = 0
-    for paper in cluster.cited_by:
+    for paper in cluster.cites:
         papers_that_cite.append(paper)
     if len(papers_that_cite) > 0:
-        search = elastic_models.Cluster.search(using=elastic_service.connection).filter('terms', paper_id=papers_that_cite)
+        search = elastic_models.Cluster.search(using=elastic_service.connection) \
+            .sort(_get_sort_param(sort)) \
+            .filter('terms', paper_id=papers_that_cite)
         start = (page - 1) * pageSize
         search = search[start:start + pageSize]
         response = search.execute()
+        print(response)
         for doc_hit in response['hits']['hits']:
             result_list.append(build_paper_entity(cluster_id=doc_hit['_id'], doc=doc_hit['_source']))
         total_results = response['hits']['total']['value']
     return showCitingClustersResponse(query_id=str(uuid4()), total_results=total_results,
                                       cluster=primary_cluster_detail, papers=result_list)
+
+
+def _get_sort_param(param: str) -> dict:
+    if param == "yearAsc":
+        return {"pub_info.year": {'order': "asc", "nested": {"path": "pub_info"}}}
+    elif param == "yearDesc":
+        return {"pub_info.year": {'order': "desc", "nested": {"path": "pub_info"}}}
+    elif param == "citCount":
+        return {"_script": {"script": "doc['cited_by'].values.size()"}}
+    else: #default
+        return {"pub_info.year": {'order': "desc", "nested": {"path": "pub_info"}}}
 
 
 @router.get('/suggest')
@@ -118,7 +133,7 @@ def build_paper_entity(cluster_id, doc):
                  title=getKeyOrDefault(doc, 'title'),
                  venue=getKeyOrDefault(getKeyOrDefault(doc, 'pub_info'), 'title'),
                  year=getKeyOrDefault(getKeyOrDefault(doc, 'pub_info'), 'year'),
-                 n_cited_by=len(getKeyOrDefault(doc, 'cited_by', default=[])),
+                 n_cited_by=len(getKeyOrDefault(doc, 'cites', default=[])),
                  n_self_cites=getKeyOrDefault(doc, 'selfCites', default=0),
                  abstract=getKeyOrDefault(doc, 'abstract'),
                  bibtex="test_bibtex",
