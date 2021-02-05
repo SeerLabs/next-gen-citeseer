@@ -1,11 +1,12 @@
 export default function ({ $axios, $recaptcha, redirect }) {
     $axios.onRequest(async (config) => {
-        await $recaptcha.init()
-        const token = await $recaptcha.execute('login')
-        config.headers.common.token = token;
-        
-        return config;
-
+        if (!process.env.DEBUG) {
+            await $recaptcha.init()
+            const token = await $recaptcha.execute('login')
+            config.headers.common.token = token;
+            
+            return config;
+        }
     })
   
     $axios.onError(error => {
