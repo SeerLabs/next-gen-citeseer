@@ -109,7 +109,7 @@ def similar_papers(id: str, algo: str):
         s = elastic_models.Cluster.search(using=elastic_service.get_connection(), index='clusters_next').filter('match', cited_by=id)
         res = s.execute()
     else:
-        res = elastic_service.more_like_this_search("papers_next", id)
+        res = elastic_service.more_like_this_search("acl_papers", id)
 
     result_list = []
     for doc in res['hits']['hits']:

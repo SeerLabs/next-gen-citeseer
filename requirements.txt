@@ -10,3 +10,6 @@ attrdict~=2.0.1
 zeep~=3.4.0
 nltk~=3.5
 simhash~=1.11.0
+fastapi-jwt-auth~=0.5.0
+redis~=3.5.3
+python-multipart~=0.0.5

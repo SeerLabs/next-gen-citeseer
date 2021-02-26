@@ -83,8 +83,8 @@ class AuthenticationService:
         return False
     def recaptcha(self, token):
         body = { "secret": RECAPTCHA_SECRET_KEY, "response": token}
-        res = requests.post(url = RECAPTCHA_API_ENDPOINT, data = body)
-        return res.json()
+        res = requests.post(url = RECAPTCHA_API_ENDPOINT, data = body).json()
+        return res
 
     def send_verification_email(self, full_name: str, email: str, token: str):
         msg = EmailMessage()
@@ -118,10 +118,10 @@ class AuthenticationService:
         s.quit()
         return True
 
-    def activate_account(self, token: str, secret_key: str):
+    def activate_account(self, user_in_db):
         try:
-            email = self.get_email_from_token(token, secret_key)
-            user_in_db = self.get_user(email)
+            # email = self.get_email_from_token(token, secret_key)
+            # user_in_db = self.get_user(email)
             user_in_db.is_activated = True
             user_in_db.save(using=elastic_service.get_connection())
             return True
@@ -169,8 +169,10 @@ class AuthenticationService:
         return 0, user
 
     def get_user(self, email: str) -> UserInDB:
-        return UserInDB.get(id=email, using=elastic_service.get_connection())
-
+        try:
+            return UserInDB.get(id=email, using=elastic_service.get_connection())
+        except:
+            return None
     def reset_password(self, email, new_password):
         user_in_db = self.get_user(email)
         new_salt = self.generate_salt()
