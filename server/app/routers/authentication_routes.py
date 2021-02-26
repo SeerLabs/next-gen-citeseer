@@ -11,6 +11,8 @@ from fastapi_jwt_auth.exceptions import AuthJWTException
 from pydantic import BaseModel
 from typing import Optional
 import re
+from redis import Redis
+from datetime import timedelta
 elastic_service = ElasticService()
 router = APIRouter()
 authService = AuthenticationService()
@@ -54,10 +56,23 @@ class JWTBearer(HTTPBearer):
 
 class Settings(BaseModel):
     authjwt_secret_key: str = "secret"
+    authjwt_denylist_enabled: bool = True
+    authjwt_denylist_token_checks: set = {"access","refresh"}
+    access_expires: int = timedelta(minutes=15)
+    refresh_expires: int = timedelta(days=1)
+
 settings = Settings()
+
 @AuthJWT.load_config
 def get_config():
     return settings
+
+#redis_conn = Redis(host='localhost', port=6379, db=0, decode_responses=True)
+denylist = set()
+@AuthJWT.token_in_denylist_loader
+def check_if_token_in_denylist(decrypted_token):
+    jti = decrypted_token['jti']
+    return jti in denylist
 
 async def get_current_user(Authorize: AuthJWT = Depends()):#token: str = Depends(oauth2_scheme)):
     Authorize.jwt_required()
@@ -131,7 +146,7 @@ def verify_account(UserInDB = Depends(get_current_user_in_db)):
 @router.get("/recaptcha")
 async def recaptcha(token: str):
     res = authService.recaptcha(token)
-    return reis
+    return res
 
 @router.post("/login")
 async def login(email: str = Form(...), password: str = Form(...), Authorize: AuthJWT = Depends()):#form_data: OAuth2PasswordRequestForm = Depends()):
@@ -167,6 +182,28 @@ async def login(email: str = Form(...), password: str = Form(...), Authorize: Au
         access_token= access_token,
         refresh_token=refresh_token
     ) 
+# Endpoint for revoking the current users access token
+@router.delete('/access-revoke', dependencies=[Depends(JWTBearer())])
+def access_revoke(Authorize: AuthJWT = Depends()):
+    Authorize.jwt_required()
+
+    # Store the tokens in redis with the value true for revoked.
+    # We can also set an expires time on these tokens in redis,
+    # so they will get automatically removed after they expired.
+    jti = Authorize.get_raw_jwt()['jti']
+    #redis_conn.setex(jti,settings.access_expires,'true')
+    denylist.add(jti)
+    return {"detail":"Access token has been revoke"}
+
+# Endpoint for revoking the current users refresh token
+@router.delete('/refresh-revoke', dependencies=[Depends(JWTBearer())])
+def refresh_revoke(Authorize: AuthJWT = Depends()):
+    Authorize.jwt_refresh_token_required()
+
+    jti = Authorize.get_raw_jwt()['jti']
+    #redis_conn.setex(jti,settings.refresh_expires,'true')
+    denylist.add(jti)
+    return {"detail":"Refresh token has been revoke"}
 
 @router.post("/refresh_token", dependencies=[Depends(JWTBearer())])
 async def refresh_token(Authorize: AuthJWT = Depends()):
