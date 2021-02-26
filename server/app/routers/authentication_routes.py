@@ -210,7 +210,9 @@ async def refresh_token(Authorize: AuthJWT = Depends()):
     Authorize.jwt_refresh_token_required()
     current_user = Authorize.get_jwt_subject()
     new_access_token = Authorize.create_access_token(subject=current_user)
-    return { "access_token": new_access_token}
+    new_refresh_token = Authorize.create_refresh_token(subject=current_user)
+    denylist.add(Authorize.get_raw_jwt()['jti'])
+    return { "access_token": new_access_token, "refresh_token": new_refresh_token}
 
 
 @router.get("/user_profile", dependencies=[Depends(JWTBearer())])
