@@ -24,26 +24,23 @@ def perform_search(searchQuery: SearchQuery):
     start = (searchQuery.page - 1) * searchQuery.pageSize
     s = s.filter('term', has_pdf=True)
 
-    if searchQuery.year!='':
-        years =  searchQuery.year.split("|")
+    if searchQuery.year is not None:
         yr_queries =[]
-        for yr in years:
+        for yr in searchQuery.year:
             q=Q("nested", path="pub_info", query=Q("term", **{'pub_info.year.keyword':yr}))
             yr_queries.append(q)
         s = s.query('bool',should=yr_queries)
 
-    if searchQuery.publisher!='':
-        publishers =  searchQuery.publisher.split("|")
+    if searchQuery.publisher is not None:
         publisher_queries =[]
-        for pub in publishers:
+        for pub in searchQuery.publisher:
             q=Q("nested", path="pub_info", query=Q("term", **{'pub_info.publisher.keyword':pub}))
             publisher_queries.append(q)
         s = s.query('bool',should=publisher_queries)
 
-    if searchQuery.author!='':
-        authors =  searchQuery.author.split("|")
+    if searchQuery.author is not None:
         athr_queries =[]
-        for athr in authors:
+        for athr in searchQuery.author:
             q=Q("nested", path="authors", query=Q("term", **{'authors.fullname.keyword':athr}))
             athr_queries.append(q)
         s = s.query('bool',should=athr_queries)
@@ -202,8 +199,10 @@ def build_paper_entity(cluster_id, doc):
 
 
 def get_authors_in_list(doc, field) -> List[str]:
-    return [getKeyOrDefault(field, 'forename', default="") + " " + getKeyOrDefault(field, 'surname', default="") for
-            field in getKeyOrDefault(doc, field, default={})]
+    return [getKeyOrDefault(field, 'fullname', default="") for 
+           field in getKeyOrDefault(doc, field, default={})]
+    # return [getKeyOrDefault(field, 'forename', default="") + " " + getKeyOrDefault(field, 'surname', default="") for
+    #         field in getKeyOrDefault(doc, field, default={})]
 
 
 def build_citation_entity(_id, doc):
