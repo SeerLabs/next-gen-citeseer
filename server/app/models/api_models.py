@@ -1,4 +1,4 @@
-from typing import Optional, List
+from typing import Optional, List, Dict
 
 from pydantic import BaseModel, typing
 
@@ -8,6 +8,7 @@ class Paper(BaseModel):
     title: Optional[str]
     venue: Optional[str]
     year: Optional[str]
+    publisher: Optional[str]
     n_cited_by: Optional[int]
     n_self_cites: Optional[int]
     abstract: str = None
@@ -18,6 +19,18 @@ class Paper(BaseModel):
     source: str
     urls: List[str] = []
     cluster_id: Optional[str]
+
+class PublicationInfo(BaseModel):
+    key: Optional[str]
+    doc_count: Optional[int]
+
+class Facets(BaseModel):
+    pub_info_year_count: Optional[int]
+    pub_info_year_list: List[PublicationInfo]
+    pub_info_publisher_count: Optional[int]
+    pub_info_publisher_list: List[PublicationInfo]
+    authors_count: Optional[int]
+    authors_fullname_terms: List[PublicationInfo]
 
 class Citation(BaseModel):
     id: str
@@ -68,6 +81,12 @@ class SearchQueryResponse(BaseModel):
     query_id: str
     total_results: int
     response: List[Paper]
+    aggregations: Dict[str, Facets]
+
+class SearchAuthorResponse(BaseModel):
+    query_id: str
+    total_results: int
+    response:List[str]
 
 class PaperDetailResponse(BaseModel):
     query_id: str
@@ -97,3 +116,6 @@ class SearchQuery(BaseModel):
     queryString: str
     page: int
     pageSize: int
+    year: str
+    author: str
+    publisher: str

@@ -5,32 +5,73 @@ from fastapi import APIRouter
 
 from models.api_models import SearchQueryResponse, PaperDetailResponse, CitationsResponse, ClusterDetailResponse, \
     showCitingClustersResponse, SimilarPapersResponse, SearchQuery, Paper, Citation, Cluster, Suggestion, \
-    AutoCompleteResponse
+    AutoCompleteResponse, PublicationInfo, Facets, SearchAuthorResponse
 
 from models import elastic_models
 
 from services.elastic_service import ElasticService
 
 from utils.helpers import getKeyOrDefault
+from elasticsearch_dsl import Q
+
 
 router = APIRouter()
 elastic_service = ElasticService()
-
 
 @router.post('/search', response_model=SearchQueryResponse)
 def perform_search(searchQuery: SearchQuery):
     s = elastic_models.Cluster.search(using=elastic_service.get_connection())
     start = (searchQuery.page - 1) * searchQuery.pageSize
     s = s.filter('term', has_pdf=True)
+
+    if searchQuery.year!='':
+        years =  searchQuery.year.split("|")
+        yr_queries =[]
+        for yr in years:
+            q=Q("nested", path="pub_info", query=Q("term", **{'pub_info.year.keyword':yr}))
+            yr_queries.append(q)
+        s = s.query('bool',should=yr_queries)
+
+    if searchQuery.publisher!='':
+        publishers =  searchQuery.publisher.split("|")
+        publisher_queries =[]
+        for pub in publishers:
+            q=Q("nested", path="pub_info", query=Q("term", **{'pub_info.publisher.keyword':pub}))
+            publisher_queries.append(q)
+        s = s.query('bool',should=publisher_queries)
+
+    if searchQuery.author!='':
+        authors =  searchQuery.author.split("|")
+        athr_queries =[]
+        for athr in authors:
+            q=Q("nested", path="authors", query=Q("term", **{'authors.fullname.keyword':athr}))
+            athr_queries.append(q)
+        s = s.query('bool',should=athr_queries)
+
     s = s.query('multi_match', query=searchQuery.queryString, fields=['title', 'text'])
+
+    s.aggs.bucket('all_pub_info1', 'nested', path='pub_info') \
+        .metric('pub_info_year_count', 'cardinality', field='pub_info.year.keyword') \
+        .bucket('pub_info_year_list', 'terms', field='pub_info.year.keyword')
+    
+    s.aggs.bucket('all_authors', 'nested', path='authors') \
+        .metric('authors_count', 'cardinality', field='authors.fullname.keyword') \
+        .bucket('authors_fullname_terms', 'terms', field='authors.fullname.keyword')
+
+    s.aggs.bucket('all_pub_info2', 'nested', path='pub_info') \
+        .metric('pub_info_publisher_count', 'cardinality', field='pub_info.publisher.keyword') \
+        .bucket('pub_info_publisher_list', 'terms', field='pub_info.publisher.keyword')
+
     s = s[start:start + searchQuery.pageSize]
     response = s.execute()
     result_list = []
     for doc_hit in response['hits']['hits']:
         result_list.append(build_paper_entity(cluster_id=doc_hit['_id'], doc=doc_hit['_source']))
     total_results = response['hits']['total']['value']
-    return SearchQueryResponse(query_id=str(uuid4()), total_results=total_results, response=result_list)
-
+    aggregations = {"agg": build_facets(response['aggregations']['all_pub_info1'],
+                                response['aggregations']['all_pub_info2'],
+                                response['aggregations']['all_authors'])}
+    return SearchQueryResponse(query_id=str(uuid4()), total_results=total_results, response=result_list, aggregations=aggregations)
 
 @router.get('/paper')
 def paper_info(paper_id: Optional[str] = None, cluster_id: Optional[str] = None):
@@ -131,11 +172,24 @@ def similar_papers(id: str, algo: str):
     return SimilarPapersResponse(query_id=str(uuid4()), total_results=total_results, similar_papers=result_list)
 
 
+@router.post('/searchAuthor',response_model=SearchAuthorResponse)
+def search_facet(searchQuery: str):
+    s = elastic_models.Cluster.search(using=elastic_service.get_connection())
+    s=s.query("nested", path="authors", query=Q('multi_match', query=searchQuery, fields=['authors.fullname']))
+    response = s.execute()
+    result_list = []
+    for doc_hit in response['hits']['hits']:
+        result_list.append(getKeyOrDefault(getKeyOrDefault(doc_hit['_source'], 'authors'), 'fullname'))
+    total_results = response['hits']['total']['value']
+    return SearchAuthorResponse(query_id=str(uuid4()),total_results=total_results,response=result_list)
+
+
 def build_paper_entity(cluster_id, doc):
     return Paper(id=getKeyOrDefault(doc, 'paper_id')[0],
                  title=getKeyOrDefault(doc, 'title'),
                  venue=getKeyOrDefault(getKeyOrDefault(doc, 'pub_info'), 'title'),
                  year=getKeyOrDefault(getKeyOrDefault(doc, 'pub_info'), 'year'),
+                 publisher=getKeyOrDefault(getKeyOrDefault(doc, 'pub_info'), 'publisher'),
                  n_cited_by=len(getKeyOrDefault(doc, 'cited_by', default=[])),
                  n_self_cites=getKeyOrDefault(doc, 'selfCites', default=0),
                  abstract=getKeyOrDefault(doc, 'abstract'),
@@ -215,3 +269,23 @@ def build_cluster_entity(id, doc):
                    cnum=getKeyOrDefault(doc, 'cnum'),
                    cpages=getKeyOrDefault(doc, 'cpages'),
                    cventype=getKeyOrDefault(doc, 'cventype'))
+
+
+def build_facets(agg_dict_yr,agg_dict_pub,agg_dict_athr):
+    return Facets(pub_info_year_count= getKeyOrDefault(getKeyOrDefault(agg_dict_yr,'pub_info_year_count'),'value'),
+                 pub_info_year_list= get_aggregation_list(
+                     getKeyOrDefault(getKeyOrDefault(agg_dict_yr,'pub_info_year_list'),'buckets')),
+                 pub_info_publisher_count= getKeyOrDefault(getKeyOrDefault(agg_dict_pub,'pub_info_publisher_count'),'value'),
+                 pub_info_publisher_list= get_aggregation_list(
+                     getKeyOrDefault(getKeyOrDefault(agg_dict_pub,'pub_info_publisher_list'),'buckets')),
+                 authors_count= getKeyOrDefault(getKeyOrDefault(agg_dict_athr,'authors_count'),'value'),
+                 authors_fullname_terms= get_aggregation_list(
+                     getKeyOrDefault(getKeyOrDefault(agg_dict_athr,'authors_fullname_terms'),'buckets')))
+
+
+def get_aggregation_list(bucket):
+    agg_list = []
+    for item in bucket:
+        agg_list.append(PublicationInfo(key=item['key'], doc_count=item['doc_count']))
+    return agg_list
+
