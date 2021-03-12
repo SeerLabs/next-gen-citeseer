@@ -199,8 +199,10 @@ def build_paper_entity(cluster_id, doc):
 
 
 def get_authors_in_list(doc, field) -> List[str]:
-    return [getKeyOrDefault(field, 'forename', default="") + " " + getKeyOrDefault(field, 'surname', default="") for
-            field in getKeyOrDefault(doc, field, default={})]
+    return [getKeyOrDefault(field, 'fullname', default="") for 
+           field in getKeyOrDefault(doc, field, default={})]
+    # return [getKeyOrDefault(field, 'forename', default="") + " " + getKeyOrDefault(field, 'surname', default="") for
+    #         field in getKeyOrDefault(doc, field, default={})]
 
 
 def build_citation_entity(_id, doc):
