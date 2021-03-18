@@ -36,7 +36,7 @@ port: "3000"
     /*
      ** Plugins to load before mounting the App
      */
-    plugins: [],
+    plugins: ['~/plugins/axios'],
     /*
      ** Nuxt.js dev-modules
      */
@@ -52,6 +52,11 @@ port: "3000"
         // Doc: https://axios.nuxtjs.org/usage
         '@nuxtjs/axios',
         '@nuxtjs/pwa',
+        ['@nuxtjs/recaptcha', {
+            hideBadge: true,
+            siteKey: process.env.RECAPTCHA_SITE_KEY,
+            version: 3,
+        }],
         '@nuxtjs/style-resources'
     ],
 
@@ -59,7 +64,9 @@ port: "3000"
      ** Axios module configuration
      ** See https://axios.nuxtjs.org/options
      */
-    axios: {},
+    axios: {
+        baseURL: 'http://localhost:8000/api',
+    },
 
     vuetify: {
         defaultAssets: {
@@ -87,6 +94,12 @@ port: "3000"
                     fix: true
                 }
             });
+        }
+    },
+
+    privateRuntimeConfig: {
+        axios: {
+            baseURL: 'http://localhost:8000/api'
         }
     }
 };
