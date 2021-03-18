@@ -38,12 +38,12 @@ export default {
         });
     },
 
-    loginUser(username, password, grant_type="", scope="", client_id="", client_secret="") {
+    loginUser(email, password, grant_type="", scope="", client_id="", client_secret="") {
         const config = {headers: {
             'content-type': 'application/x-www-form-urlencoded;charset=utf-8'
         }}
         
-        return CoreApi().post('/login', qs.stringify({username, password, grant_type, scope, client_id, client_secret}), config)
+        return CoreApi().post('/login', qs.stringify({email, password}), config)
             .then(function(response) {
                 return response
             })
@@ -154,7 +154,7 @@ export default {
             }
         }
 
-        return CoreApi().post(`/liked_paper/${pid}`, {}, options)
+        return CoreApi().put(`/liked_paper/${pid}`, {}, options)
         .then(function(response) {
             return response
         })

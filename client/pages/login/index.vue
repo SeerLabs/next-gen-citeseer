@@ -67,28 +67,28 @@ export default {
   computed: {
     ...mapState(['auth'])
   },
+  /*
   async beforeCreate() {
     if (this.auth && this.auth.token) {
         this.$router.push("/myciteseer/profile")
     }
     else {
       try {
-        await this.$recaptcha.init()
+        // await this.$recaptcha.init()
       } catch(e) {
         // eslint-disable-next-line
         console.log(e);
       }
     }
-  },
+  }, */
   methods: {
     ...mapMutations('auth', ['login']),
     ...mapMutations(['showNotification']),
     async submitLogin() {
       try {
-        const recaptchaToken = await this.$recaptcha.execute('login');
-        const recaptchaStatus = (await authService.checkRecaptcha(recaptchaToken)).data.success;
-
-        if (recaptchaStatus) {
+        // const recaptchaToken = await this.$recaptcha.execute('login');
+        // const recaptchaStatus = (await authService.checkRecaptcha(recaptchaToken)).data.success;
+        // if (true) {
           await authService.loginUser(this.email, this.password)
           .then((response) => {
             if (response.status === 200) {
@@ -113,7 +113,7 @@ export default {
               console.log(error);
 
           });
-        }
+        // }
       } catch(error) {
           // eslint-disable-next-line
           console.log(error);
