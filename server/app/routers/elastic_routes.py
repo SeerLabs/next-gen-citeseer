@@ -215,7 +215,7 @@ def search_facet(searchQuery: SearchFilter):
     result_list = list(set(result_list))
     for ele in result_list:
         for name in tofilter:
-            if name in ele:
+            if name.lower() in ele.lower():
                 res.append(ele)
                 break
 
