@@ -1,12 +1,17 @@
 import uvicorn as uvicorn
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+
 from routers import document_routes, elastic_routes
 
 app = FastAPI()
 
 origins = [
     "http://localhost:3000",
+    "http://0.0.0.0:8080"
+    "http://0.0.0.0:8000",
+    "http://0.0.0.0:3000/",
+    "http://istcsxfe01.ist.psu.edu"
 ]
 app.add_middleware(
     CORSMiddleware,
@@ -25,4 +30,4 @@ def pong():
 
 
 if __name__ == "__main__":
-    uvicorn.run(app, host="localhost", port=8000)
+    uvicorn.run(app, host="0.0.0.0", port=8000)

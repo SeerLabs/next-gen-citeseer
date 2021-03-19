@@ -1,4 +1,4 @@
-from typing import Optional, List
+from typing import Optional, List, Dict
 
 from pydantic import BaseModel, typing
 
@@ -8,6 +8,7 @@ class Paper(BaseModel):
     title: Optional[str]
     venue: Optional[str]
     year: Optional[str]
+    publisher: Optional[str]
     n_cited_by: Optional[int]
     n_self_cites: Optional[int]
     abstract: str = None
@@ -17,25 +18,39 @@ class Paper(BaseModel):
     publish_time: str = None
     source: str
     urls: List[str] = []
+    cluster_id: Optional[str]
+
+class PublicationInfo(BaseModel):
+    key: Optional[str]
+    doc_count: Optional[int]
+
+class Facets(BaseModel):
+    pub_info_year_count: Optional[int]
+    pub_info_year_list: List[PublicationInfo]
+    pub_info_publisher_count: Optional[int]
+    pub_info_publisher_list: List[PublicationInfo]
+    authors_count: Optional[int]
+    authors_fullname_terms: List[PublicationInfo]
 
 class Citation(BaseModel):
     id: str
-    cluster: int
-    authors: typing.Any
-    title: typing.Any
-    venue: typing.Any
-    venue_type: typing.Any
-    year: typing.Any
-    pages: typing.Any
-    editors: typing.Any
-    publisher: typing.Any
-    pub_address: typing.Any
-    volume: typing.Any
-    number: typing.Any
-    tech: typing.Any
-    raw: str
-    paper_id: str
-    self: typing.Any
+    cluster: Optional[str]
+    authors: List[str] = []
+    title: Optional[str]
+    in_collection: Optional[bool]
+    venue: Optional[str]
+    venue_type: Optional[str]
+    year: Optional[str]
+    pages: Optional[str]
+    editors: Optional[str]
+    publisher: Optional[str]
+    pub_address: Optional[str]
+    volume: Optional[str]
+    number: Optional[str]
+    tech: Optional[str]
+    raw: Optional[str]
+    paper_id: Optional[str]
+    self: Optional[str]
 
 class Cluster(BaseModel):
     cluster_id: str
@@ -52,11 +67,26 @@ class Cluster(BaseModel):
     cpages: Optional[str]
     cventype: Optional[str]
 
+class Suggestion(BaseModel):
+    type: str
+    text: str
+    id: str
+
+class AutoCompleteResponse(BaseModel):
+    query_id: str
+    query: str
+    suggestions: List[Suggestion]
 
 class SearchQueryResponse(BaseModel):
     query_id: str
     total_results: int
     response: List[Paper]
+    aggregations: Dict[str, Facets]
+
+class SearchAuthorResponse(BaseModel):
+    query_id: str
+    total_results: int
+    response:List[str]
 
 class PaperDetailResponse(BaseModel):
     query_id: str
@@ -66,6 +96,11 @@ class CitationsResponse(BaseModel):
     query_id: str
     total_results: int
     citations: List[Citation]
+
+class SimilarPapersResponse(BaseModel):
+    query_id: str
+    total_results: int
+    similar_papers: List[Citation]
 
 class ClusterDetailResponse(BaseModel):
     query_id: str
@@ -81,3 +116,10 @@ class SearchQuery(BaseModel):
     queryString: str
     page: int
     pageSize: int
+    yearStart: Optional[str]
+    yearEnd: Optional[str]
+    author: Optional[List[str]]
+    publisher: Optional[List[str]]
+
+class SearchFilter(BaseModel):
+    queryString: str

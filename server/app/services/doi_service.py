@@ -1,6 +1,9 @@
 from zeep import Client
 
-
+"""
+This Service is to interact with old DOI Server for Legacy CiteSeerX
+and won't be used for next gen seer
+"""
 class DOIService:
     def __init__(self):
         # TODO: create configurable endpoint.

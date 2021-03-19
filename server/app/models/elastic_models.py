@@ -1,172 +1,107 @@
 from typing import List
 
-from elasticsearch_dsl import Document, Text, Completion, Date, datetime, Keyword, Integer, Nested, Boolean
+from elasticsearch_dsl import Document, Text, Completion, Date, Keyword, Integer, Nested, Boolean, InnerDoc
+
+import settings
 
 
-class Author(Document):
-    author_suggest: Completion()
-    cluster_id: Keyword()
-    forename: Text()
-    surname: Text()
-    fullname: Text()
-    affiliation: Text()
-    address: Text()
-    email: Keyword()
-    ord: Integer()
-    created_at = Date(default_timezone='UTC')
-
-    class Index:
-        name = 'authors_next'
-
-    class Meta:
-        doc_type = 'authors_next'
-
-    def save(self, **kwargs):
-        self.created_at = datetime.now()
-        return super().save(**kwargs)
-
-
-class PubInfo(Document):
-    title: Text()
-    date: Text()
-    publisher: Text()
-    meeting: Text()
-    pub_place: Text()
-    pub_address: Text()
-
-    class Index:
-        name = 'pub_info_next'
-
-    class Meta:
-        doc_type = 'pub_info_next'
-
-class CrawlMeta(Document):
-    crawl_status: Boolean()
-    pdf_path: Text()
-    citations_extracted: Boolean()
-    text_extracted: Boolean()
-    source: Text()
-    algorithms_extracted = Boolean()
-    uid = Text()
-    figures_extracted = Boolean()
-    text_ingested = Boolean()
-    time = Text()
-    doi = Text()
-    status = Boolean()
-    fields = Nested(Date)
-
-    class Index:
-        name = 'crawl_meta'
-
-    class Meta:
-        doc_type = 'crawl_meta'
-
-class Citation(Document):
-    title = Text()
-    title_suggest = Completion()
-    created_at = Date(default_timezone='UTC')
-    authors = Nested(Author)
+class Author(InnerDoc):
+    author_suggest = Completion()
     cluster_id = Keyword()
-    paper_id = Text()
-    raw = Text()
-    pub_info = Nested(PubInfo)
-
-    class Index:
-        name = 'citations_next'
-
-    class Meta:
-        doc_type = 'citations_next'
+    forename = Text()
+    surname = Text()
+    fullname = Text()
+    affiliation = Text()
+    address = Text()
+    email = Keyword()
+    ord = Integer()
+    created_at = Date(default_timezone='UTC')
 
     def save(self, **kwargs):
-        self.created_at = datetime.now()
+        self.author_suggest = {
+            'input': [self.forename, self.surname],
+        }
         return super().save(**kwargs)
 
 
-class Paper(Document):
+class PubInfo(InnerDoc):
+    title = Text()
+    date = Text()
+    year = Integer()
+    publisher = Text()
+    meeting = Text()
+    pub_place = Text()
+    pub_address = Text()
+
+
+class KeyMap(Document):
     paper_id = Text()
+
+    class Index:
+        name = settings.KEYMAP_INDEX
+
+
+class Cluster(Document):
+    paper_id = Keyword(multi=True)
+    csx_doi = Keyword()
     title = Text()
     cluster_id = Keyword()
     title_suggest = Completion()
     text = Text()
+    has_pdf = Boolean()
     abstract = Text()
+    is_citation = Boolean()
     created_at = Date(default_timezone='UTC')
     authors = Nested(Author)
-    citations = Nested(Citation)
+    self_cites = Integer()
+    num_cites = Integer()
+    cited_by = Keyword(multi=True)
+    keys = Keyword(multi=True)
     keywords = Keyword(multi=True)
     pub_info = Nested(PubInfo)
 
     class Index:
-        name = 'papers_next'
+        name = settings.CLUSTERS_INDEX
 
-    class Meta:
-        doc_type = 'papers_next'
-
-    def save(self, **kwargs):
-        self.created_at = datetime.now()
-        return super().save(**kwargs)
-
-
-class Cluster(Document):
-    in_collection: Boolean()
-    keys: Keyword(multi=True)
-    citations: Keyword(multi=True)
-    papers: Keyword(multi=True)
-    title: Text()
-    pub_info: Nested(PubInfo)
-    authors: Nested(Author)
-    cites: Keyword(multi=True)
-    cited_by: Keyword(multi=True)
-    created_at = Date(default_timezone='UTC')
-    modified_at = Date(default_timezone='UTC')
-
-    class Index:
-        name = 'clusters_next'
-
-    class Meta:
-        doc_type = 'cluster_next'
-
-    def save(self, **kwargs):
-        self.created_at = datetime.now()
-        return super().save(**kwargs)
-
-    def add_paper_id(self, paper_id: str):
-        if not self.__contains__("papers"):
-            self.__setitem__("papers", [paper_id])
-            return
-        self.papers.append(paper_id)
-        self.modified_at = datetime.now()
-
-    def add_citation_id(self, citation_id: str):
-        if not self.__contains__("citations"):
-            self.__setitem__("citations", [citation_id])
-            return
-        self.citations.append(citation_id)
-        self.modified_at = datetime.now()
-
-    def add_cites(self, cite: str):
-        if not self.__contains__("cites"):
-            self.__setitem__("cites", [cite])
-            return
-        self.cites.append(cite)
-        self.modified_at = datetime.now()
-
-    def add_cited_by(self, cited_by: str):
+    def add_cited_by(self, paper_id: str):
         if not self.__contains__("cited_by"):
-            self.__setitem__("cited_by", [cited_by])
+            self.__setitem__("cited_by", [paper_id])
             return
-        self.cited_by.append(cited_by)
-        self.modified_at = datetime.now()
+        self.cited_by.append(paper_id)
+
+    def get_cited_by(self):
+        if not self.__contains__("cited_by"):
+            return []
+        else:
+            return self.cited_by
+
+    def get_paper_ids(self):
+        if not self.__contains__("paper_id"):
+            return []
+        else:
+            return self.paper_id
 
     def add_key(self, key: str):
         if not self.__contains__("keys"):
             self.__setitem__("keys", [key])
             return
         self.keys.append(key)
-        self.modified_at = datetime.now()
+
+    def add_paper_id(self, paper_id: str):
+        if not self.__contains__("paper_id"):
+            self.__setitem__("paper_id", [paper_id])
+            return
+        self.paper_id.append(paper_id)
 
     def extend_keys(self, keys: List[str]):
         if not self.__contains__("keys"):
             self.__setitem__("keys", keys)
             return
         self.keys.extend(keys)
-        self.modified_at = datetime.now()
+
+    def save(self, **kwargs):
+        if self.title is not None:
+            self.title_suggest = {
+                'input': [self.title],
+            }
+        return super().save(**kwargs)

@@ -5,6 +5,7 @@
                 <doc-results-item
                     class="document-results-item"
                     :doc-id="item.id"
+                    :cluster-id="item.cluster_id"
                     :title="item.title"
                     :type="item.type"
                     :authors="item.authors"

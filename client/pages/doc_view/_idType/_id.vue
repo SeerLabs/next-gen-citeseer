@@ -21,16 +21,16 @@
                         id="citations"
                         class="citation-card"
                         :doc-id="docId"
+                        :cid="cid"
                         title="Citations"
-                        :n-citations="nCitations"
                     />
 
                     <citation-card
                         id="similar-articles"
                         class="citation-card"
                         :doc-id="docId"
+                        :cid="cid"
                         title="Similar Articles"
-                        :n-citations="nCitations"
                     />
                     <version-history-card
                         id="version-history"
@@ -76,7 +76,21 @@ export default {
     },
     async fetch() {
         this.loading = true;
-        const { data } = await DocViewService.getPaperEntity(this.docId);
+        let data = null;
+        switch (this.idType){
+            case 'pid':
+                ({ data } = await DocViewService.getPaperWithPaperId(this.docId));
+                break;
+            case 'cid':
+                ({ data } = await DocViewService.getPaperWithClusterId(this.docId));
+                // set docID from cluster id back to paper id
+                this.docId = data.paper.id
+                break;
+            default:
+                this.loading = false;
+                return;
+        }
+        this.cid = data.paper.cluster_id
         this.title = data.paper.title;
         this.year = data.paper.year;
         this.authors = data.paper.authors;
@@ -91,6 +105,8 @@ export default {
             loading: false,
             showAbstract: false,
             docId: this.$route.params.id,
+            idType: this.$route.params.idType,
+            cid: '',
             title: '',
             year: '',
             authors: [],

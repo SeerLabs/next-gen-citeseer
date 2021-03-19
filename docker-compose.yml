@@ -1,0 +1,38 @@
+version: '2.3'
+
+services:
+    server:        
+      build: ./server
+      container_name: server
+      ports:
+        - 8000:8000
+      volumes:
+        - ./server:/api
+    client:
+      build: ./client
+      container_name: client
+      restart: always
+      command: 'npm run start'
+      ports:
+        - 3000:3000
+      volumes:
+          - /app/node_modules
+          - ./client:/app
+      depends_on:
+          - server
+      environment:
+        - NODE_ENV
+    nginx:
+      container_name: web
+      restart: always
+      image: nginx:latest
+      ports:
+        - 8080:8080
+      volumes:
+        - .:/next-gen-seer
+        - ./nginx.conf:/etc/nginx/conf.d/nginx.conf
+      depends_on:
+        - server
+        - client
+
+

@@ -3,7 +3,10 @@
         <v-row no-gutters>
             <v-col class="result-title">
                 <h5>
-                    <nuxt-link v-if="cid" :to="'/show_citing/' + cid">
+                    <nuxt-link v-if="inCollection && cid" :to="'/doc_view/cid/' + cid">
+                        {{ title }}
+                    </nuxt-link>
+                    <nuxt-link v-else-if="cid" :to="'/show_citing/' + cid">
                         {{ title }}
                     </nuxt-link>
                     <span v-else>
@@ -16,7 +19,7 @@
         <v-row no-gutters>
             <v-col class="result-info">
                 <h6>
-                    {{ authors || 'No authors available' }} -
+                    {{ authors.join(", ") || 'No authors available' }} -
                     {{ venue || 'No venue available' }} -
                     {{ year || 'No year available' }}
                 </h6>
@@ -30,11 +33,12 @@ export default {
     name: 'CitationItem',
     props: {
         title: { type: String, default: '' },
-        authors: { type: String, default: 'No authors available' },
+        authors: { type: Array[String], default: 'No authors available' },
         venue: { type: String, default: 'No venue available' },
-        year: { type: Number, default: 0 },
+        year: { type: String, default: '0' },
         numCitations: { type: Number, default: 0 },
-        cid: { type: Number, required: true }
+        cid: { type: String, required: true },
+        inCollection: { type: Boolean, required: true }
     },
     data() {
         return {

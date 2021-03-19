@@ -10,17 +10,35 @@
                 </div>
                 <div class="citation-sorting-container">
                     <v-select
+                        v-model="sortSelected"
                         dense
                         class="m-2 citation-sorting"
-                        :value="sortDropdown[0]"
                         :items="sortDropdown"
                         label="Sort By"
                         outlined
+                        @change="getCitations"
                     />
                 </div>
             </div>
             <v-card-text>
-                <citation-list :doc-id="docId" :type="title" />
+                <div v-if="loading" id="loading">
+                    <v-progress-linear rounded indeterminate color="teal" />
+                </div>
+                <div v-else>
+                    <citation-list 
+                        :doc-id="docId" 
+                        :title="title"
+                        :citations="citations"
+                        :n-citations="nCitations"
+                    />
+                    <v-pagination
+                        v-model="currentPage"
+                        :total-visible="6"
+                        :length="totalNumRows"
+                        @input="getCitations"
+                    />
+                    <p class="mt-3">Current Page: {{ currentPage }}</p>
+                </div>
             </v-card-text>
         </span>
         <v-card-text v-else class="text-center text-muted blue-grey lighten-4">
@@ -31,6 +49,7 @@
 
 <script>
 import CitationList from './CitationList.vue';
+import docViewService from '~/api/DocViewService';
 export default {
     name: 'CitationCard',
     components: {
@@ -38,53 +57,95 @@ export default {
     },
     props: {
         docId: { type: String, default: '' },
-        title: { type: String, default: '' },
-        nCitations: { type: Number, default: 0 }
+        cid: { type: String, default: ''},
+        title: { type: String, default: '' }
     },
     data() {
         return {
             sortByDisplay: '',
             sortDropdown: [],
-            sortByKey: ''
+            sortSelected: '',
+            citations: [],
+            nCitations: 0,
+            perPage: 10,
+            currentPage: 1,
+            loading: false
         };
     },
-    mounted() {
+    computed: {
+        totalNumRows() {
+            return Math.floor(this.nCitations / this.perPage);
+        }
+    },
+    created() {
         switch (this.title) {
             case 'Citations':
-                this.sortByDisplay = 'Relevance';
-                this.sortDropdown = [
-                    {
-                        text: 'Relevance',
-                        sortByKey: 'relevance'
-                    },
-                    {
-                        text: 'Recency',
-                        sortByKey: 'Recency'
-                    }
+                this.sortSelected = 'Relevance';
+                this.sortDropdown = [ 
+                    'Relevance',
+                    'Recency'
                 ];
-                this.sortByKey = 'relevance';
+                
+                this.getCitations();
                 break;
             case 'Similar Articles':
-                this.sortByDisplay = 'Co-Citation';
+                this.sortSelected = 'Co-Citation';
                 this.sortDropdown = [
-                    {
-                        text: 'Co-Citation',
-                        sortByKey: 'co-citation'
-                    },
-                    {
-                        text: 'Active Bibliography',
-                        sortByKey: 'active-bibliography'
-                    }
+                    'Co-Citation',
+                    'Active Bibliography',
+                    'TF-IDF'
                 ];
-                this.sortByKey = 'co-citation';
+                this.getCitations();
                 break;
         }
     },
     methods: {
-        sortResults(event) {
-            const dropdownItem = event.target.name;
-            this.sortByDisplay = event.target.text;
-            this.sortByKey = this.sortDropdown[dropdownItem].sortByKey;
+        getCitations() {
+            switch (this.title) {
+                case 'Citations':
+                    this.loading = true;
+                    docViewService
+                        .getCitationsEntities(
+                            this.docId,
+                            this.currentPage,
+                            this.perPage
+                        )
+                        .then(response => {
+                            this.citations = response.data.citations;
+                            this.nCitations = response.data.total_results;
+                            this.loading = false;
+                        })
+                        .catch(error => {
+                            this.loading = false;
+                            // eslint-disable-next-line
+                            console.log(error);
+                        });
+                    break;
+                case 'Similar Articles': {
+                    this.loading = true;
+                    let queryId = this.cid;
+                    if (this.sortSelected === 'TF-IDF'){
+                        queryId = this.docId;
+                    }
+                    
+                    docViewService
+                        .getSimilarPaper(
+                            queryId,
+                            this.sortSelected
+                        )
+                        .then(response => {
+                            this.citations = response.data.similar_papers;
+                            this.nCitations = response.data.total_results;
+                            this.loading = false;
+                        })
+                        .catch(error => {
+                            this.loading = false;
+                            // eslint-disable-next-line
+                            console.log(error);
+                        });
+                    break;
+                }
+            }
         }
     }
 };
