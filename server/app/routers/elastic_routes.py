@@ -173,7 +173,7 @@ def similar_papers(id: str, algo: str):
 def search_facet(searchQuery: SearchFilter):
     s = elastic_models.Cluster.search(using=elastic_service.get_connection())
     q=searchQuery.queryString
-    s=s.query("nested", path="authors", query=Q('multi_match', query=q, fields=['authors.fullname']),size=10)
+    s=s.query("nested", path="authors", query=Q('multi_match', query=q, fields=['authors.fullname']))
     response = s.execute()
     result_list,res = [],[]
     tofilter = q.split(" ")
