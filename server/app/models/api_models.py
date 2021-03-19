@@ -119,3 +119,6 @@ class SearchQuery(BaseModel):
     year: Optional[List[str]]
     author: Optional[List[str]]
     publisher: Optional[List[str]]
+
+class SearchFilter(BaseModel):
+    queryString: str
