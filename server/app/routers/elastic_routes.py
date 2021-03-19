@@ -5,7 +5,7 @@ from fastapi import APIRouter
 
 from models.api_models import SearchQueryResponse, PaperDetailResponse, CitationsResponse, ClusterDetailResponse, \
     showCitingClustersResponse, SimilarPapersResponse, SearchQuery, Paper, Citation, Cluster, Suggestion, \
-    AutoCompleteResponse, PublicationInfo, Facets, SearchAuthorResponse
+    AutoCompleteResponse, PublicationInfo, Facets, SearchAuthorResponse, SearchFilter
 
 from models import elastic_models
 
@@ -170,15 +170,27 @@ def similar_papers(id: str, algo: str):
 
 
 @router.post('/searchAuthor',response_model=SearchAuthorResponse)
-def search_facet(searchQuery: str):
+def search_facet(searchQuery: SearchFilter):
     s = elastic_models.Cluster.search(using=elastic_service.get_connection())
-    s=s.query("nested", path="authors", query=Q('multi_match', query=searchQuery, fields=['authors.fullname']))
+    q=searchQuery.queryString
+    s=s.query("nested", path="authors", query=Q('multi_match', query=q, fields=['authors.fullname']),size=10)
     response = s.execute()
-    result_list = []
+    result_list,res = [],[]
+    tofilter = q.split(" ")
     for doc_hit in response['hits']['hits']:
-        result_list.append(getKeyOrDefault(getKeyOrDefault(doc_hit['_source'], 'authors'), 'fullname'))
+        authorlist = getKeyOrDefault(doc_hit['_source'], 'authors')
+        for author in authorlist:
+            result_list.append(getKeyOrDefault(author,'fullname'))
+    
+    result_list = list(set(result_list))
+    for ele in result_list:
+        for name in tofilter:
+            if name in ele:
+                res.append(ele)
+                break
+
     total_results = response['hits']['total']['value']
-    return SearchAuthorResponse(query_id=str(uuid4()),total_results=total_results,response=result_list)
+    return SearchAuthorResponse(query_id=str(uuid4()),total_results=total_results,response=res)
 
 
 def build_paper_entity(cluster_id, doc):
