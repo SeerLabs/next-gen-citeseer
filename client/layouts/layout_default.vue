@@ -3,7 +3,7 @@
         <v-app v-cloak>
             <nav-bar />
             <v-main>
-                <v-container>
+                <v-container id="page-container">
                     <nuxt keep-alive />
                 </v-container>
             </v-main>
@@ -21,13 +21,22 @@ export default {
     components: {
         NavBar,
         FooterBar
+    },
+    async mounted() {
+      try {
+        await this.$recaptcha.init()
+      } catch (e) {
+        // eslint-disable-next-line
+        console.log(e);
+      }
     }
 };
 </script>
 
 <style>
 #page-container {
-    margin: auto;
+    margin: auto auto;
+    margin-bottom: 400px;
 }
 
 #app {

@@ -1,9 +1,15 @@
 import uvicorn as uvicorn
-from fastapi import FastAPI
+from fastapi import FastAPI, Request, HTTPException, status
+from fastapi.responses import JSONResponse, PlainTextResponse
+from fastapi.exceptions import RequestValidationError
 from fastapi.middleware.cors import CORSMiddleware
-
+import os
 from routers import document_routes, elastic_routes
+import requests
 
+DEBUG = os.environ['DEBUG'] == 'true'
+RECAPTCHA_SECRET_KEY = os.environ['RECAPTCHA_SECRET_KEY']
+RECAPTCHA_API_ENDPOINT = "https://www.google.com/recaptcha/api/siteverify"
 app = FastAPI()
 
 origins = [
@@ -23,6 +29,22 @@ app.add_middleware(
 
 app.include_router(document_routes.router, tags=['document_routes'], prefix="/api")
 app.include_router(elastic_routes.router, tags=['elastic_routes'], prefix="/api")
+
+@app.middleware("http")
+async def recaptcha_check(request: Request, call_next):
+    if not DEBUG and request.method != "OPTIONS":
+        if 'token' not in request.headers:
+            return JSONResponse({"message": "Token is required"}, status_code=status.HTTP_401_UNAUTHORIZED) 
+
+        token = request.headers['token']
+        body = { "secret": RECAPTCHA_SECRET_KEY, "response": token}
+        res = requests.post(url = RECAPTCHA_API_ENDPOINT, data = body).json()
+
+        if res["success"] != False:
+            return JSONResponse({"message": "Token is invalid"}, status_code=status.HTTP_401_UNAUTHORIZED) 
+
+    response = await call_next(request)
+    return response
 
 @app.get("/")
 def pong():

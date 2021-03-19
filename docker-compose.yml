@@ -8,6 +8,10 @@ services:
         - 8000:8000
       volumes:
         - ./server:/api
+      environment:
+        - RECAPTCHA_SECRET_KEY
+      env_file:
+        - ./variables/development.env
     client:
       build: ./client
       container_name: client
@@ -20,8 +24,8 @@ services:
           - ./client:/app
       depends_on:
           - server
-      environment:
-        - NODE_ENV
+      env_file:
+        - ./variables/development.env
     nginx:
       container_name: web
       restart: always

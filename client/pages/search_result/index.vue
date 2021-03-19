@@ -14,7 +14,7 @@
                 />
                 <v-pagination
                     v-model="page"
-                    :length="totalNumRows"
+                    :length="totalPageResults"
                     :total-visible="8"
                     @input="searchQuery"
                 />
@@ -33,10 +33,11 @@
 </template>
 
 <script>
+import { mapActions } from 'vuex';
 import DocResultsContainer from '../../components/DocResults/DocResultsContainer';
 import SearchResultsFilter from '../../components/SearchResults/SearchResultsFilter.vue';
 import SearchResultsExternalLinks from '../../components/SearchResults/SearchResultsExternalLinks';
-import searchPaperService from '~/api/SearchPaperService';
+
 
 export default {
     name: 'SearchResults',
@@ -89,19 +90,14 @@ export default {
         this.searchQuery();
     },
     methods: {
+        ...mapActions(['searchPaper']),
         searchQuery() {
             this.loadingState = true;
             // push params
-            searchPaperService
-                .searchPaper(
-                    this.queryString,
-                    this.page,
-                    this.pageSize,
-                    this.filters
-                )
-                .then((response) => {
-                    this.documents = response.data.response;
-                    this.totalPageResults = response.data.total_results;
+            this.searchPaper( {queryString: this.queryString, page: this.page, pageSize: this.pageSize} )
+                .then(res => {
+                    this.documents = res.response;
+                    this.totalPageResults = res.total_results;
                     this.loadingState = false;
                 })
                 .catch((error) => {
