@@ -24,9 +24,10 @@ def perform_search(searchQuery: SearchQuery):
     start = (searchQuery.page - 1) * searchQuery.pageSize
     s = s.filter('term', has_pdf=True)
 
-    if searchQuery.year is not None:
+    if searchQuery.yearStart is not None and searchQuery.yearEnd is not None:
+        year_list = map(str,list(range(int(searchQuery.yearStart),int(searchQuery.yearEnd) +1)))
         yr_queries =[]
-        for yr in searchQuery.year:
+        for yr in year_list:
             q=Q("nested", path="pub_info", query=Q("term", **{'pub_info.year.keyword':yr}))
             yr_queries.append(q)
         s = s.query('bool',should=yr_queries)

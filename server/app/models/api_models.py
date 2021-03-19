@@ -116,7 +116,8 @@ class SearchQuery(BaseModel):
     queryString: str
     page: int
     pageSize: int
-    year: Optional[List[str]]
+    yearStart: Optional[str]
+    yearEnd: Optional[str]
     author: Optional[List[str]]
     publisher: Optional[List[str]]
 
