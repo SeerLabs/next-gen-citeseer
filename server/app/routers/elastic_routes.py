@@ -25,12 +25,8 @@ def perform_search(searchQuery: SearchQuery):
     s = s.filter('term', has_pdf=True)
 
     if searchQuery.yearStart is not None and searchQuery.yearEnd is not None:
-        year_list = map(str,list(range(int(searchQuery.yearStart),int(searchQuery.yearEnd) +1)))
-        yr_queries =[]
-        for yr in year_list:
-            q=Q("nested", path="pub_info", query=Q("term", **{'pub_info.year.keyword':yr}))
-            yr_queries.append(q)
-        s = s.query('bool',should=yr_queries)
+        q= Q("nested", path="pub_info", query=Q("range", **{'pub_info.year.keyword':{'gte': searchQuery.yearStart , 'lte': searchQuery.yearEnd }}))
+        s = s.query(q)
 
     if searchQuery.publisher is not None and len(searchQuery.publisher) > 0:
         publisher_queries =[]
