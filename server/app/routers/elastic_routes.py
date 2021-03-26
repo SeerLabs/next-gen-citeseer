@@ -4,7 +4,7 @@ from uuid import uuid4
 from fastapi import APIRouter
 
 from models.api_models import SearchQueryResponse, PaperDetailResponse, CitationsResponse, ClusterDetailResponse, \
-    showCitingClustersResponse, SimilarPapersResponse, SearchQuery, Paper, Citation, Cluster, Suggestion, \
+    showCitingClustersResponse, SimilarPapersResponse, SearchQuery, AggregationQuery, Paper, Citation, Cluster, Suggestion, \
     AutoCompleteResponse, PublicationInfo, Facets, SearchAuthorResponse, SearchFilter, AggregationResponse
 
 from models import elastic_models
@@ -32,14 +32,14 @@ def perform_search(searchQuery: SearchQuery):
             yr_queries.append(q)
         s = s.query('bool',should=yr_queries)
 
-    if searchQuery.publisher is not None:
+    if searchQuery.publisher is not None and len(searchQuery.publisher) > 0:
         publisher_queries =[]
         for pub in searchQuery.publisher:
             q=Q("nested", path="pub_info", query=Q("term", **{'pub_info.publisher.keyword':pub}))
             publisher_queries.append(q)
         s = s.query('bool',should=publisher_queries)
 
-    if searchQuery.author is not None:
+    if searchQuery.author is not None and len(searchQuery.author) > 0:
         athr_queries =[]
         for athr in searchQuery.author:
             q=Q("nested", path="authors", query=Q("term", **{'authors.fullname.keyword':athr}))
@@ -72,9 +72,8 @@ def perform_search(searchQuery: SearchQuery):
     return SearchQueryResponse(query_id=str(uuid4()), total_results=total_results, response=result_list, aggregations=aggregations)
 
 @router.post('/aggregate',response_model=AggregationResponse)
-def perform_aggregations(searchQuery: SearchQuery):
+def perform_aggregations(searchQuery: AggregationQuery):
     s = elastic_models.Cluster.search(using=elastic_service.get_connection())
-    start = (searchQuery.page - 1) * searchQuery.pageSize
     s = s.filter('term', has_pdf=True)
 
     s = s.query('multi_match', query=searchQuery.queryString, fields=['title', 'text'])
@@ -91,7 +90,6 @@ def perform_aggregations(searchQuery: SearchQuery):
         .metric('pub_info_publisher_count', 'cardinality', field='pub_info.publisher.keyword') \
         .bucket('pub_info_publisher_list', 'terms', field='pub_info.publisher.keyword')
     
-    s = s[start:start + searchQuery.pageSize]
     response = s.execute()
     aggregations = {"agg": build_facets(response['aggregations']['all_pub_info1'],
                                 response['aggregations']['all_pub_info2'],

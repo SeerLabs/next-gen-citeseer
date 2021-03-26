@@ -124,5 +124,8 @@ class SearchQuery(BaseModel):
 class SearchFilter(BaseModel):
     queryString: str
 
+class AggregationQuery(BaseModel):
+    queryString: str
+
 class AggregationResponse(BaseModel):
     aggregations: Dict[str, Facets]
