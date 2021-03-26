@@ -5,7 +5,7 @@ from fastapi import APIRouter
 
 from models.api_models import SearchQueryResponse, PaperDetailResponse, CitationsResponse, ClusterDetailResponse, \
     showCitingClustersResponse, SimilarPapersResponse, SearchQuery, Paper, Citation, Cluster, Suggestion, \
-    AutoCompleteResponse, PublicationInfo, Facets, SearchAuthorResponse, SearchFilter
+    AutoCompleteResponse, PublicationInfo, Facets, SearchAuthorResponse, SearchFilter, AggregationResponse
 
 from models import elastic_models
 
@@ -70,6 +70,35 @@ def perform_search(searchQuery: SearchQuery):
                                 response['aggregations']['all_pub_info2'],
                                 response['aggregations']['all_authors'])}
     return SearchQueryResponse(query_id=str(uuid4()), total_results=total_results, response=result_list, aggregations=aggregations)
+
+@router.post('/aggregate',response_model=AggregationResponse)
+def perform_aggregations(searchQuery: SearchQuery):
+    s = elastic_models.Cluster.search(using=elastic_service.get_connection())
+    start = (searchQuery.page - 1) * searchQuery.pageSize
+    s = s.filter('term', has_pdf=True)
+
+    s = s.query('multi_match', query=searchQuery.queryString, fields=['title', 'text'])
+
+    s.aggs.bucket('all_pub_info1', 'nested', path='pub_info') \
+        .metric('pub_info_year_count', 'cardinality', field='pub_info.year.keyword') \
+        .bucket('pub_info_year_list', 'terms', field='pub_info.year.keyword')
+    
+    s.aggs.bucket('all_authors', 'nested', path='authors') \
+        .metric('authors_count', 'cardinality', field='authors.fullname.keyword') \
+        .bucket('authors_fullname_terms', 'terms', field='authors.fullname.keyword')
+
+    s.aggs.bucket('all_pub_info2', 'nested', path='pub_info') \
+        .metric('pub_info_publisher_count', 'cardinality', field='pub_info.publisher.keyword') \
+        .bucket('pub_info_publisher_list', 'terms', field='pub_info.publisher.keyword')
+    
+    s = s[start:start + searchQuery.pageSize]
+    response = s.execute()
+    aggregations = {"agg": build_facets(response['aggregations']['all_pub_info1'],
+                                response['aggregations']['all_pub_info2'],
+                                response['aggregations']['all_authors'])}
+    return AggregationResponse(aggregations=aggregations)
+
+
 
 @router.get('/paper')
 def paper_info(paper_id: Optional[str] = None, cluster_id: Optional[str] = None):
@@ -186,7 +215,7 @@ def search_facet(searchQuery: SearchFilter):
     result_list = list(set(result_list))
     for ele in result_list:
         for name in tofilter:
-            if name in ele:
+            if name.lower() in ele.lower():
                 res.append(ele)
                 break
 
