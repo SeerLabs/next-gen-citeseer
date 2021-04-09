@@ -4,7 +4,10 @@ from elasticsearch_dsl import Document, Text, Completion, Date, Keyword, Integer
 
 import settings
 
-
+'''
+IMPORTANT: ANY UPDATES TO THIS FILE MUST ALSO BE MADE IN elastic_models.py
+file of PDFMEF REPOSITORY AND VICE-VERSA
+'''
 class Author(InnerDoc):
     author_suggest = Completion()
     cluster_id = Keyword()
@@ -105,3 +108,20 @@ class Cluster(Document):
                 'input': [self.title],
             }
         return super().save(**kwargs)
+
+
+class UserRequest(Document):
+    request_type = Keyword()
+    requester_email = Keyword()
+    requester_name = Keyword()
+    reason_or_details = Text()
+    paper_id = Keyword()
+    title = Text()
+    cluster_id = Keyword()
+    abstract = Text()
+    authors = Nested(Author)
+    pub_info = Nested(PubInfo)
+    status = Keyword()
+
+    class Index:
+        name = settings.REQUESTS_INDEX
