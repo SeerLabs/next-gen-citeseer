@@ -23,7 +23,8 @@ elastic_service = ElasticService()
 def perform_search(searchQuery: SearchQuery):
     s = elastic_models.Cluster.search(using=elastic_service.get_connection())
     start = (searchQuery.page - 1) * searchQuery.pageSize
-    s = s.filter('term', has_pdf=True)
+    if searchQuery.must_have_pdf:
+        s = s.filter('term', has_pdf=True)
     s = s.query('multi_match', query=searchQuery.queryString, fields=['title', 'text'])
     s = s[start:start + searchQuery.pageSize]
     response = s.execute()
@@ -36,9 +37,15 @@ def perform_search(searchQuery: SearchQuery):
 
 @router.get('/paper')
 def paper_info(paper_id: Optional[str] = None, cluster_id: Optional[str] = None):
+    # if Called with cluster ID
     if cluster_id is not None:
         cluster = elastic_models.Cluster.get(id=cluster_id, using=elastic_service.get_connection())
-        paper_id = cluster.paper_id[0]
+        print(cluster.to_dict())
+        paper_entity_response = build_paper_entity(cluster_id=cluster_id,
+                                                   doc=cluster.to_dict())
+        return PaperDetailResponse(query_id=str(uuid4()), paper=paper_entity_response)
+
+    # if called with paper ID (SHA1)
     s = elastic_models.Cluster.search(using=elastic_service.get_connection())
     s = s.filter("term", paper_id=paper_id)
     response = s.execute()
@@ -196,7 +203,8 @@ def user_request_correction(paper_id: str):
 
 
 def build_paper_entity(cluster_id, doc):
-    return Paper(id=getKeyOrDefault(doc, 'paper_id')[0],
+    paper_id = getKeyOrDefault(doc, 'paper_id', [''])[0]
+    return Paper(id=paper_id,
                  title=getKeyOrDefault(doc, 'title'),
                  venue=getKeyOrDefault(getKeyOrDefault(doc, 'pub_info'), 'title'),
                  year=getKeyOrDefault(getKeyOrDefault(doc, 'pub_info'), 'year'),

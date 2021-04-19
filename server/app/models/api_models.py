@@ -97,3 +97,4 @@ class SearchQuery(BaseModel):
     queryString: str
     page: int
     pageSize: int
+    must_have_pdf: bool
