@@ -77,7 +77,7 @@ class CorrectPaperMetadataES(Document):
     pub_address = Text()
     tech_report_num = Keyword()
     class Index:
-        name = 'paper_metadata_correction'
+        name = 'paper_metadata_correction_next'
 
 class PaperMetadataCorrectionES(Document):
     user_email = Keyword()
@@ -96,7 +96,7 @@ class PaperMetadataCorrectionES(Document):
     tech_report_num = Text()
 
     class Index:
-        name = 'paper_metadata_correction'
+        name = 'paper_metadata_correction_nextv1'
 
 
 class Cluster(Document):
