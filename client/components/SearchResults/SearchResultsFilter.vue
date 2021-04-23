@@ -14,8 +14,12 @@
                     class="align-center"
                     @change="$emit('year-change', yearRange)"
                 >
-                    <template v-slot:prepend>{{ yearRange[0] }}</template>
-                    <template v-slot:append>{{ yearRange[1] }}</template>
+                    <template v-slot:prepend>
+                        {{ yearRange[0] }}
+                    </template>
+                    <template v-slot:append>
+                      {{ yearRange[1] }}
+                    </template>
                 </v-range-slider>
             </div>
 
@@ -38,7 +42,17 @@
                     >{{facet.key.toUpperCase()}}</v-btn>
                 </template>
                 <v-card>
+                    <v-card-title>{{ facet.key.charAt(0).toUpperCase() + facet.key.slice(1) }}</v-card-title>
                     <v-list>
+                        <v-list-item>
+                          <v-text-field
+                            v-model="facet.searchQuery"
+                            :label="`Search ${facet.key}`"
+                            outlined
+                            dense
+                            @keydown.enter="searchFilter(facet)"
+                          />
+                        </v-list-item>
                         <v-list-item v-for="item in facet.items" :key="item.key">
                             <v-list-item-action>
                                 <v-checkbox
@@ -46,10 +60,18 @@
                                     v-model="facet.filter"
                                     type="checkbox"
                                     :value="item.key"
-                                    :label="`${item.key} (${item.doc_count})`"
+                                    :label="`${item.key} ${item.doc_count ? '(' + item.doc_count + ')' : ''}`"
                                     class="facet-checkbox"
-                                    @change="$emit('facet-change', {key: facet.key, filter: facet.filter})"
-                                />
+                                    @change="$emit('facet-change', {key: facet.key, filters: facet.filter})"
+                                >
+                                    <v-icon 
+                                      v-if="!item.doc_count"
+                                      slot="append"
+                                      @click="removeItem(facet, item)"
+                                    >
+                                      cancel
+                                    </v-icon>
+                                </v-checkbox>
                             </v-list-item-action>
                         </v-list-item>
                     </v-list>
@@ -60,7 +82,7 @@
 </template>
 
 <script>
-import searchPaperService from '~/api/SearchPaperService';
+import { mapActions } from 'vuex';
 
 export default {
     name: 'SearchResultsFilter',
@@ -78,35 +100,39 @@ export default {
             yearMax,
             yearRange: [yearMin, yearMax],
 
-            facets: []
+            facets: [],
         };
     },
     watch: {
         queryString() {
-            this.getAggregations();
+            this.populateFacets();
         }
     },
-    created() {
+    mounted() {
         // make search query immediately when page is loaded
-        this.getAggregations();
+        this.populateFacets();
     },
     methods: {
-        getAggregations() {
+        ...mapActions(['getAggregations']),
+        populateFacets() {
             this.loadingState = true;
 
-            searchPaperService
-                .getAggregations(this.queryString)
+            this.getAggregations({queryString: this.queryString})
                 .then((response) => {
-                    response.data.aggs.forEach((agg) => {
-                        this.facets = [
-                            ...this.facets,
-                            {
-                                ...agg,
-                                filter: [],
-                                menu: false
-                            }
-                        ];
-                    });
+                    const aggregations = response.aggregations.agg
+
+                    if ('authors_fullname_terms' in aggregations) {
+                      this.facets = [
+                        ...this.facets,
+                        {
+                          key: 'authors',
+                          items: aggregations.authors_fullname_terms,
+                          filter: [],
+                          searchQuery: "",
+                          menu: false
+                        }
+                      ]
+                    }
 
                     console.log(this.facets);
 
@@ -117,6 +143,25 @@ export default {
                     console.log(error.message);
                     this.error = true;
                 });
+        },
+
+        searchFilter(facet) {
+
+          const searchQuery = facet.searchQuery;
+
+          if (facet.items.filter(item => item.key === searchQuery).length === 0) {
+            facet.items.push({key: searchQuery});
+          }
+          facet.filter.push(searchQuery);
+
+          this.$emit('facet-change', {key: facet.key, filters: facet.filter})
+          facet.searchQuery = "";
+        },
+
+        removeItem(facet, item) {
+          facet.items = facet.items.filter(i => i.key !== item.key);
+          facet.filter = facet.filter.filter(i => i !== item.key);
+          this.$emit('facet-change', {key: facet.key, filters: facet.filter});
         }
     }
 };

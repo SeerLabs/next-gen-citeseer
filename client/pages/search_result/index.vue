@@ -24,7 +24,7 @@
                     class="mb-md-10"
                     :query-string="queryString"
                     @year-change="value => onYearFacetChange(value)"
-                    @facet-change="({key, value}) => onFacetChange(key, value)"
+                    @facet-change="({key, filters}) => onFacetChange(key, filters)"
                 />
                 <search-results-external-links />
             </v-col>
@@ -69,7 +69,8 @@ export default {
             error: false,
             filters: {
                 years: { start: 0, end: new Date().getFullYear() },
-                authors: []
+                authors: [],
+                publishers: []
             }
         };
     },
@@ -94,7 +95,20 @@ export default {
         searchQuery() {
             this.loadingState = true;
             // push params
-            this.searchPaper( {queryString: this.queryString, page: this.page, pageSize: this.pageSize} )
+
+            console.log(this.filters.authors);
+            
+            const query = {
+              queryString: this.queryString,
+              page: this.page,
+              pageSize: this.pageSize,
+              yearStart: String(this.filters.years.start),
+              yearEnd: String(this.filters.years.end),
+              author: this.filters.authors,
+              publisher: this.filters.publishers
+            }
+
+            this.searchPaper(query)
                 .then(res => {
                     this.documents = res.response;
                     this.totalPageResults = res.total_results;
@@ -114,8 +128,10 @@ export default {
             this.searchQuery();
         },
 
-        onFacetChange(key, value) {
-            this.filters.authors = value;
+        onFacetChange(key, filters) {
+            console.log(key);
+            console.log(filters);
+            this.filters[key] = filters;
             this.searchQuery();
         }
     },
