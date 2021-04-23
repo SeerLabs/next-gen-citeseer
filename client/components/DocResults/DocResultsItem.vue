@@ -50,7 +50,11 @@ export default {
     },
     computed: {
         docUrl() {
-            return `/doc_view/pid/${this.docId}`;
+            if (this.docId) {
+              return `/doc_view/pid/${this.docId}`;
+            }
+
+            return `/doc_view/cid/${this.clusterId}`;
         },
 
         pdfUrl() {

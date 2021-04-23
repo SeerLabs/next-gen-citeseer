@@ -171,7 +171,7 @@ export default {
         });
     },
     methods: {
-        ...mapActions(['getPaperWithPaperId']),
+        ...mapActions(['getPaperWithPaperId', 'getPaperWithClusterId']),
 
         toggleReadMore() {
             this.readMoreFlag = true;

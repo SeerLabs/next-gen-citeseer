@@ -1,4 +1,5 @@
 <template>
+    <div>
     <v-combobox
         v-model="searchQuery"
         :items="items"
@@ -18,6 +19,8 @@
             </div>
         </template>
     </v-combobox>
+    <v-checkbox v-model="includePdfs" label="Only include results with PDFs" @click="submitInput"/>
+    </div>
 </template>
 
 <script>
@@ -32,7 +35,8 @@ export default {
             searchQuery: '',
             textInput: '',
             entries: [],
-            isLoading: false
+            isLoading: false,
+            includePdfs: true
         };
     },
     computed: {
@@ -66,7 +70,7 @@ export default {
         searchQuery() {
             if (this.searchQuery && this.searchQuery.type) {
                 const idType =
-                    this.searchQuery.type === 'paper' ? 'pid' : 'cid';
+                    this.searchQuery.type === 'paper' ? 'cid' : 'pid';
 
                 this.$router.push({
                     name: 'doc_view-idType-id',
@@ -77,6 +81,7 @@ export default {
     },
     created() {
         this.textInput = this.$route.query.query || '';
+        this.includePdfs = this.$route.query.pdf || false;
         this.searchQuery = this.textInput;
     },
     methods: {
@@ -88,7 +93,8 @@ export default {
                 this.$router.push({
                     name: 'search_result',
                     query: {
-                        query: this.textInput
+                        query: this.textInput,
+                        pdf: this.includePdfs
                     }
                 });
             }
