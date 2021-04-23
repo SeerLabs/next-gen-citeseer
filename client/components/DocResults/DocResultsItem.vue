@@ -26,7 +26,7 @@
             </v-col>
             <v-col cols="8" class="links">
                 <a href="http://google.com">+Cite</a>
-                <a :href="pdfUrl" target="_blank">+View PDF</a>
+                <a v-if="docId" :href="pdfUrl" target="_blank">+View PDF</a>
                 <a href="http://google.com">+Save</a>
                 <a href="http://google.com">+Add to ExportCart</a>
             </v-col>

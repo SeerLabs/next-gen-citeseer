@@ -14,7 +14,7 @@ export default {
     }
   },
   mounted () {
-    this.pdfURL += this.$route.params.id
+    this.pdfURL += this.$route.params.id;
   }
 }
 </script>
