@@ -2,9 +2,10 @@ from typing import List, Optional
 from uuid import uuid4
 
 from elasticsearch_dsl import UpdateByQuery
-from fastapi import APIRouter
+from fastapi import APIRouter, Request
 
 import settings
+from limiter import limiter
 from models.api_models import SearchQueryResponse, PaperDetailResponse, CitationsResponse, ClusterDetailResponse, \
     showCitingClustersResponse, SimilarPapersResponse, SearchQuery, Paper, Citation, Cluster, Suggestion, \
     AutoCompleteResponse
@@ -18,9 +19,11 @@ from utils.helpers import getKeyOrDefault
 router = APIRouter()
 elastic_service = ElasticService()
 
+rate_limit_string = "5/minute"
 
 @router.post('/search', response_model=SearchQueryResponse)
-def perform_search(searchQuery: SearchQuery):
+@limiter.limit(rate_limit_string)
+def perform_search(request: Request, searchQuery: SearchQuery):
     s = elastic_models.Cluster.search(using=elastic_service.get_connection())
     start = (searchQuery.page - 1) * searchQuery.pageSize
     s = s.filter('term', has_pdf=True)
@@ -35,7 +38,9 @@ def perform_search(searchQuery: SearchQuery):
 
 
 @router.get('/paper')
-def paper_info(paper_id: Optional[str] = None, cluster_id: Optional[str] = None):
+@limiter.limit(rate_limit_string)
+def paper_info(request: Request, paper_id: Optional[str] = None, cluster_id: Optional[str] = None):
+    # if Called with cluster ID
     if cluster_id is not None:
         cluster = elastic_models.Cluster.get(id=cluster_id, using=elastic_service.get_connection())
         paper_id = cluster.paper_id[0]
@@ -48,7 +53,8 @@ def paper_info(paper_id: Optional[str] = None, cluster_id: Optional[str] = None)
 
 
 @router.get('/citations/{id}')
-def citations(id: str, page: int = 1, pageSize: int = 10):
+@limiter.limit(rate_limit_string)
+def citations(request: Request, id: str, page: int = 1, pageSize: int = 10):
     s = elastic_models.Cluster.search(using=elastic_service.get_connection())
     start = (page - 1) * pageSize
     s = s.filter('term', cited_by=id)
@@ -63,7 +69,8 @@ def citations(id: str, page: int = 1, pageSize: int = 10):
 
 
 @router.get('/showCiting/{cid}')
-def show_citing_papers(cid: str, sort: str, page: int, pageSize: int):
+@limiter.limit(rate_limit_string)
+def show_citing_papers(request: Request, cid: str, sort: str, page: int, pageSize: int):
     cluster = elastic_models.Cluster.get(id=cid, using=elastic_service.get_connection())
     primary_cluster_detail = build_cluster_entity(id=cid, doc=cluster.to_dict(skip_empty=False))
     papers_that_cite = []
@@ -102,7 +109,8 @@ def _get_sort_param(param: str) -> dict:
 
 
 @router.get('/suggest')
-def get_suggestions(query: str):
+@limiter.limit(rate_limit_string)
+def get_suggestions(request: Request, query: str):
     s = elastic_models.Cluster.search(using=ElasticService().get_connection())
     s = s.suggest('auto_complete', query, completion={'field': 'title_suggest'})
     response = s.execute()
@@ -113,7 +121,8 @@ def get_suggestions(query: str):
 
 
 @router.get('/similar/{id}')
-def similar_papers(id: str, algo: str):
+@limiter.limit(rate_limit_string)
+def similar_papers(request: Request, id: str, algo: str):
     res = None
     if algo == 'Co-Citation':
         s = elastic_models.Cluster.search(using=elastic_service.get_connection(), index='clusters_next').filter('match',
@@ -134,7 +143,8 @@ def similar_papers(id: str, algo: str):
 
 
 @router.delete('/delete/{id}')
-def delete_paper(id: str):
+@limiter.limit(rate_limit_string)
+def delete_paper(request: Request, id: str):
     # Delete citations for paper
     ubq = UpdateByQuery(index=settings.CLUSTERS_INDEX).using(elastic_service.get_connection()) \
         .filter("term", cited_by=id).script(source="""
@@ -169,7 +179,8 @@ def delete_paper(id: str):
 
 
 @router.delete('/unlist/{id}')
-def unlist_paper(id: str):
+@limiter.limit(rate_limit_string)
+def unlist_paper(request: Request, id: str):
     # Get Cluster for paper
     search_cluster = elastic_models.Cluster.search(using=elastic_service.get_connection())
     search_cluster = search_cluster.filter('term', paper_id=id)
@@ -190,7 +201,8 @@ def unlist_paper(id: str):
 
 
 @router.post('/edit')
-def user_request_correction(paper_id: str):
+@limiter.limit(rate_limit_string)
+def user_request_correction(request: Request, paper_id: str):
     # TODO: meta data correction; save edit in UserRequest index and later process in batch
     pass
 
