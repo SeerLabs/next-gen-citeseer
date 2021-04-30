@@ -33,7 +33,8 @@ export default {
         doi: { type: String, default: '' },
         title: { type: String, default: '' },
         citations: {type:Array, default: null},
-        nCitations: { type: Number, default: 0}
+        nCitations: { type: Number, default: 0},
+        loading: {type: Boolean, default: false}
     },
 };
 </script>

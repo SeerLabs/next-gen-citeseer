@@ -1,0 +1,10 @@
+version: '2.3'
+
+services:
+    server:        
+      env_file: variables/production.env
+    client:
+      env_file: variables/production.env
+    nginx:
+      env_file: variables/production.env
+

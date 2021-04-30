@@ -4,6 +4,13 @@ from elasticsearch_dsl import Document, Text, Keyword, Nested, InnerDoc, Object
 class Collection(InnerDoc):
     collection_name = Keyword(multi=True)
     paper_id_list = Keyword(multi=True)
+class AdminInDB(Document):
+    username = Text()
+    salt = Keyword()
+    hashed_password = Keyword()
+    
+    class Index:
+        name = "admin_user"
 
 class UserInDB(Document):
     email = Keyword()
@@ -75,4 +82,4 @@ class UserInDB(Document):
                     return 0
                 else:
                     return -1
-            return -1
+        return -1

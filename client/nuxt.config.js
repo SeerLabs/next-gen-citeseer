@@ -1,4 +1,10 @@
 export default {
+config: {
+nuxt: {
+host: "0.0.0.0",
+port: "3000"
+}
+},
     mode: 'universal',
     /*
      ** Headers of the page
@@ -30,7 +36,7 @@ export default {
     /*
      ** Plugins to load before mounting the App
      */
-    plugins: [],
+    plugins: ['~/plugins/axios'],
     /*
      ** Nuxt.js dev-modules
      */
@@ -46,6 +52,11 @@ export default {
         // Doc: https://axios.nuxtjs.org/usage
         '@nuxtjs/axios',
         '@nuxtjs/pwa',
+        ['@nuxtjs/recaptcha', {
+            hideBadge: true,
+            siteKey: process.env.RECAPTCHA_SITE_KEY,
+            version: 3,
+        }],
         '@nuxtjs/style-resources'
     ],
 
@@ -53,7 +64,9 @@ export default {
      ** Axios module configuration
      ** See https://axios.nuxtjs.org/options
      */
-    axios: {},
+    axios: {
+        baseURL: 'http://localhost:8000/api',
+    },
 
     vuetify: {
         defaultAssets: {
@@ -81,6 +94,12 @@ export default {
                     fix: true
                 }
             });
+        }
+    },
+
+    privateRuntimeConfig: {
+        axios: {
+            baseURL: 'http://localhost:8000/api'
         }
     }
 };

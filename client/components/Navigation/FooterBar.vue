@@ -50,12 +50,14 @@
 		background-color: #1B263C;
 		box-shadow: 0 1px 1px 0 rgba(0, 0, 0, 0.12);
 		box-sizing: border-box;
-		width: 100%;
-		height: inherit;
+		height: 350px;
 		text-align: left;
 		font: bold 16px sans-serif;
 		padding: 50px 40px;
-
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
 	}
 
 	.footer-distributed .footer-left,
