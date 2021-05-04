@@ -21,7 +21,7 @@
     </v-combobox>
     <v-checkbox 
       v-model="includePdfs"
-      label="Only include results with PDFs"
+      label="Include results without PDF"
       @click="submitInput"
     />
     </div>
@@ -40,7 +40,7 @@ export default {
             textInput: '',
             entries: [],
             isLoading: false,
-            includePdfs: true
+            includePdfs: false
         };
     },
     computed: {
@@ -85,7 +85,7 @@ export default {
     },
     created() {
         this.textInput = this.$route.query.query || '';
-        this.includePdfs = this.$route.query.pdf || true;
+        this.includePdfs = this.$route.query.pdf || false;
         this.searchQuery = this.textInput;
     },
     methods: {
