@@ -10,7 +10,7 @@
 export default {
   data () {
     return {
-      pdfURL: `${$axios.defaults.baseURL}/document?repid=rep1&type=pdf&doi=`
+      pdfURL: `${this.$axios.defaults.baseURL}/document?repid=rep1&type=pdf&doi=`
     }
   },
   mounted () {
