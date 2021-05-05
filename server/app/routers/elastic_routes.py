@@ -81,7 +81,7 @@ def show_citing_papers(request: Request, cid: str, sort: str, page: int, pageSiz
     if len(papers_that_cite) > 0:
         search = elastic_models.Cluster.search(using=elastic_service.connection) \
             .sort(_get_sort_param(sort)) \
-            .filter('terms', paper_id=papers_that_cite, has_pdf=True)
+            .filter('terms', paper_id=papers_that_cite)
         start = (page - 1) * pageSize
         search = search[start:start + pageSize]
         response = search.execute()
