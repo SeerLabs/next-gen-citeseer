@@ -1,30 +1,40 @@
 <template>
-    <div>
-    <v-combobox
-        v-model="searchQuery"
-        :items="items"
-        :loading="isLoading"
-        :search-input.sync="textInput"
-        :hide-no-data="!textInput"
-        filled
-        clearable
-        hide-selected
-        item-text="description"
-        placeholder="Search"
-        @keydown.enter="submitInput"
-    >
-        <template v-slot:append>
-            <div id="search-button" @click="submitInput">
-                <v-icon class="ml-3">search</v-icon>
-            </div>
-        </template>
-    </v-combobox>
-    <v-checkbox 
-      v-model="includePdfs"
-      label="Include results without PDF"
-      @click="submitInput"
-    />
-    </div>
+    <v-card flat>
+      <v-combobox
+          v-model="searchQuery"
+          class="mb-0 pb-0"
+          :items="items"
+          :loading="isLoading"
+          :search-input.sync="textInput"
+          :hide-no-data="!textInput"
+          filled
+          clearable
+          hide-selected
+          item-text="description"
+          placeholder="Search"
+          @keydown.enter="submitInput"
+          
+      >
+          <template v-slot:append>
+              <div id="search-button" @click="submitInput">
+                  <v-icon class="ml-3">search</v-icon>
+              </div>
+          </template>
+      </v-combobox>
+      <v-container
+        class="pa-0"
+        fluid
+      >
+        <v-checkbox 
+          id="pdf-checkbox"
+          v-model="includeWithoutPdfs"
+          class="pt-0 mt-0"
+          dense
+          label="Include results without PDF"
+          @click="submitInput"
+        />
+      </v-container>
+    </v-card>
 </template>
 
 <script>
@@ -40,7 +50,7 @@ export default {
             textInput: '',
             entries: [],
             isLoading: false,
-            includePdfs: false
+            includeWithoutPdfs: false
         };
     },
     computed: {
@@ -85,7 +95,7 @@ export default {
     },
     created() {
         this.textInput = this.$route.query.query || '';
-        this.includePdfs = this.$route.query.pdf || false;
+        this.includeWithoutPdfs = this.$route.query.pdf || false;
         this.searchQuery = this.textInput;
     },
     methods: {
@@ -98,7 +108,7 @@ export default {
                     name: 'search_result',
                     query: {
                         query: this.textInput,
-                        pdf: this.includePdfs
+                        pdf: this.includeWithoutPdfs
                     }
                 });
             }
@@ -110,5 +120,11 @@ export default {
 <style scoped>
 #search-button {
     cursor: pointer;
+}
+</style>
+
+<style>
+.v-label {
+  margin-bottom: 0 !important;
 }
 </style>

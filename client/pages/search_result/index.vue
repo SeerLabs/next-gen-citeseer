@@ -62,7 +62,7 @@ export default {
                 { text: 'Year', callback: () => (this.sortBy = 'year') }
             ],
             error: false,
-            includePdfs: false
+            includeWithoutPdfs: false
         };
     },
     computed: {
@@ -73,14 +73,14 @@ export default {
     watch: {
         '$route.query'() {
             this.queryString = this.$route.query.query;
-            this.includePdfs = this.$route.query.pdf || false;
+            this.includeWithoutPdfs = this.$route.query.pdf || false;
             this.searchQuery();
         }
     },
     created() {
         // make search query immediately when page is loaded
         this.queryString = this.$route.query.query;
-        this.includePdfs = this.$route.query.pdf || false;
+        this.includeWithoutPdfs = this.$route.query.pdf || false;
         this.searchQuery();
     },
     methods: {
@@ -88,7 +88,7 @@ export default {
         searchQuery() {
             this.loadingState = true;
             // push params
-            this.searchPaper( {queryString: this.queryString, page: this.page, pageSize: this.pageSize, includePdfs: this.includePdfs} )
+            this.searchPaper( {queryString: this.queryString, page: this.page, pageSize: this.pageSize, includeWithoutPdfs: this.includeWithoutPdfs} )
                 .then(res => {
                     this.documents = res.response;
                     this.totalPageResults = res.total_results;
