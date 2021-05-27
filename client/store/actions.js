@@ -15,13 +15,13 @@ export default {
       return this.$axios.$get('/similar/' + id, { params: {algo}})
     },
 
-    searchPaper(context, { queryString, page, pageSize, includeWithoutPdfs }) {
+    searchPaper(context, { queryString, page, pageSize, includePdfs }) {
         return this.$axios
             .$post('/search', {
                 queryString,
                 page,
                 pageSize,
-                must_have_pdf: includeWithoutPdfs
+                must_have_pdf: includePdfs
             })
             .catch(function(error) {
                 // eslint-disable-next-line

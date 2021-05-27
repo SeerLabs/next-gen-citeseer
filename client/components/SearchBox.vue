@@ -95,7 +95,7 @@ export default {
     },
     created() {
         this.textInput = this.$route.query.query || '';
-        this.includeWithoutPdfs = this.$route.query.pdf || false;
+        this.includeWithoutPdfs = this.$route.query.pdf != null && !this.$route.query.pdf || false;
         this.searchQuery = this.textInput;
     },
     methods: {
@@ -108,7 +108,7 @@ export default {
                     name: 'search_result',
                     query: {
                         query: this.textInput,
-                        pdf: this.includeWithoutPdfs
+                        pdf: !this.includeWithoutPdfs
                     }
                 });
             }
