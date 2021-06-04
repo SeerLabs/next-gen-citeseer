@@ -22,6 +22,8 @@ services:
       volumes:
           - /app/node_modules
           - ./client:/app
+      environment:
+          - RECAPTCHA_SITE_KEY
       depends_on:
           - server
       env_file:
