@@ -8,8 +8,6 @@ services:
         - 8000:8000
       volumes:
         - ./server:/api
-      environment:
-        - RECAPTCHA_SECRET_KEY
       env_file:
         - ./variables/development.env
     client:
@@ -22,8 +20,6 @@ services:
       volumes:
           - /app/node_modules
           - ./client:/app
-      environment:
-          - RECAPTCHA_SITE_KEY
       depends_on:
           - server
       env_file:
@@ -40,5 +36,7 @@ services:
       depends_on:
         - server
         - client
+      env_file:
+        - ./variables/development.env
 
 
