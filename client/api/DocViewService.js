@@ -6,15 +6,16 @@ export default {
   },
 
   async getPaperswithPaperIds (pids) {
-    const papers = [];
-
-    for (const pid of pids) {
-        const paper = (await this.getPaperWithPaperId(pid)).data.paper;
-        papers.push(paper);
-    }
-    
-    return papers;
+    return await CoreApi().post(`/mget_paper`, {"paper_id_list": pids})
+            .then(function(response) {
+                return response.data.response
+            })
+            .catch(function(error) {
+                // eslint-disable-next-line
+                console.error(error);
+            })
   },
+
 
   getPaperWithClusterId (cid){
     return CoreApi().get('/paper/', {params: {cluster_id: cid}})

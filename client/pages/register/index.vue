@@ -8,7 +8,7 @@
           <Notification v-if="error" :message="error"/>
 
           <form method="post" @submit.prevent="register">
-            <div class="field">
+            <!-- <div class="field">
               <label class="label">Username</label>
               <div class="control">
                 <v-text-field
@@ -19,7 +19,7 @@
                   required
                 />
               </div>
-            </div>
+            </div> -->
             <div class="field">
               <label class="label">Email</label>
               <div class="control">
@@ -81,7 +81,6 @@ export default {
   },
   data() {
     return {
-      username: '',
       email: '',
       full_name: '',
       password: '',
@@ -106,7 +105,7 @@ export default {
         const recaptchaStatus = (await authService.checkRecaptcha(token)).data.success;
 
         if (recaptchaStatus) {
-          await authService.registerUser(this.username, this.password, this.email, this.full_name)
+          await authService.registerUser(this.email, this.password, this.full_name)
           .then((response) => {
             if(response.status === 200) {
               this.$router.push('/login');

@@ -13,6 +13,7 @@
                     :n-cited-by="item.n_cited_by"
                     :n-self-cites="item.n_self_cites"
                 />
+                
             </li>
         </ul>
     </div>

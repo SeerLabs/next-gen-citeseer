@@ -1,6 +1,6 @@
 export default {
     state : () => ({
-        reCaptchaSiteKey: "6LdjreIZAAAAACuiEgvWpl8EFFeI-EaO5x_Fozst",
+        reCaptchaSiteKey: "6LfmtpgaAAAAAI9u-W21_48xQqUIo_z3lBjxJAC8",
         displayNotification: false,
         notificationText: "",
         notificationType: "success"

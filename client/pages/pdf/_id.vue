@@ -10,7 +10,7 @@
 export default {
   data () {
     return {
-      pdfURL: 'http://localhost:8000/api/document?repid=rep1&type=pdf&doi='
+      pdfURL: 'http://localhost:8005/api/document?repid=rep1&type=pdf&doi='
     }
   },
   mounted () {
