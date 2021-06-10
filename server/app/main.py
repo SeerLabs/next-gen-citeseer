@@ -12,6 +12,7 @@ from slowapi import _rate_limit_exceeded_handler
 from slowapi.errors import RateLimitExceeded
 
 DEBUG = os.environ['DEBUG'] == 'true'
+
 RECAPTCHA_SECRET_KEY = os.environ['RECAPTCHA_SECRET_KEY']
 RECAPTCHA_API_ENDPOINT = "https://www.google.com/recaptcha/api/siteverify"
 app = FastAPI()

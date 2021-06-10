@@ -54,7 +54,7 @@ port: "3000"
         '@nuxtjs/pwa',
         ['@nuxtjs/recaptcha', {
             hideBadge: true,
-            siteKey: process.env.RECAPTCHA_SITE_KEY, // || '6LdjreIZAAAAACuiEgvWpl8EFFeI-EaO5x_Fozst',
+            siteKey: process.env.RECAPTCHA_SITE_KEY,
             version: 3,
         }],
         '@nuxtjs/style-resources'
