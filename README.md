@@ -6,8 +6,9 @@ Note: In order to run the backend API, you must have access to the port that you
 ### **Setting up through docker-compose**
 If you wish to run the system using the docker-compose configuration, run `docker-compose build` to install the dependencies and `docker-compose up` to start-up the system.
 
-To deploy the system for a production environment, run `docker-compose -f docker-compose.yml -f production.yml up`. You must generate a Google ReCaptcha v3 key and set `RECAPTCHA_SITE_KEY` and `RECAPTCHA_SECRET_KEY` environmental variables. You can create a file named `.ini` in the root project directory and add the following contents.
-```.ini
+To deploy the system for a production environment, run `docker-compose -f docker-compose.yml -f production.yml up`. You must generate a Google ReCaptcha v3 key and set `RECAPTCHA_SITE_KEY` and `RECAPTCHA_SECRET_KEY` environmental variables. You can specify these variables in the `variables` directory, in which you'll need to specify them in the `development.env` and `production.env` files as such:
+
+```
 RECAPTCHA_SITE_KEY=Your site key here
 RECAPTCHA_SECRET_KEY=Your secret key here
 ```
