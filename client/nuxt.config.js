@@ -1,6 +1,12 @@
 import { stubFalse } from 'lodash';
 
 export default {
+config: {
+nuxt: {
+host: "0.0.0.0",
+port: "3000"
+}
+},
     mode: 'universal',
     /*
      ** Headers of the page
@@ -32,7 +38,7 @@ export default {
     /*
      ** Plugins to load before mounting the App
      */
-    plugins: [{ src: '~/plugins/persistedState.client.js' }],
+    plugins: [{ src: '~/plugins/persistedState.client.js' }, '~/plugins/axios'],
     /*
      ** Nuxt.js dev-modules
      */
@@ -48,20 +54,23 @@ export default {
         // Doc: https://axios.nuxtjs.org/usage
         '@nuxtjs/axios',
         '@nuxtjs/pwa',
-        '@nuxtjs/style-resources',
+
+        'nuxt-vuex-localstorage',
         ['@nuxtjs/recaptcha', {
             hideBadge: true,
-            siteKey: '6LdjreIZAAAAACuiEgvWpl8EFFeI-EaO5x_Fozst',
+            siteKey: process.env.RECAPTCHA_SITE_KEY,
             version: 3,
         }],
-        'nuxt-vuex-localstorage'
+        '@nuxtjs/style-resources'
     ],
 
     /*
      ** Axios module configuration
      ** See https://axios.nuxtjs.org/options
      */
-    axios: {},
+    axios: {
+        baseURL: '/api',
+    },
 
     vuetify: {
         defaultAssets: {
@@ -89,6 +98,12 @@ export default {
                     fix: true
                 }
             });
+        }
+    },
+
+    privateRuntimeConfig: {
+        axios: {
+            baseURL: '/api'
         }
     }
 };

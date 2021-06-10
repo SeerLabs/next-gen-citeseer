@@ -20,7 +20,9 @@
 
         <v-row no-gutters>
             <v-col cols="4" class="citations">
-                Cited by {{ nCitedBy }} ({{ nSelfCites }} self-citations)
+                <nuxt-link :to="{ path: showCitingUrl }">
+                    Cited by {{ nCitedBy }} ({{ nSelfCites }} self-citations)
+                </nuxt-link>
             </v-col>
             <v-col cols="8" class="links">
                 <a href="http://google.com">+Cite</a>
@@ -37,6 +39,7 @@ export default {
     name: 'DocResultsItem',
     props: {
         docId: { type: String, default: '' },
+        clusterId: { type: String, default: '' },
         title: { type: String, default: '' },
         type: { type: String, default: '' },
         authors: { type: Array, default: null },
@@ -52,6 +55,9 @@ export default {
 
         pdfUrl() {
             return '/pdf/' + this.docId;
+        },
+        showCitingUrl() {
+            return '/show_citing/' + this.clusterId;
         }
     }
 };
