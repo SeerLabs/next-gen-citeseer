@@ -2,13 +2,17 @@ import uvicorn as uvicorn
 from fastapi_jwt_auth.exceptions import AuthJWTException
 from fastapi import FastAPI, Request, HTTPException, status
 from fastapi.responses import JSONResponse, PlainTextResponse
-from fastapi.exceptions import RequestValidationError
 from fastapi.middleware.cors import CORSMiddleware
 import os
 from routers import document_routes, elastic_routes, authentication_routes
+from limiter import limiter
 import requests
 
+from slowapi import _rate_limit_exceeded_handler
+from slowapi.errors import RateLimitExceeded
+
 DEBUG = os.environ['DEBUG'] == 'true'
+
 RECAPTCHA_SECRET_KEY = os.environ['RECAPTCHA_SECRET_KEY']
 RECAPTCHA_API_ENDPOINT = "https://www.google.com/recaptcha/api/siteverify"
 app = FastAPI()
@@ -37,6 +41,8 @@ def authjwt_exception_handler(request: Request, exc: AuthJWTException):
         status_code=exc.status_code,
         content={"detail": exc.message}
     )
+app.state.limiter = limiter
+app.add_exception_handler(RateLimitExceeded, _rate_limit_exceeded_handler)
 
 @app.middleware("http")
 async def recaptcha_check(request: Request, call_next):
@@ -55,7 +61,8 @@ async def recaptcha_check(request: Request, call_next):
     return response
 
 @app.get("/")
-def pong():
+@limiter.limit("5/minute")
+def pong(request: Request):
     return {"ping": "pong!"}
 
 
