@@ -1,5 +1,5 @@
-from models.elastic.user import UserInDB, Collection
-from models.schemas.user import User, UserRegistrationForm
+from models.elastic.user import UserInDB, Collection, AdminInDB
+from models.schemas.user import User, UserRegistrationForm, AdminUser
 from models.schemas.jwt import JWTMeta, JWTUser
 from models.elastic_models import PaperMetadataCorrectionES, Author
 from models.api_models import PaperMetadataCorrection
@@ -95,7 +95,7 @@ class AuthenticationService:
         msg['To'] = email
         context = ssl.create_default_context()
         # Send the message via our own SMTP server.
-        s = smtplib.SMTP('smtp.psu.edu', 25) 
+        s = smtplib.SMTP('smtp.psu.edu')#, 25) 
         #s.login(SENDER_EMAIL, SENDER_PASSWORD)
         s.send_message(msg)
         #s.sendmail('test-csx@ist.psu.edu', '', 'test msg')
@@ -153,7 +153,15 @@ class AuthenticationService:
         user_in_db.meta.id = user_in_db.email # set email as _id in elasticsearch
         return user_in_db.save(using=elastic_service.get_connection())
         
-    
+    def create_admin(self, admin_data: AdminUser):
+        salt = self.generate_salt()
+        hashed_password = self.get_password_hash(salt, admin_data.password)
+        
+        admin_in_db = AdminInDB(salt=salt,username=admin_data.username, hashed_password=hashed_password)
+        admin_in_db.init(using=elastic_service.get_connection())
+        admin_in_db.meta.id = admin_in_db.username
+        return admin_in_db.save(using=elastic_service.get_connection())
+
     def authenticate_user(self, email: str, password: str) -> (int, UserInDB):
         '''return (status, UserInDB object)
            status:
@@ -167,6 +175,18 @@ class AuthenticationService:
         if not user.is_activated:
             return -2, None
         return 0, user
+    def authenticate_admin(self, username: str, password: str):
+        '''return (status, UserInDB object)
+           status:
+               0 on sucess
+               -1 on authetication error
+               -2 on not activated account
+        '''
+        user = AdminInDB.get(id=username, using=elastic_service.get_connection())
+        if not user or not self.verify_password(user.salt, password, user.hashed_password):
+            return -1, None
+        return 0, user
+
 
     def get_user(self, email: str) -> UserInDB:
         try:
@@ -213,6 +233,7 @@ class AuthenticationService:
 
     def correct_metadata_request(self, correct_meta: PaperMetadataCorrection, user_email: str):
         correct_meta_ES = PaperMetadataCorrectionES(
+            paper_id = correct_meta.id,
             authors = [],
             user_email = user_email,
             title = correct_meta.title,

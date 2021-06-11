@@ -1,8 +1,10 @@
 from fastapi import APIRouter, Depends, HTTPException, status, Form, Request
 from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm, HTTPBearer, HTTPAuthorizationCredentials
+from models.elastic_models import PaperMetadataCorrectionES
+from models import elastic_models
 from models.elastic.user import UserInDB
-from models.schemas.user import User, UserWithToken, UserRegistrationForm
-from models.api_models import PaperMetadataCorrection
+from models.schemas.user import User, UserWithToken, UserRegistrationForm, AdminUser
+from models.api_models import PaperMetadataCorrection, UserRequest, UserRequestResponse, ProcessRequest
 from services.authentication_service import AuthenticationService
 from utils.helpers import getKeyOrDefault
 from services.elastic_service import ElasticService
@@ -19,6 +21,7 @@ authService = AuthenticationService()
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl = "api/login")
 SECRET_KEY = ""
 email_validate_regex = "^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$"
+
 def validate_email(email: str):
     if not re.fullmatch(email_validate_regex, email):
         raise HTTPException(
@@ -58,6 +61,11 @@ class Settings(BaseModel):
     authjwt_secret_key: str = "secret"
     authjwt_denylist_enabled: bool = True
     authjwt_denylist_token_checks: set = {"access","refresh"}
+    # authjwt_token_location: set = {"cookies"}
+    # Only allow JWT cookies to be sent over https
+    # authjwt_cookie_secure: bool = False
+    # authjwt_cookie_csrf_protect: bool = False
+    # authjwt_cookie_samesite: str = 'lax'
     access_expires: int = timedelta(minutes=15)
     refresh_expires: int = timedelta(days=1)
 
@@ -129,11 +137,33 @@ async def get_current_user_in_db(Authorize: AuthJWT = Depends()) -> UserInDB:#to
         )
 
 
+@router.post("/create_admin")
+def register_admin(username: str = Form(...), password: str = Form(...)):
+    adminData = AdminUser(username=username,password=password, access_token="")
+    is_user_created = authService.create_admin(adminData)
+    return {"success": is_user_created }
+
+@router.post("/admin_login")
+async def login(username: str = Form(...), password: str = Form(...), Authorize: AuthJWT = Depends()):
+    auth_status, admin_in_db = authService.authenticate_admin(username, password)
+    error_msg = ""
+    if auth_status == -1:
+        error_msg = "Inccorect email or password"
+    if error_msg != "":
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail=error_msg,
+            headers={"WWW-Authenticate": "Bearer"},
+        )
+    access_token = Authorize.create_access_token(subject="admin")
+    
+    return AdminUser(username=username, access_token=access_token)
+
+
 @router.post("/register")
 def register(userData: UserRegistrationForm = Depends(UserRegistrationForm.as_form), Authorize: AuthJWT = Depends()):
     validate_email(userData.email)
     is_user_created = authService.create_user(userData)
-    print(userData.email)
     token =  Authorize.create_access_token(subject=userData.email) #authService.create_user_access_token(userData.email, SECRET_KEY)
     is_sent = authService.send_verification_email(userData.full_name, userData.email, token) 
     return {"success": is_user_created and is_sent}
@@ -164,6 +194,8 @@ async def login(email: str = Form(...), password: str = Form(...), Authorize: Au
         )
     access_token = Authorize.create_access_token(subject=email)
     refresh_token = Authorize.create_refresh_token(subject=email)
+    # Authorize.set_access_cookies(access_token)
+    # Authorize.set_refresh_cookies(refresh_token)
     # token = authService.create_user_access_token(user_in_db.email, SECRET_KEY)
     # refresh_token = authService.create_user_access_token(user_in_db.email, SECRET_KEY)
     user_in_db = user_in_db.to_dict()
@@ -320,3 +352,146 @@ async def correct_metadata_request(correct_meta: PaperMetadataCorrection, Author
     user_email = Authorize.get_jwt_subject() #authService.get_email_from_token(token, SECRET_KEY)
     authService.correct_metadata_request(correct_meta, user_email)
     return {"success": True}
+
+@router.get("/get_correct_metadatas")#, dependencies=[Depends(JWTBearer())])
+def get_correct_metadata_request():
+    #Authorize.jwt_required()
+    #user = Authorize.get_jwt_subject()
+    results = PaperMetadataCorrectionES.search(using=elastic_service.get_connection()).execute()
+    response = []
+    for doc in results:#['hits']['hits']:
+        doc = vars(doc)["_d_"]
+        authors = []
+        #for author in doc["authors"]:
+        #    authors.append(author)
+        #doc["authors"] = authors
+        response.append(doc)
+    return response
+
+@router.delete('/unlist/{id}')
+def unlist_paper(id: str):
+    # Get Cluster for paper
+    search_cluster = elastic_models.Cluster.search(using=elastic_service.get_connection())
+    search_cluster = search_cluster.filter('term', paper_id=id)
+    response = search_cluster.execute()
+    cluster_id = response['hits']['hits'][0]['_id']
+
+    # Make PDF availability as False
+    cluster = elastic_models.Cluster.get(id=cluster_id, using=elastic_service.get_connection())
+    cluster.has_pdf = False
+    cluster.save(using=elastic_service.get_connection())
+
+    # Create an Audit entry
+    new_user_request = elastic_models.UserRequest()
+    new_user_request.request_type = "UNLIST"
+    new_user_request.paper_id = id
+    new_user_request.status = "DONE"
+    new_user_request.save(using=elastic_service.get_connection())
+
+
+@router.post('/edit/new', dependencies=[Depends(JWTBearer())])
+def unlist_paper(edit_request: UserRequest, Authorize: AuthJWT = Depends()):
+    # Create an Audit entry
+    Authorize.jwt_required()
+    user_email = Authorize.get_jwt_subject()
+    
+    pub_info = elastic_models.PubInfo()
+    pub_info.date = edit_request.publish_date
+    pub_info.meeting = edit_request.meeting
+    pub_info.publisher = edit_request.publisher
+    
+    author_list = []
+    for author in edit_request.authors:
+        new_author = elastic_models.Author()
+        new_author.fullname = author.name
+        new_author.affiliation = author.affiliation
+        new_author.address = author.address
+        new_author.email = author.email
+        author_list.append(new_author)
+
+    new_user_request = elastic_models.UserRequest()
+    new_user_request.request_type = "EDIT"
+    new_user_request.paper_id = edit_request.paper_id
+    new_user_request.requester_email = user_email 
+    new_user_request.reason_or_details = edit_request.reason_or_details
+    new_user_request.title = edit_request.title
+    new_user_request.abstract = edit_request.abstract
+    new_user_request.authors = author_list
+    new_user_request.pub_info = pub_info
+    new_user_request.status = "PENDING"
+    new_user_request.save(using=elastic_service.get_connection())
+    return {"success": True}
+
+@router.get('/edit/get_pending', dependencies=[Depends(JWTBearer())])
+def unlist_paper(Authorize: AuthJWT = Depends()):
+    Authorize.jwt_required()
+    user_email = Authorize.get_jwt_subject()
+    
+    search_request = elastic_models.UserRequest.search(using=elastic_service.get_connection())
+    search_request = search_request.filter("term", request_type = "EDIT")
+    search_request = search_request.filter("term", status = "PENDING")
+    result = search_request.execute()
+    response = []
+    for hit in result:
+        #req = UserRequestResponse(request_id = hit.meta.id, user_request = hit.to_dict())
+        req = {"request_id": hit.meta.id, "user_request": hit.to_dict()}
+        response.append(req)
+
+    return response
+
+@router.get('/edit/get_archived', dependencies=[Depends(JWTBearer())])
+def unlist_paper(Authorize: AuthJWT = Depends()):
+    Authorize.jwt_required()
+    user_email = Authorize.get_jwt_subject()
+    
+    search_request = elastic_models.UserRequest.search(using=elastic_service.get_connection())
+    search_request = search_request.filter("term", request_type = "EDIT")
+    search_request = search_request.filter("terms", status = ["COMMITTED", "DENIED", "MODIFIED"])
+    result = search_request.execute()
+    response = []
+    for hit in result:
+        #req = UserRequestResponse(request_id = hit.meta.id, user_request = hit.to_dict())
+        req = {"request_id": hit.meta.id, "user_request": hit.to_dict()}
+        response.append(req)
+    
+    return response
+
+
+@router.get('/edit/init')
+def unlist_paper():
+    request = elastic_models.UserRequest()
+   
+    request.init(using=elastic_service.get_connection())
+    return {"success": True}
+
+
+@router.post('/edit/commit', dependencies=[Depends(JWTBearer())])
+def unlist_paper(req: ProcessRequest, Authorize: AuthJWT = Depends()):
+    Authorize.jwt_required()
+    user_email = Authorize.get_jwt_subject()
+    
+    user_request = elastic_models.UserRequest.get(id=req.request_id, using=elastic_service.get_connection())
+
+    if user_request.request_type != "EDIT":
+        return {"success": False, "message": "not an EDIT request"}
+   
+    user_request.status = "COMMITTED"
+    user_request.reviewer_comment = req.reviewer_comment
+    user_request.save(using=elastic_service.get_connection())
+    return {"success": True}
+
+@router.post('/edit/deny', dependencies=[Depends(JWTBearer())])
+def unlist_paper(req: ProcessRequest, Authorize: AuthJWT = Depends()):
+    Authorize.jwt_required()
+    user_email = Authorize.get_jwt_subject()
+    
+    user_request = elastic_models.UserRequest.get(id=req.request_id, using=elastic_service.get_connection())
+
+    if user_request.request_type != "EDIT":
+        return {"success": False, "message": "not an EDIT request"}
+   
+    user_request.status = "DENIED"
+    user_request.reviewer_comment = req.reviewer_comment
+    user_request.save(using=elastic_service.get_connection())
+    return {"success": True}
+

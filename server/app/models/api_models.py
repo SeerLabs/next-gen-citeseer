@@ -121,3 +121,21 @@ class SearchQuery(BaseModel):
 
 class MGetRequest(BaseModel):
     paper_id_list: List[str]
+
+
+class UserRequest(BaseModel):
+    paper_id: str
+    reason_or_details: str
+    title:str
+    abstract: str
+    authors: List[Author] 
+    meeting: Optional[str]
+    publisher: Optional[str]    
+    publish_date: Optional[str]
+    reviewer_comment: Optional[str]
+class ProcessRequest(BaseModel):
+    request_id: str
+    reviewer_comment: str
+class UserRequestResponse(BaseModel):
+    request_id: str
+    user_request: UserRequest

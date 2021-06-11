@@ -18,6 +18,10 @@ class UserWithToken(User):
     access_token: str
     refresh_token: str
 
+class AdminUser(BaseModel):
+    username: str
+    access_token: str
+
 class UserRegistrationForm(BaseModel):
     password: str
     email: str

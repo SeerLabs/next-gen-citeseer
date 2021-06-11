@@ -44,6 +44,7 @@ def paper_info(paper_id: Optional[str] = None, cluster_id: Optional[str] = None)
     paper_entity_response = build_paper_entity(cluster_id=response['hits']['hits'][0]['_id'],
                                                doc=response['hits']['hits'][0]['_source'])
     return PaperDetailResponse(query_id=str(uuid4()), paper=paper_entity_response)
+
 @router.post('/mget_paper/')
 def paper_list(mget_request: MGetRequest):
     s = elastic_models.Cluster.search(using=elastic_service.get_connection())
@@ -51,7 +52,7 @@ def paper_list(mget_request: MGetRequest):
     response = s.execute()
     result_list = []
     for doc_hit in response['hits']['hits']:
-        result_list.append(build_paper_entity(doc=doc_hit['_source']))
+        result_list.append(build_paper_entity(cluster_id=doc_hit['_id'], doc=doc_hit['_source']))
     total_results = response['hits']['total']['value']
     return SearchQueryResponse(query_id=str(uuid4()), total_results=total_results, response=result_list)
 

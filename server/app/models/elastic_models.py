@@ -163,6 +163,6 @@ class UserRequest(Document):
     authors = Nested(Author)
     pub_info = Nested(PubInfo)
     status = Keyword()
-
+    reviewer_comment = Text()
     class Index:
         name = settings.REQUESTS_INDEX
