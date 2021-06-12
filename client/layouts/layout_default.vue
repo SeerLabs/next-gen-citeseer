@@ -15,7 +15,6 @@
 <script>
 import NavBar from '~/components/Navigation/Navbar.vue';
 import FooterBar from '~/components/Navigation/FooterBar.vue';
-
 export default {
     name: 'LayoutDefault',
     components: {
@@ -38,11 +37,9 @@ export default {
     margin: auto auto;
     margin-bottom: 400px;
 }
-
 #app {
     text-align: left;
 }
-
 [v-cloak] {
     display: none;
 }

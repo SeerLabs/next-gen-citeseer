@@ -71,9 +71,8 @@
 </template>
 
 <script>
-import { mapGetters, mapMutations } from 'vuex'
+import { mapGetters, mapMutations, mapActions } from 'vuex'
 import Notification from '~/components/Notification'
-import authService from '~/api/AuthService'
 
 export default {
   components: {
@@ -99,13 +98,14 @@ export default {
 
   methods: {
     ...mapMutations(['showNotification']),
+    ...mapActions(['checkRecaptcha', 'registerUser']),
     async register() {
       try {
         const token = await this.$recaptcha.execute('login');
-        const recaptchaStatus = (await authService.checkRecaptcha(token)).data.success;
+        const recaptchaStatus = (await this.checkRecaptcha(token)).data.success;
 
         if (recaptchaStatus) {
-          await authService.registerUser(this.email, this.password, this.full_name)
+          await this.registerUser({email: this.email, password: this.password, fullName: this.full_name})
           .then((response) => {
             if(response.status === 200) {
               this.$router.push('/login');

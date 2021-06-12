@@ -49,9 +49,8 @@
 </template>
 
 <script>
-import { mapMutations, mapState } from 'vuex'
+import { mapMutations, mapState, mapActions } from 'vuex'
 import Notification from '~/components/Notification'
-import authService from '~/api/AuthService'
 
 export default {
   components: {
@@ -84,31 +83,31 @@ export default {
   methods: {
     ...mapMutations('auth', ['login']),
     ...mapMutations(['showNotification']),
+    ...mapActions(['loginUser']),
     async submitLogin() {
       try {
         // const recaptchaToken = await this.$recaptcha.execute('login');
         // const recaptchaStatus = (await authService.checkRecaptcha(recaptchaToken)).data.success;
         // if (true) {
-          await authService.loginUser(this.email, this.password)
+          console.log("page email: " + this.email)
+          await this.loginUser({email: this.email, password: this.password})
           .then((response) => {
-            if (response.status === 200) {
-              const user = response.data;
-              this.login(user);
-              this.$router.push('/')
-            }
-            else if (response.status === 401) {
+            this.login(response);
+            this.$router.push('/');
+          })
+          .catch((error) => {
+            if (error.response.status === 401){
               this.showNotification({
-                text: "Login unsuccessful, invalid email address or password.",
+                text: "Invalid email address or password.",
                 type: "error"
               })
             }
-          })
-          .catch((error) => {
+            else{
               this.showNotification({
                 text: `Error: ${error.message}`, 
                 type: "error"
               })
-
+            }
               // eslint-disable-next-line
               console.log(error);
 

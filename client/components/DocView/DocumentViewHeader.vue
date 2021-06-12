@@ -219,8 +219,7 @@
 </template>
 
 <script>
-import { mapState } from 'vuex'
-import authService from '~/api/AuthService'
+import { mapState, mapActions } from 'vuex'
 
 export default {
     props: {
@@ -265,7 +264,7 @@ export default {
     beforeMount() {
         this.admin_loggedIn = this.admin_auth.loggedIn
       if (this.auth.loggedIn) {
-        authService.getUserProfile(this.auth.token)
+        this.getUserProfile({token: this.auth.token})
         .then((response) => {
           const profile = response.data;
           this.liked = profile.liked_papers.includes(this.docId)
@@ -284,33 +283,35 @@ export default {
       }
     },
     methods: {
+        ...mapActions(['getUserProfile', 'addLikedPaper', 'deleteLikedPaper', 'addMoniteredPaper', 
+        'deleteMoniteredPaper', 'addPaperToCollection', 'addCollectionName', 'addPaperToCollection', 'edit_new']),
         toggleReadMore() {
             this.showAbstract = !this.showAbstract;
         },
 
         toggleLikePaper() {
           if (!this.liked) {
-            authService.addLikedPaper(this.auth.token, this.docId)
+            this.addLikedPaper({token: this.auth.token, pid: this.docId})
           }
           else {
-            authService.deleteLikedPaper(this.auth.token, this.docId)
+            this.deleteLikedPaper({token: this.auth.token, pid: this.docId})
           }
           this.liked = !this.liked
         },
 
         toggleMoniterPaper() {
           if (!this.monitered) {
-            authService.addMoniteredPaper(this.auth.token, this.docId)
+            this.addMoniteredPaper({token: this.auth.token, pid: this.docId})
           }
           else {
-            authService.deleteMoniteredPaper(this.auth.token, this.docId)
+            this.deleteMoniteredPaper({token: this.auth.token, pid: this.docId})
           }
           this.monitered = !this.monitered
         },
 
         addExistingCollectionPaper() {
             if (this.selected_collection){
-                authService.addPaperToCollection(this.auth.token, this.docId, this.selected_collection)
+                this.addPaperToCollection({token: this.auth.token, pid: this.docId, collectionName: this.selected_collection})
                 this.collection_dialog = false
             }
             else{
@@ -321,8 +322,8 @@ export default {
         
         addToNewCollection(){
             if (this.new_collection_name){
-                authService.addCollectionName(this.auth.token, this.new_collection_name)
-                authService.addPaperToCollection(this.auth.token, this.docId, this.new_collection_name)
+                this.addCollectionName({token: this.auth.token, collectionName: this.new_collection_name})
+                this.addPaperToCollection({token: this.auth.token, pid: this.docId, collectionName: this.new_collection_name})
                 this.collection_dialog = false;
             }
             else{
@@ -343,7 +344,17 @@ export default {
                     "email": ""
                 })
             }
-            authService.edit_new(this.auth.token, this.docId, this.temp_reason, this.temp_title, this.temp_abstract, correctAuthors,  this.temp_meeting, this.temp_publisher, this.temp_pub_date.toString())
+            this.edit_new({
+                token: this.auth.token, 
+                paperId: this.docId, 
+                reasonOrDetails: this.temp_reason, 
+                title: this.temp_title, 
+                abstract: this.temp_abstract, 
+                authors: correctAuthors,  
+                meeting: this.temp_meeting, 
+                publisher: this.temp_publisher, 
+                publishDate: this.temp_pub_date.toString()
+            })
             this.correct_error_dialog = false;
         }
     }

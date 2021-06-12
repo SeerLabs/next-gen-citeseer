@@ -49,9 +49,8 @@
 </template>
 
 <script>
-import { mapMutations, mapState } from 'vuex'
+import { mapMutations, mapState, mapActions } from 'vuex'
 import Notification from '~/components/Notification'
-import authService from '~/api/AuthService'
 
 export default {
   components: {
@@ -82,18 +81,19 @@ export default {
     }
   }, */
   methods: {
-    ...mapMutations('admin_auth', ['loginAdmin']),
+    ...mapMutations('admin_auth', ['admin_login']),
     ...mapMutations(['showNotification']),
+    ...mapActions(['loginAdmin']),
     async submitLogin() {
       try {
         // const recaptchaToken = await this.$recaptcha.execute('login');
         // const recaptchaStatus = (await authService.checkRecaptcha(recaptchaToken)).data.success;
         // if (true) {
-          await authService.loginAdmin(this.username, this.password)
+          await this.loginAdmin(this.username, this.password)
           .then((response) => {
             if (response.status === 200) {
               const user = response.data;
-              this.loginAdmin(user);
+              this.admin_login(user);
               this.$router.push('/admin/console')
             }
             else if (response.status === 401) {

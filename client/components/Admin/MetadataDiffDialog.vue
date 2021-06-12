@@ -307,9 +307,8 @@
 </template>
 
 <script>
-import { mapState } from 'vuex'
-import authService from '~/api/AuthService'
-  export default {
+import { mapState, mapActions } from 'vuex'
+export default {
     props: {
         paper: null,
         metaRequest: null,
@@ -339,6 +338,7 @@ import authService from '~/api/AuthService'
         }
     },
     methods: {
+        ...mapActions(['edit_commit', 'edit_deny']),
         commitReq(){
             let i;
             for (i = 0; i < 6; i++) {
@@ -347,7 +347,7 @@ import authService from '~/api/AuthService'
                     return
                 }
             }
-            authService.edit_commit(this.admin_auth.token, this.req_id, this.reviewer_comment)
+            this.edit_commit(this.admin_auth.token, this.req_id, this.reviewer_comment)
             this.dialog = false;
         },
         rejectReq(){
@@ -359,7 +359,7 @@ import authService from '~/api/AuthService'
                 }
             }
             
-            authService.edit_deny(this.admin_auth.token, this.req_id, this.reviewer_comment)
+            this.edit_deny(this.admin_auth.token, this.req_id, this.reviewer_comment)
             this.dialog = false;
         }
     }

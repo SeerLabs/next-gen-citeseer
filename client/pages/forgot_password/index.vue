@@ -29,8 +29,7 @@
 </template>
 
 <script>
-import { mapMutations } from 'vuex'
-import authService from '~/api/AuthService'
+import { mapMutations, mapActions } from 'vuex'
 
 export default {
     data() {
@@ -40,9 +39,9 @@ export default {
     },
     methods: {
       ...mapMutations(['showNotification']),
-
+      ...mapActions(['sendPasswordResetEmail']),
       sendEmail() {
-        authService.sendPasswordResetEmail(this.email)
+        this.sendPasswordResetEmail({email: this.email})
         .then(response => {
             if (response.status === 200) {
               this.showNotification({

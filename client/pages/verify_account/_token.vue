@@ -3,12 +3,11 @@
 </template>
 
 <script>
-import { mapMutations } from 'vuex'
-import authService from '~/api/AuthService'
+import { mapMutations, mapActions } from 'vuex'
 
 export default {
   created() {
-    authService.activateUser(this.$route.params.token)
+    this.activateUser({token: this.$route.params.token})
     .then(response => {
       const success = response.data.success
       if (success) {
@@ -30,7 +29,8 @@ export default {
     this.$router.push('/login')
     },
     methods: {
-      ...mapMutations(['showNotification'])
+      ...mapMutations(['showNotification']),
+      ...mapActions(['activateUser'])
     }
 }
 </script>

@@ -1,9 +1,10 @@
 <template>
     <div>
-        <v-app v-cloak>
+      <nuxt/>
+        <!-- <v-app v-cloak>
             <nav-bar />
             <v-main>
-                <v-container>
+                <v-container id="page-container">
                     <v-alert
                       :value="displayNotification"
                       :type="notificationType"
@@ -16,42 +17,51 @@
                 </v-container>
             </v-main>
             <footer-bar />
-        </v-app>
+        </v-app> -->
     </div>
 </template>
 
-<script>
-import { mapState } from 'vuex'
-import NavBar from '~/components/Navigation/Navbar.vue';
-import FooterBar from '~/components/Navigation/FooterBar.vue';
+// <script>
+// import { mapState } from 'vuex'
+// import NavBar from '~/components/Navigation/Navbar.vue';
+// import FooterBar from '~/components/Navigation/FooterBar.vue';
 
 
-export default {
-    name: 'LayoutDefault',
-    components: {
-        NavBar,
-        FooterBar
-    },
-    computed: {
-      ...mapState([
-        'displayNotification',
-        'notificationText',
-        'notificationType'
-      ])
-    },
-    watch:{
-    $route (to, from){
-      if(!(to.name === "login")) {
-        this.$store.commit('closeNotification')
-      }
-    }
-  } 
-};
-</script>
+// export default {
+//     name: 'LayoutDefault',
+//     components: {
+//         NavBar,
+//         FooterBar
+//     },
+//     computed: {
+//       ...mapState([
+//         'displayNotification',
+//         'notificationText',
+//         'notificationType'
+//       ])
+//     },
+//     watch:{
+//     $route (to, from){
+//       if(!(to.name === "login")) {
+//         this.$store.commit('closeNotification')
+//       }
+//     }
+//   },
+//     async mounted() {
+//       try {
+//         await this.$recaptcha.init()
+//       } catch (e) {
+//         // eslint-disable-next-line
+//         console.log(e);
+//       }
+//     } 
+// };
+// </script>
 
 <style>
 #page-container {
     margin: auto;
+    margin-bottom: 400px;
 }
 
 #app {

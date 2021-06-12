@@ -1,7 +1,7 @@
 <template>
     <div id="homepage">
         <img id="logo" src="../assets/img/csx_logo.png" alt="CiteSeerX" />
-        <search-box />
+        <search-box/>
     </div>
 </template>
 
@@ -14,7 +14,7 @@ export default {
     components: {
         SearchBox
     },
-    layout: 'layout_default'
+    layout: "layout_default"
 };
 </script>
 

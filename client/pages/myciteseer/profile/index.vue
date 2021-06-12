@@ -286,9 +286,8 @@
 
 <script>
 /* eslint-disable */
-import { mapState } from 'vuex'
-import authService from '~/api/AuthService'
-import docViewService from '~/api/DocViewService'
+import { mapState, mapActions } from 'vuex'
+
 
 import DocResultsList from '~/components/MyCiteSeer/MCSDocResults'
 
@@ -314,31 +313,33 @@ export default {
       ...mapState(['auth'])
     },
     methods: {
+      ...mapActions(['sendResetPasswordEmail','deleteLikedPaper', 'deleteMoniteredPaper', 'deletePaperFromCollection', 'deleteACollection', 'renameCollection', 'getUserProfile', 
+      'getPaperswithPaperIds']),
       sendResetPasswordEmail(){
-        authService.sendPasswordResetEmail(this.profile.email)
+        this.sendPasswordResetEmail({email: this.profile.email})
       },
       removeLikedPaper(index){
-        authService.deleteLikedPaper(this.auth.token, this.likedPapers[index].id);
+        this.deleteLikedPaper({token: this.auth.token, pid: this.likedPapers[index].id});
         this.likedPapers.splice(index, 1);
       },
       removeMoniteredPaper(index){
-        authService.deleteMoniteredPaper(this.auth.token, this.moniteredPapers[index].id);
+        this.deleteMoniteredPaper({token: this.auth.token, pid: this.moniteredPapers[index].id});
         this.moniteredPapers.splice(index, 1);
       },
       removeCollectionPaper(c_index, index){
         const collection_name = this.collections[c_index].name;
         const c_pid = this.collections[c_index].papers[index].id;
-        authService.deletePaperFromCollection(this.auth.token, c_pid, collection_name)
+        this.deletePaperFromCollection({token: this.auth.token, pid: c_pid, collectionName: collection_name})
         this.collections[c_index].papers.splice(index, 1)
       },
       deleteACollection(c_index){
 
-        authService.deleteACollection(this.auth.token, this.collections[c_index].name);
+        this.deleteACollection({token: this.auth.token, collectionName: this.collections[c_index].name});
         this.collections.splice(c_index, 1);
         this.c_delete_dialog = false;
       },
       renameCollection(c_index){
-        authService.renameCollection(this.auth.token, this.collections[c_index].name, this.rename_temp);
+        this.renameCollection({token: this.auth.token, currCollectionName: this.collections[c_index].name, newCollectionName: this.rename_temp});
         this.collections[c_index].name = this.rename_temp;
         this.rename_temp = "";
         this.c_rename_dialog = false;
@@ -350,30 +351,24 @@ export default {
         this.$router.push("/login");
       }
       else {
-        authService.getUserProfile(this.auth.token)
+        this.getUserProfile({token: this.auth.token})
         .then(async (response) => {
-          this.profile = response.data;
-
-          this.likedPapers = await docViewService.getPaperswithPaperIds(this.profile.liked_papers)
-          this.moniteredPapers = await docViewService.getPaperswithPaperIds(this.profile.monitered_papers)
-          console.log(this.profile.collections)
-          console.log("collections here:")
-          
+          this.profile = response;
+          console.log(this.profile)
+          this.likedPapers = await this.getPaperswithPaperIds({pids: this.profile.liked_papers})
+          this.moniteredPapers = await this.getPaperswithPaperIds({pids: this.profile.monitered_papers})
+          console.log("liked paper length")
+          console.log(this.likedPapers)
+          console.log(this.likedPapers.length)
           for (const i in this.profile.collections){
             let collection = this.profile.collections[i]
             let collection_paper = []
-            console.log(collection)
             if ("paper_id_list" in collection){
-              collection_paper = await docViewService.getPaperswithPaperIds(collection.paper_id_list)
+              collection_paper = await this.getPaperswithPaperIds({pids: collection.paper_id_list})
             }
             this.collections.push({name: collection.collection_name, papers: collection_paper})
           }
-          console.log("in meme collections:")
-          console.log(this.collections)
-          // console.log(this.likedPapers);
-          // console.log(this.moniteredPapers);
         });
-        // console.log(this.profile)
       }
     },
 };

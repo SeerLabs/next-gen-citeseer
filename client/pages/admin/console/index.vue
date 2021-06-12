@@ -59,10 +59,7 @@
 
 <script>
 /* eslint-disable */
-import { mapState } from 'vuex'
-import authService from '~/api/AuthService'
-import DocViewService from '~/api/DocViewService'
-
+import { mapState, mapActions} from 'vuex'
 import DocResultsList from '~/components/Admin/CorrectMetaDocResult'
 import ArchivedResList from '~/components/Admin/EditArchivedResult'
 export default {
@@ -85,7 +82,7 @@ export default {
       ...mapState(['admin_auth'])
     },
     methods: {
-
+      ...mapActions(['getPaperWithPaperId','get_edit_requests', 'get_edit_archived'])
     },
     beforeMount() {
       if (!this.admin_auth.loggedIn) {
@@ -93,13 +90,13 @@ export default {
       }
       else {
         this.username = this.admin_auth.username
-        authService.get_edit_requests(this.admin_auth.token)
+        this.get_edit_requests(this.admin_auth.token)
         .then((async (response) => {
             this.correctMetadatas = response.data;
             console.log("meta:")
             console.log(this.correctMetadatas)
             for (const i in this.correctMetadatas){
-              let paper = await DocViewService.getPaperWithPaperId(this.correctMetadatas[i].user_request.paper_id)
+              let paper = await this.getPaperWithPaperId(this.correctMetadatas[i].user_request.paper_id)
               this.papers.push(paper.data.paper)
        
             }
@@ -108,13 +105,13 @@ export default {
             console.log(this.papers)
         }))
 
-        authService.get_edit_archived(this.admin_auth.token)
+        this.get_edit_archived(this.admin_auth.token)
         .then((async (response) => {
             this.editArchived = response.data;
             console.log("arch:")
             console.log(this.editArchived)
             for (const i in this.editArchived){
-              let paper = await DocViewService.getPaperWithPaperId(this.editArchived[i].user_request.paper_id)
+              let paper = await this.getPaperWithPaperId(this.editArchived[i].user_request.paper_id)
               this.papersArchived.push(paper.data.paper)
        
             }

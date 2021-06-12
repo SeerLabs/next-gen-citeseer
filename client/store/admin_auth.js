@@ -5,13 +5,13 @@ export const state = () => ({
 })
 
 export const mutations = {
-    loginAdmin(state, user) {
+    admin_login(state, user) {
         state.loggedIn = true;
         state.username = user.username;
         state.token = user.access_token;
     },
 
-    logoutAdmin(state) {
+    admin_logout(state) {
         state.loggedIn = false;
         state.user = null;
         state.token = "";
