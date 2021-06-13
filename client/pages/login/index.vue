@@ -88,7 +88,7 @@ export default {
       try {
         // const recaptchaToken = await this.$recaptcha.execute('login');
         // const recaptchaStatus = (await authService.checkRecaptcha(recaptchaToken)).data.success;
-        // if (true) {
+        // if (recaptchaStatus) {
           await this.loginUser({email: this.email, password: this.password})
           .then((response) => {
             this.login(response);
