@@ -92,32 +92,6 @@ export default {
             abstract: '',
             nCitations: 0,
 
-            // documents: [
-            //     {
-            //         title: 'Document Title',
-            //         type: 'DOCUMENT',
-            //         authors: 'Abcdefg Lastname',
-            //         year: '2018',
-            //         abstract: 'Lorem ipsum',
-            //         numCitations: 20
-            //     },
-            //     {
-            //         title: 'ABCDEFG',
-            //         type: 'DOCUMENT',
-            //         authors: 'Hijklmno Pqrstuv',
-            //         year: '2020',
-            //         abstract: 'Lorem ipsum',
-            //         numCitations: 3
-            //     },
-            //     {
-            //         title: 'EFGHIJK',
-            //         type: 'CITATION',
-            //         authors: 'Firstname Lastname',
-            //         year: '2021',
-            //         abstract: 'Lorem ipsum',
-            //         numCitations: 30
-            //     }
-            // ],
             totalPageResults: 1000
         };
     },

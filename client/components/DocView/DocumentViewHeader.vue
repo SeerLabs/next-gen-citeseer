@@ -206,12 +206,7 @@
                             </v-card-actions>
                         </v-card>
                         </v-dialog>
-                        <v-btn v-if="admin_loggedIn">
-                            {{ "Physical Delete Paper" }}
-                        </v-btn>
-                        <v-btn v-if="admin_loggedIn" >
-                            {{ "Logical Delete Paper" }}
-                        </v-btn>
+                        
                 </v-card-text>
             </v-card>
         </v-col>
@@ -249,20 +244,16 @@ export default {
             temp_abstract: this.abstract,
             temp_reason: '',
             temp_publisher: '',
-            admin_loggedIn:  false,
         };
     },
     computed: {
         ...mapState(['auth']),
         
-        ...mapState(['admin_auth']),
-
         getPDFUrl() {
             return '/pdf/' + this.docId;
         }
     },
     beforeMount() {
-        this.admin_loggedIn = this.admin_auth.loggedIn
       if (this.auth.loggedIn) {
         this.getUserProfile({token: this.auth.token})
         .then((response) => {
