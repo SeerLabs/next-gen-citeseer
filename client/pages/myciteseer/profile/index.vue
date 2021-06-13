@@ -50,10 +50,10 @@
                 <v-tabs v-if="activeTabClass === 2" v-model="activeTab[index]" vertical>
                 
                 <v-tab
-                  v-for="(n, c_index) in collections"
-                  :key="n.name" 
+                  v-for="(c, c_index) in collections"
+                  :key="c.name" 
                 >
-                  <v-col cols="11">{{ n.name }} </v-col>
+                  <v-col cols="11">{{ c.name }} </v-col>
                   <v-col cols="1"> 
                       <v-menu offset-y>
                         <template v-slot:activator="{ on, attrs }">
@@ -73,7 +73,7 @@
                                   <div
                                     v-bind="attrs"
                                     v-on="on"
-                                    @click="rename_temp = n.name"
+                                    @click="rename_temp = c.name"
                                   >
                                     Rename
                                   </div>
@@ -130,7 +130,7 @@
                                 <v-card>
                                 <v-card-text>
                                 <h3>Are you sure you want to delete the 
-                                    collection: {{ n.name }}?</h3>
+                                    collection: {{ c.name }}?</h3>
                                 </v-card-text>
 
                                   <v-divider></v-divider>
@@ -157,12 +157,12 @@
                       </v-menu>  
                   </v-col>
                 </v-tab>
-                <v-tab-item v-for="(n, c_index) in collections" :key="n.name">
+                <v-tab-item v-for="(c, c_index) in collections" :key="c.name">
                   <v-card-text>
                     <doc-results-list
-                      v-if="n.papers.length"
+                      v-if="c.papers.length"
                       class="profile-documents-list"
-                      :documents="n.papers" 
+                      :documents="c.papers" 
                       @remove-paper="removeCollectionPaper(c_index, $event)"
                     />
                     <div v-else class="text-body1 filler-text">
@@ -174,104 +174,10 @@
               </v-tabs>
               </v-card>
               <v-card v-if="activeTabClass === 3" v-model="activeTab[index]" flat>
-                <v-col class="text-h3 mb-10">Profile Information</v-col>
-                <v-layout column>
-                  <v-card flat>
-                    <v-card-text>
-                      <v-row>
-                        <v-col cols="2">
-                          Password
-                        </v-col>
-                        <v-col cols="4">
-                          <v-btn @click="sendResetPasswordEmail()">
-                            Send Password Reset Email
-                          </v-btn>
-                        </v-col>
-                      </v-row>
-                      <v-row>
-                        <v-col cols="2">
-                          Full Name
-                        </v-col>
-                        <v-col cols="4">
-                          <v-text-field
-                            v-model="profile.full_name"></v-text-field>
-                        </v-col>
-                      </v-row>
-                      
-                      <v-row>
-                        <v-col cols="2">
-                          Email
-                        </v-col>
-                        <v-col cols="4">
-                          <v-text-field
-                            v-model="profile.email"></v-text-field>
-                        </v-col>
-                      </v-row>
-
-                      <v-row>
-                        <v-col cols="2">
-                          Organization
-                        </v-col>
-                        <v-col cols="4">
-                          <v-text-field
-                            v-model="profile.organization"></v-text-field>
-                        </v-col>
-                      </v-row>
-
-                      <v-row>
-                        <v-col cols="2">
-                          Department
-                        </v-col>
-                        <v-col cols="4">
-                          <v-text-field
-                            v-model="profile.department"></v-text-field>
-                        </v-col>
-                      </v-row>
-
-                      <v-row>
-                        <v-col cols="2">
-                          Web Page
-                        </v-col>
-                        <v-col cols="4">
-                          <v-text-field
-                            v-model="profile.web_page"></v-text-field>
-                        </v-col>
-                      </v-row>
-
-                      <v-row>
-                        <v-col cols="2">
-                          State
-                        </v-col>
-                        <v-col cols="4">
-                          <v-text-field
-                            v-model="profile.state"></v-text-field>
-                        </v-col>
-                      </v-row>
-
-                      <v-row>
-                        <v-col cols="2">
-                          Country
-                        </v-col>
-                        <v-col cols="4">
-                          <v-text-field
-                            v-model="profile.country"></v-text-field>
-                        </v-col>
-                      </v-row>
-
-                      
-                      
-                      <v-card-actions>
-                        <v-btn :loading="loading" @click.native="update">
-                            <v-icon left dark>check</v-icon>
-                            Update Profile Information
-                        </v-btn>
-                      </v-card-actions>
-                      
-                      
-                    </v-card-text>
-                    
-                  </v-card>
-                </v-layout>
+                <profile-info
+                  :profile="profile"
+                />
+                
               </v-card>
             </v-tab-item>
         </v-tabs>
@@ -285,9 +191,10 @@ import { mapState, mapActions } from 'vuex'
 
 
 import DocResultsList from '~/components/MyCiteSeer/MCSDocResults'
+import ProfileInfo from '~/components/MyCiteSeer/ProfileInfo'
 
 export default {
-    components: { DocResultsList },
+    components: { DocResultsList, ProfileInfo},
     data() {
       return {
         activeTabClass: "1",
@@ -308,11 +215,8 @@ export default {
       ...mapState(['auth'])
     },
     methods: {
-      ...mapActions(['sendResetPasswordEmail','deleteLikedPaper', 'deleteMoniteredPaper', 'deletePaperFromCollection', 'deleteACollection', 'renameCollection', 'getUserProfile', 
+      ...mapActions([,'deleteLikedPaper', 'deleteMoniteredPaper', 'deletePaperFromCollection', 'deleteACollection', 'renameCollection', 'getUserProfile', 
       'getPaperswithPaperIds']),
-      sendResetPasswordEmail(){
-        this.sendPasswordResetEmail({email: this.profile.email})
-      },
       removeLikedPaper(index){
         this.deleteLikedPaper({token: this.auth.token, pid: this.likedPapers[index].id});
         this.likedPapers.splice(index, 1);

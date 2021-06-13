@@ -196,14 +196,20 @@ export default {
             return error;
         });
     },
-       
+    updateProfile(context, {email}){
+        const config = {headers: {
+            'content-type': 'application/x-www-form-urlencoded;charset=utf-8'
+        }}
+        return this.$axios.$post('/profile/update', qs.stringify({email}), config)
+            .then(function(response) {
+                return response
+            })
+    },
 
     loginUser(context, {email, password}) {
         const config = {headers: {
             'content-type': 'application/x-www-form-urlencoded;charset=utf-8'
         }}
-        console.log("logining ingggggggggg")
-        console.log(email)
         return this.$axios.$post('/login', qs.stringify({email, password}), config)
             .then(function(response) {
                 return response

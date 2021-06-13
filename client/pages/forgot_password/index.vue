@@ -43,14 +43,12 @@ export default {
       sendEmail() {
         this.sendPasswordResetEmail({email: this.email})
         .then(response => {
-            if (response.status === 200) {
-              this.showNotification({
-                text: "Password reset email set. Please check your inbox",
-                type: "success"
-              })
+            this.showNotification({
+              text: "Password reset email sent. Please check your inbox",
+              type: "success"
+            })
 
-              this.$router.push('/login')
-            }
+            this.$router.push('/login')
           }
         ).catch((error) => {
             this.showNotification({
