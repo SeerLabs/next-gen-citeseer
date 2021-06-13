@@ -11,13 +11,10 @@
             {{ n.text }}
           </v-tab>
         
-          <!-- <v-tabs-items v-model="tab" class="ml-10"> -->
             <v-tab-item v-for="(n, index) in tabClasses" :key="n.id">
 
               <v-card v-if="activeTabClass === 0" v-model="activeTab[index]" flat>
-                <!-- <v-card-title>
-                  Liked Papers 
-                </v-card-title> -->
+
                 <v-col class="text-h3 mb-10">Liked Papers</v-col>
                 <v-card-text>
                   <doc-results-list
@@ -33,9 +30,7 @@
               </v-card>
 
               <v-card v-if="activeTabClass === 1" v-model="activeTab[index]" flat>
-                <!-- <v-card-title>
-                  Monitered Papers 
-                </v-card-title> -->
+
                 <v-col class="text-h3 mb-10">Monitered Papers</v-col>
                 <v-card-text>
                   <doc-results-list 
