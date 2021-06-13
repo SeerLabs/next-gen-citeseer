@@ -13,7 +13,7 @@ from fastapi_jwt_auth.exceptions import AuthJWTException
 from pydantic import BaseModel
 from typing import Optional
 import re
-from redis import Redis
+# from redis import Redis
 from datetime import timedelta
 elastic_service = ElasticService()
 router = APIRouter()

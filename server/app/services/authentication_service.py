@@ -6,7 +6,7 @@ from models.api_models import PaperMetadataCorrection
 from passlib.context import CryptContext
 from typing import Dict
 from datetime import datetime, timedelta
-import jwt
+#import jwt
 import bcrypt
 from services.elastic_service import ElasticService
 import requests
@@ -46,6 +46,7 @@ CiteSeerX
 """
 class AuthenticationService:        
     # JWT
+    """
     def create_jwt_token(self, jwt_content: Dict[str, str], secret_key: str, expires_delta: timedelta) ->str:
         to_encode = jwt_content.copy()
         expire = datetime.utcnow() + expires_delta
@@ -65,7 +66,7 @@ class AuthenticationService:
             raise ValueError("unable to decode JWT token") from decode_error
         except ValidationError as validation_error:
             raise ValueError("malformed payload in token") from validation_error
-
+    """
     # Securities
     def generate_salt(self) -> str:
         return bcrypt.gensalt().decode()
