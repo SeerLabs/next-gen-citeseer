@@ -69,7 +69,7 @@ port: "3000"
      ** See https://axios.nuxtjs.org/options
      */
     axios: {
-        baseURL: 'http://localhost:8005/api',
+        baseURL: '/api',
     },
 
     vuetify: {
