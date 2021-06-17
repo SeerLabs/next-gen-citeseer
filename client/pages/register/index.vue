@@ -8,18 +8,6 @@
           <Notification v-if="error" :message="error"/>
 
           <form method="post" @submit.prevent="register">
-            <!-- <div class="field">
-              <label class="label">Username</label>
-              <div class="control">
-                <v-text-field
-                  v-model="username"
-                  type="text"
-                  class="input"
-                  name="username"
-                  required
-                />
-              </div>
-            </div> -->
             <div class="field">
               <label class="label">Email</label>
               <div class="control">
@@ -36,10 +24,10 @@
               <label class="label">Full Name</label>
               <div class="control">
                 <v-text-field
-                  v-model="full_name"
+                  v-model="fullName"
                   type="text"
                   class="input"
-                  name="full_name"
+                  name="fullName"
                   required
                 />
               </div>
@@ -81,7 +69,7 @@ export default {
   data() {
     return {
       email: '',
-      full_name: '',
+      fullName: '',
       password: '',
       error: null
     }
@@ -105,7 +93,7 @@ export default {
         const recaptchaStatus = (await this.checkRecaptcha(token)).data.success;
 
         if (recaptchaStatus) {
-          await this.registerUser({email: this.email, password: this.password, fullName: this.full_name})
+          await this.registerUser({email: this.email, password: this.password, fullName: this.fullName})
           .then((response) => {
             if(response.status === 200) {
               this.$router.push('/login');

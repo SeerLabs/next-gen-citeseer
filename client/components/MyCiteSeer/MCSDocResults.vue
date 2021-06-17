@@ -50,15 +50,6 @@ export default {
     props: {
         documents: { type: Array, default: null }
     }
-    // computed: {
-    //     docUrl() {
-    //         return `/doc_view/pid/${this.docId}`;
-    //     },
-
-    //     pdfUrl() {
-    //         return '/pdf/' + this.docId;
-    //     }
-    // }
 };
 </script>
 

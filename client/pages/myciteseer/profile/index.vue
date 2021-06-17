@@ -66,7 +66,7 @@
                         <v-list>
                           <v-list-item>
                             <v-dialog
-                                v-model="c_rename_dialog"
+                                v-model="cRenameDialog"
                                 width="400"
                               >
                                 <template v-slot:activator="{ on, attrs }">
@@ -95,13 +95,13 @@
                                   <v-card-actions>
                                     <v-spacer></v-spacer>
                                     <v-btn
-                                      @click="renameCollection(c_index)"
+                                      @click="collectionRename(c_index)"
                                     >
                                       Rename
                                     </v-btn>
                                     <v-btn
                                       color="primary"
-                                      @click="c_rename_dialog = false"
+                                      @click="cRenameDialog = false"
                                     >
                                       Cancel
                                     </v-btn>
@@ -115,7 +115,7 @@
 
                           <v-list-item>
                             <v-dialog
-                                v-model="c_delete_dialog"
+                                v-model="cDeleteDialog"
                                 width="400"
                               >
                                 <template v-slot:activator="{ on, attrs }">
@@ -139,13 +139,13 @@
                                     <v-spacer></v-spacer>
                                     <v-btn
                                       color="error"
-                                      @click="deleteACollection(c_index)"
+                                      @click="collectionDelete(c_index)"
                                     >
                                       Delete
                                     </v-btn>
                                     <v-btn
                                       color="primary"
-                                      @click="c_delete_dialog = false"
+                                      @click="cDeleteDialog = false"
                                     >
                                       Cancel
                                     </v-btn>
@@ -204,9 +204,8 @@ export default {
         moniteredPapers: [],
         collections: [],
         activeTab: [],
-        c_dropdown: [ {title: 'Rename'}, {title: 'Delete'}],
-        c_delete_dialog: false,
-        c_rename_dialog: false,
+        cDeleteDialog: false,
+        cRenameDialog: false,
         rename_temp: ""
 
       }
@@ -231,17 +230,17 @@ export default {
         this.deletePaperFromCollection({token: this.auth.token, pid: c_pid, collectionName: collection_name})
         this.collections[c_index].papers.splice(index, 1)
       },
-      deleteACollection(c_index){
+      collectionDelete(c_index){
 
         this.deleteACollection({token: this.auth.token, collectionName: this.collections[c_index].name});
         this.collections.splice(c_index, 1);
-        this.c_delete_dialog = false;
+        this.cDeleteDialog = false;
       },
-      renameCollection(c_index){
+      collectionRename(c_index){
         this.renameCollection({token: this.auth.token, currCollectionName: this.collections[c_index].name, newCollectionName: this.rename_temp});
         this.collections[c_index].name = this.rename_temp;
         this.rename_temp = "";
-        this.c_rename_dialog = false;
+        this.cRenameDialog = false;
       }
     },
     mounted() {
@@ -268,6 +267,7 @@ export default {
             this.collections.push({name: collection.collection_name, papers: collection_paper})
           }
         });
+        
       }
     },
 };

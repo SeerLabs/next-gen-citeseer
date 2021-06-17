@@ -20,7 +20,7 @@
                         </v-col>
                         <v-col cols="4">
                           <v-text-field
-                            v-model="profile.full_name"></v-text-field>
+                            v-model="fullName"></v-text-field>
                         </v-col>
                       </v-row>
                       
@@ -30,7 +30,7 @@
                         </v-col>
                         <v-col cols="4">
                           <v-text-field
-                            v-model="profile.email"></v-text-field>
+                            v-model="email"></v-text-field>
                         </v-col>
                       </v-row>
 
@@ -40,7 +40,7 @@
                         </v-col>
                         <v-col cols="4">
                           <v-text-field
-                            v-model="profile.organization"></v-text-field>
+                            v-model="organization"></v-text-field>
                         </v-col>
                       </v-row>
 
@@ -50,7 +50,7 @@
                         </v-col>
                         <v-col cols="4">
                           <v-text-field
-                            v-model="profile.department"></v-text-field>
+                            v-model="department"></v-text-field>
                         </v-col>
                       </v-row>
 
@@ -60,7 +60,7 @@
                         </v-col>
                         <v-col cols="4">
                           <v-text-field
-                            v-model="profile.web_page"></v-text-field>
+                            v-model="webPage"></v-text-field>
                         </v-col>
                       </v-row>
 
@@ -70,7 +70,7 @@
                         </v-col>
                         <v-col cols="4">
                           <v-text-field
-                            v-model="profile.state"></v-text-field>
+                            v-model="state"></v-text-field>
                         </v-col>
                       </v-row>
 
@@ -80,14 +80,14 @@
                         </v-col>
                         <v-col cols="4">
                           <v-text-field
-                            v-model="profile.country"></v-text-field>
+                            v-model="country"></v-text-field>
                         </v-col>
                       </v-row>
 
                       
                       
                       <v-card-actions>
-                        <v-btn :loading="loading" @click.native="updateProfile">
+                        <v-btn :loading="loading" @click.native="profileUpdate">
                             <v-icon left dark>check</v-icon>
                             Update Profile Information
                         </v-btn>
@@ -108,13 +108,24 @@ export default {
     props: {
         profile: { type: Object, default: null},
     },
+    data() {
+      return {
+        fullName: this.profile.full_name,
+        email: this.profile.email,
+        organization:this.profile.organization,
+        department: this.profile.department,
+        webPage: this.profile.web_page,
+        state: this.profile.state,
+        country: this.profile.country,
+      }
+    },
     methods: {
       ...mapActions(['sendPasswordResetEmail', 'updateProfile']),
       sendResetPasswordEmail(){
-        this.sendPasswordResetEmail({email: this.profile.email})
+        this.sendPasswordResetEmail({email: this.email})
       },
-      updatePrifle(){
-          this.updateProfile({email: this.profile.email})
+      profileUpdate(){
+          this.updateProfile({email: this.email})
       }
       
     },

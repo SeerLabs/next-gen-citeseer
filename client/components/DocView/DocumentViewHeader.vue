@@ -43,7 +43,7 @@
                     </v-btn>
 
                     <v-dialog
-                        v-model="collection_dialog"
+                        v-model="collectionDialog"
                         width="500"
                         >
                         <template v-slot:activator="{ on, attrs }">
@@ -61,8 +61,8 @@
                             </v-card-title>
                             <v-card-text>
                                 <v-select
-                                    v-model="selected_collection"
-                                    :items="collection_names"
+                                    v-model="selectedCollection"
+                                    :items="collectionNames"
                                     label="Select from a existing collection"
                                     item-value="text"
                                     >
@@ -79,7 +79,7 @@
 
                             <v-card-text>
                                 <v-text-field
-                                    v-model="new_collection_name"
+                                    v-model="newCollectionName"
                                     label="Collection Name"
                                 ></v-text-field>
                                 <v-btn
@@ -96,7 +96,7 @@
                             <v-btn
                                 color="primary"
                                 text
-                                @click="collection_dialog = false"
+                                @click="collectionDialog = false"
                             >
                                 Close
                             </v-btn>
@@ -104,7 +104,7 @@
                         </v-card>
                     </v-dialog>
                     <v-dialog
-                        v-model="correct_error_dialog"
+                        v-model="correctErrorDialog"
                         persistent
                         max-width="600px"
                         >
@@ -121,36 +121,36 @@
                             <span class="headline">Request to Correct Errors</span>
                             </v-card-title>
                             <v-card-text>
-                                Our staffs will manually review the rquest for correcting paper's metadata.
+                                Our staff will manually review the rquest for correcting paper's metadata.
                             <v-container>
                                 <v-row>
                                 <v-col cols="12">
                                     Title*
                                     <v-text-field
-                                    v-model="temp_title"
+                                    v-model="tempTitle"
                                     required
                                     ></v-text-field>
                                 </v-col>
                                 
                                 <v-col cols="12">
                                     Abstract
-                                    <v-textarea v-model="temp_abstract">
+                                    <v-textarea v-model="tempAbstract">
                                     </v-textarea>
                                 </v-col>
                                 
                                 <v-col cols="12">
                                     Authors
-                                    <div v-for="(author_name, index) in temp_authors" :key="index" class="form-row">
+                                    <div v-for="(author_name, index) in tempAuthors" :key="index" class="form-row">
                                             
-                                            <v-text-field v-model="temp_authors[index]"></v-text-field>
-                                            <button type="button" class="close" aria-label="Close" @click="temp_authors.splice(index,1)">
+                                            <v-text-field v-model="tempAuthors[index]"></v-text-field>
+                                            <button type="button" class="close" aria-label="Close" @click="tempAuthors.splice(index,1)">
                                                 <span aria-hidden="true">×</span>
                                             </button>
                                     </div>
                                     <v-btn
                                         color="blue darken-1"
                                         text
-                                        @click="temp_authors.push('')"
+                                        @click="tempAuthors.push('')"
                                     >
                                         Add Author
                                     </v-btn>
@@ -158,25 +158,25 @@
                                 
                                 <v-col cols="12">
                                     Venue or Conference
-                                    <v-text-field v-model="temp_meeting"
+                                    <v-text-field v-model="tempMeeting"
                                     ></v-text-field>
                                 </v-col>
                                 
                                 <v-col cols="12" >
                                     Year
-                                    <v-text-field v-model="temp_pub_date"
+                                    <v-text-field v-model="tempPubDate"
                                     ></v-text-field>
                                 </v-col>
                                 
                                 <v-col cols="12" >
                                     Publisher
-                                    <v-text-field v-model="temp_publisher"
+                                    <v-text-field v-model="tempPublisher"
                                     ></v-text-field>
                                 </v-col>
                                  <v-col cols="12">
                                     Reason Or Details*
                                     <v-text-field
-                                    v-model="temp_reason"
+                                    v-model="tempReason"
                                     required
                                     ></v-text-field>
                                 </v-col>
@@ -192,7 +192,7 @@
                             <v-btn
                                 color="blue darken-1"
                                 text
-                                @click="correct_error_dialog = false"
+                                @click="correctErrorDialog = false"
                             >
                                 Close
                             </v-btn>
@@ -231,19 +231,19 @@ export default {
             showAbstract: false,
             liked: false,
             monitered: false,
-            collection_dialog: false,
-            collection_names: [],
-            new_collection_name: '',
-            selected_collection: null,
-            correct_error_dialog: false,
+            collectionDialog: false,
+            collectionNames: [],
+            newCollectionName: '',
+            selectedCollection: null,
+            correctErrorDialog: false,
             loading: true,
-            temp_title: this.title,
-            temp_authors: this.authors,
-            temp_meeting: this.venue,
-            temp_pub_date: this.year,
-            temp_abstract: this.abstract,
-            temp_reason: '',
-            temp_publisher: '',
+            tempTitle: this.title,
+            tempAuthors: this.authors,
+            tempMeeting: this.venue,
+            tempPubDate: this.year,
+            tempAbstract: this.abstract,
+            tempReason: '',
+            tempPublisher: '',
         };
     },
     computed: {
@@ -261,7 +261,7 @@ export default {
           this.liked = profile.liked_papers.includes(this.docId)
           this.monitered = profile.monitered_papers.includes(this.$docId)
           for (const i in profile.collections){
-            this.collection_names.push(profile.collections[i].collection_name)
+            this.collectionNames.push(profile.collections[i].collectionName)
           }
           this.loading = false;
         })
@@ -275,35 +275,50 @@ export default {
     },
     methods: {
         ...mapActions(['getUserProfile', 'addLikedPaper', 'deleteLikedPaper', 'addMoniteredPaper', 
-        'deleteMoniteredPaper', 'addPaperToCollection', 'addCollectionName', 'addPaperToCollection', 'edit_new']),
+        'deleteMoniteredPaper', 'addPaperToCollection', 'addCollectionName', 'addPaperToCollection', 'editNew']),
         toggleReadMore() {
             this.showAbstract = !this.showAbstract;
         },
-
+        isLoggedIn(){
+            if (!this.auth.loggedIn) {
+                this.$router.push("/login");
+                return false;
+            }
+            return true;
+        },
         toggleLikePaper() {
-          if (!this.liked) {
-            this.addLikedPaper({token: this.auth.token, pid: this.docId})
-          }
-          else {
-            this.deleteLikedPaper({token: this.auth.token, pid: this.docId})
-          }
-          this.liked = !this.liked
+            if (!this.isLoggedIn()) {
+                return;
+            }
+            if (!this.liked) {
+                this.addLikedPaper({token: this.auth.token, pid: this.docId})
+            }
+            else {
+                this.deleteLikedPaper({token: this.auth.token, pid: this.docId})
+            }
+            this.liked = !this.liked
         },
 
         toggleMoniterPaper() {
-          if (!this.monitered) {
-            this.addMoniteredPaper({token: this.auth.token, pid: this.docId})
-          }
-          else {
-            this.deleteMoniteredPaper({token: this.auth.token, pid: this.docId})
-          }
-          this.monitered = !this.monitered
+            if (!this.isLoggedIn()) {
+                return;
+            }
+            if (!this.monitered) {
+                this.addMoniteredPaper({token: this.auth.token, pid: this.docId})
+            }
+            else {
+                this.deleteMoniteredPaper({token: this.auth.token, pid: this.docId})
+            }
+            this.monitered = !this.monitered
         },
 
         addExistingCollectionPaper() {
-            if (this.selected_collection){
-                this.addPaperToCollection({token: this.auth.token, pid: this.docId, collectionName: this.selected_collection})
-                this.collection_dialog = false
+            if (!this.isLoggedIn()) {
+                return;
+            }
+            if (this.selectedCollection){
+                this.addPaperToCollection({token: this.auth.token, pid: this.docId, collectionName: this.selectedCollection})
+                this.collectionDialog = false
             }
             else{
                 alert("Please select an existing collection")
@@ -312,10 +327,13 @@ export default {
         },
         
         addToNewCollection(){
-            if (this.new_collection_name){
-                this.addCollectionName({token: this.auth.token, collectionName: this.new_collection_name})
-                this.addPaperToCollection({token: this.auth.token, pid: this.docId, collectionName: this.new_collection_name})
-                this.collection_dialog = false;
+            if (!this.isLoggedIn()) {
+                return;
+            }
+            if (this.newCollectionName){
+                this.addCollectionName({token: this.auth.token, collectionName: this.newCollectionName})
+                this.addPaperToCollection({token: this.auth.token, pid: this.docId, collectionName: this.newCollectionName})
+                this.collectionDialog = false;
             }
             else{
                 alert("Please enter name of new collection.")
@@ -323,30 +341,33 @@ export default {
         },
 
         submitCorrectMetadataRequest(){
-            const correctAuthors = []
-            if (!this.temp_pub_date){
-                this.temp_pub_date = ""
+            if (!this.isLoggedIn()) {
+                return;
             }
-            for (const i in this.temp_authors){
+            const correctAuthors = []
+            if (!this.tempPubDate){
+                this.tempPubDate = ""
+            }
+            for (const i in this.tempAuthors){
                 correctAuthors.push({
-                    "name": this.temp_authors[i],
+                    "name": this.tempAuthors[i],
                     "affiliation": "",
                     "address": "",
                     "email": ""
                 })
             }
-            this.edit_new({
+            this.editNew({
                 token: this.auth.token, 
                 paperId: this.docId, 
-                reasonOrDetails: this.temp_reason, 
-                title: this.temp_title, 
-                abstract: this.temp_abstract, 
+                reasonOrDetails: this.tempReason, 
+                title: this.tempTitle, 
+                abstract: this.tempAbstract, 
                 authors: correctAuthors,  
-                meeting: this.temp_meeting, 
-                publisher: this.temp_publisher, 
-                publishDate: this.temp_pub_date.toString()
+                meeting: this.tempMeeting, 
+                publisher: this.tempPublisher, 
+                publishDate: this.tempPubDate.toString()
             })
-            this.correct_error_dialog = false;
+            this.correctErrorDialog = false;
         }
     }
 };

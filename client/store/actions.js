@@ -82,36 +82,11 @@ export default {
         });
     },
 
-    edit_new(context, {token, paperId, reasonOrDetails = "", title = "", abstract="", authors = [], meeting="", publisher="", publishDate=""}) {
+    editNew(context, {token, paperId, reasonOrDetails = "", title = "", abstract="", authors = [], meeting="", publisher="", publishDate=""}) {
         const config = {
             headers: {
                 "Authorization": `Bearer ${token}`
             }
-        }
-        if (!paperId){
-            paperId = ""
-        }
-        if (!reasonOrDetails){
-            reasonOrDetails = ""
-        }
-        
-        if (!authors){
-            authors = []
-        }
-        if (!title){
-            title = ""
-        }
-        if (!abstract){
-            abstract=""
-        }
-        if (!meeting){
-            meeting=""
-        }
-        if (!publisher){
-            publisher=""
-        }
-        if (!publishDate){
-            publishDate=""
         }
 
         return this.$axios.$post('/edit/new', {"paper_id": paperId, "reason_or_details": reasonOrDetails, title, abstract, authors, meeting, publisher, "publish_date": publishDate}, config)
@@ -123,7 +98,7 @@ export default {
         });
     },
 
-    get_edit_requests(context, {token}){
+    getEditRequests(context, {token}){
         const config = {
             headers: {
                 "Authorization": `Bearer ${token}`
@@ -138,7 +113,7 @@ export default {
         });
     },
 
-    get_edit_archived(context, {token}){
+    getEditArchived(context, {token}){
         const config = {
             headers: {
                 "Authorization": `Bearer ${token}`
@@ -153,7 +128,7 @@ export default {
         });
     },
 
-    edit_commit(context, {token, requestID = "", reviewerComment = ""}){
+    editCommit(context, {token, requestID = "", reviewerComment = ""}){
         const config = {
             headers: {
                 "Authorization": `Bearer ${token}`
@@ -174,7 +149,7 @@ export default {
         });
     },
 
-    edit_deny(context, {token, requestID, reviewerComment}) {
+    editDeny(context, {token, requestID, reviewerComment}) {
         const config = {
             headers: {
                 "Authorization": `Bearer ${token}`
