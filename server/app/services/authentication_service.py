@@ -6,7 +6,6 @@ from models.api_models import PaperMetadataCorrection
 from passlib.context import CryptContext
 from typing import Dict
 from datetime import datetime, timedelta
-#import jwt
 import bcrypt
 from services.elastic_service import ElasticService
 import requests
@@ -21,8 +20,6 @@ pwd_context = CryptContext(schemes=["bcrypt"], deprecated = "auto")
 RECAPTCHA_SECRET_KEY = os.environ['RECAPTCHA_SECRET_KEY']
 RECAPTCHA_API_ENDPOINT = "https://www.google.com/recaptcha/api/siteverify"
 elastic_service = ElasticService()
-#SENDER_EMAIL = os.environ['SENDER_EMAIL']
-#SENDER_PASSWORD = os.environ['SENDER_PASSWORD']
 verification_email_message ="""
 Hi %s,
 
@@ -45,28 +42,7 @@ Best,
 CiteSeerX
 """
 class AuthenticationService:        
-    # JWT
-    """
-    def create_jwt_token(self, jwt_content: Dict[str, str], secret_key: str, expires_delta: timedelta) ->str:
-        to_encode = jwt_content.copy()
-        expire = datetime.utcnow() + expires_delta
-        to_encode.update(JWTMeta(exp=expire, sub=JWT_SUBJECT).dict())
-        return jwt.encode(to_encode, secret_key, algorithm=ALGORITHM).decode()
-
-    def create_user_access_token(self, email: str, secret_key: str) -> str:
-        return self.create_jwt_token(
-            jwt_content=JWTUser(email=email).dict(),
-            secret_key=secret_key,
-            expires_delta=timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES),
-        )
-    def get_email_from_token(self, token: str, secret_key: str) -> str:
-        try:
-            return JWTUser(**jwt.decode(token, secret_key, algorithms=[ALGORITHM])).email
-        except jwt.PyJWTError as decode_error:
-            raise ValueError("unable to decode JWT token") from decode_error
-        except ValidationError as validation_error:
-            raise ValueError("malformed payload in token") from validation_error
-    """
+    
     # Securities
     def generate_salt(self) -> str:
         return bcrypt.gensalt().decode()
@@ -77,11 +53,11 @@ class AuthenticationService:
     def get_password_hash(self, salt, password) -> str:
         return pwd_context.hash(salt + password)
 
-    def is_username_taken(self, username: str) -> bool:
-        return False
-
     def is_email_taken(self, email: str) -> bool:
-        return False
+        ''' retrun true if email already taken
+        '''
+        return self.get_user(email) != None
+
     def recaptcha(self, token):
         body = { "secret": RECAPTCHA_SECRET_KEY, "response": token}
         res = requests.post(url = RECAPTCHA_API_ENDPOINT, data = body).json()
@@ -97,9 +73,7 @@ class AuthenticationService:
         context = ssl.create_default_context()
         # Send the message via our own SMTP server.
         s = smtplib.SMTP('smtp.psu.edu')#, 25) 
-        #s.login(SENDER_EMAIL, SENDER_PASSWORD)
         s.send_message(msg)
-        #s.sendmail('test-csx@ist.psu.edu', '', 'test msg')
         s.quit()
         return True
 
@@ -113,16 +87,12 @@ class AuthenticationService:
         context = ssl.create_default_context()
         # Send the message via our own SMTP server.
         s = smtplib.SMTP('smtp.psu.edu', 25) 
-        #s.login(SENDER_EMAIL, SENDER_PASSWORD)
         s.send_message(msg)
-        #s.sendmail('test-csx@ist.psu.edu', '', 'test msg')
         s.quit()
         return True
 
     def activate_account(self, user_in_db):
         try:
-            # email = self.get_email_from_token(token, secret_key)
-            # user_in_db = self.get_user(email)
             user_in_db.is_activated = True
             user_in_db.save(using=elastic_service.get_connection())
             return True
@@ -130,7 +100,14 @@ class AuthenticationService:
             return False
     # Authentication
     def create_user(self, user_data: UserRegistrationForm):
-        
+        '''return status
+           status:
+               0 on success
+               -1 on email taken
+               -2 db error
+        '''
+        if self.is_email_taken(user_data.email):
+            return -1    
         salt = self.generate_salt()
         hashed_password = self.get_password_hash(salt, user_data.password)
         
@@ -144,15 +121,15 @@ class AuthenticationService:
             web_page=user_data.web_page,
             country=user_data.country,
             state=user_data.state,
-            #collections=[Collection(collection_name="untitled_collection", paper_id_list= [123]).save(using=elastic_sergice.get_connection())],
             monitered_papers=[],
             liked_papers=[],
             is_activated = False
         )
         user_in_db.init(using=elastic_service.get_connection())
-        #user_in_db.add_collection_paper("untitled_collection", 123)
         user_in_db.meta.id = user_in_db.email # set email as _id in elasticsearch
-        return user_in_db.save(using=elastic_service.get_connection())
+        if user_in_db.save(using=elastic_service.get_connection()):
+            return 0
+        return -2
         
     def create_admin(self, admin_data: AdminUser):
         salt = self.generate_salt()

@@ -61,11 +61,6 @@ class Settings(BaseModel):
     authjwt_secret_key: str = "secret"
     authjwt_denylist_enabled: bool = True
     authjwt_denylist_token_checks: set = {"access","refresh"}
-    # authjwt_token_location: set = {"cookies"}
-    # Only allow JWT cookies to be sent over https
-    # authjwt_cookie_secure: bool = False
-    # authjwt_cookie_csrf_protect: bool = False
-    # authjwt_cookie_samesite: str = 'lax'
     access_expires: int = timedelta(minutes=15)
     refresh_expires: int = timedelta(days=1)
 
@@ -82,10 +77,10 @@ def check_if_token_in_denylist(decrypted_token):
     jti = decrypted_token['jti']
     return jti in denylist
 
-async def get_current_user(Authorize: AuthJWT = Depends()):#token: str = Depends(oauth2_scheme)):
+async def get_current_user(Authorize: AuthJWT = Depends()):
     Authorize.jwt_required()
     try:
-        email = Authorize.get_jwt_subject()#authService.get_email_from_token(token, SECRET_KEY)
+        email = Authorize.get_jwt_subject()
     except ValueError:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
@@ -115,17 +110,10 @@ async def get_current_user(Authorize: AuthJWT = Depends()):#token: str = Depends
 
 
 # NOTE: UserInDB contain hashed password, don't ever expose this as response!!
-async def get_current_user_in_db(Authorize: AuthJWT = Depends()) -> UserInDB:#token: str = Depends(oauth2_scheme)) -> UserInDB:
+async def get_current_user_in_db(Authorize: AuthJWT = Depends()) -> UserInDB:
     Authorize.jwt_required()
-    email = Authorize.get_jwt_subject() #authService.get_email_from_token(token, SECRET_KEY)
-    """
-    except ValueError:
-        raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="Invalid authentication credentials or malformed jwt token",
-            headers={"WWW-Authenticate": "Bearer"},
-        )
-    """
+    email = Authorize.get_jwt_subject()
+    
     user_in_db = authService.get_user(email)
     if user_in_db:
         return user_in_db 
@@ -163,10 +151,24 @@ async def login(username: str = Form(...), password: str = Form(...), Authorize:
 @router.post("/register")
 def register(userData: UserRegistrationForm = Depends(UserRegistrationForm.as_form), Authorize: AuthJWT = Depends()):
     validate_email(userData.email)
-    is_user_created = authService.create_user(userData)
-    token =  Authorize.create_access_token(subject=userData.email) #authService.create_user_access_token(userData.email, SECRET_KEY)
-    is_sent = authService.send_verification_email(userData.full_name, userData.email, token) 
-    return {"success": is_user_created and is_sent}
+    user_created_status = authService.create_user(userData)
+    if user_created_status == -1:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="User account with this email already exist",
+            headers={"WWW-Authenticate": "Bearer"},
+        )
+    elif user_created_status == -2:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Database error, please try again",
+            headers={"WWW-Authenticate": "Bearer"},
+        )
+    else:
+
+        token =  Authorize.create_access_token(subject=userData.email)
+        is_sent = authService.send_verification_email(userData.full_name, userData.email, token) 
+        return {"success": user_created_status == 0 and is_sent}
 
 @router.post("/activate_account", dependencies=[Depends(JWTBearer())])
 def verify_account(UserInDB = Depends(get_current_user_in_db)):
