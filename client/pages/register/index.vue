@@ -89,28 +89,33 @@ export default {
     ...mapActions(['checkRecaptcha', 'registerUser']),
     async register() {
       try {
-        const token = await this.$recaptcha.execute('login');
-        const recaptchaStatus = (await this.checkRecaptcha(token)).data.success;
+        // const token = await this.$recaptcha.execute('login');
+        // const recaptchaStatus = (await this.checkRecaptcha(token)).data.success;
 
-        if (recaptchaStatus) {
+        // if (recaptchaStatus) {
           await this.registerUser({email: this.email, password: this.password, fullName: this.fullName})
           .then((response) => {
-            if(response.status === 200) {
+              console.log("res status")
+              console.log(response.status)
               this.$router.push('/login');
               this.showNotification({ 
                   text: "Account successfully created. Please check your inbox for a confirmation email to login.", 
                   type: "success"
                 })
-            }
-            else {
+          
+          })
+          .catch((error) => {
+            console.log(error.response)
+            if (error.response.status === 401){
               this.showNotification({
-                  text: "Error creating account. Please try again.",
-                  type: "error"
-                })
+                      text: error.response.data.detail,
+                      type: "error"
+                    })
             }
           });
-        }
+        // }
       } catch(error) {
+        
         // eslint-disable-next-line
         console.log(error);
       }

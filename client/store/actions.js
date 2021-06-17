@@ -68,19 +68,7 @@ export default {
         })
     },
 
-    registerUser(context, {email, password, fullName, organization="", department="", webpage="", country="", state=""}) {
-        const config = {headers: {
-            'content-type': 'application/x-www-form-urlencoded;charset=utf-8'
-        }}
-
-        return this.$axios.$post('/register', qs.stringify({password, email, "full_name": fullName, organization, department, "web_page": webpage, country, state}), config)
-        .then(function(response) {
-            return response;
-        })
-        .catch(function(error) {
-            return error;
-        });
-    },
+    
 
     editNew(context, {token, paperId, reasonOrDetails = "", title = "", abstract="", authors = [], meeting="", publisher="", publishDate=""}) {
         const config = {
@@ -179,6 +167,17 @@ export default {
             .then(function(response) {
                 return response
             })
+    },
+
+    registerUser(context, {email, password, fullName, organization="", department="", webpage="", country="", state=""}) {
+        const config = {headers: {
+            'content-type': 'application/x-www-form-urlencoded;charset=utf-8'
+        }}
+
+        return this.$axios.$post('/register', qs.stringify({password, email, "full_name": fullName, organization, department, "web_page": webpage, country, state}), config)
+        .then(function(response) {
+            return response;
+        })
     },
 
     loginUser(context, {email, password}) {

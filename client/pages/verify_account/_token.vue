@@ -8,8 +8,8 @@ import { mapMutations, mapActions } from 'vuex'
 export default {
   created() {
     this.activateUser({token: this.$route.params.token})
-    .then(response => {
-      const success = response.data.success
+    .then((response) => {
+      const success = response.success
       if (success) {
         this.showNotification({
           text: "Account activated successful. You may now login to your account.",
@@ -18,15 +18,24 @@ export default {
       }
       else {
         this.showNotification({
-          text: "Error: Invalid token.",
+          text: "Error: Invalid token. Account activation not successful",
           type: "error"
         })
       }
 
       this.$router.push('/login')
     })
-
-    this.$router.push('/login')
+    .catch((error) => {
+      this.showNotification({
+        text: "Error: Invalid token. Account activation not successful",
+        type: "error"
+      })
+      
+      this.$router.push('/login')
+      // eslint-disable-next-line
+      console.log(error)
+    });
+    
     },
     methods: {
       ...mapMutations(['showNotification']),
