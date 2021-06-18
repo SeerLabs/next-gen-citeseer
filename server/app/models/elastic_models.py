@@ -36,10 +36,49 @@ class PubInfo(InnerDoc):
     pub_place = Text()
     pub_address = Text()
 
+class CorrectPaperMetadataES(Document):
+    paper_id = Keyword()
+    user_email = Keyword()
+    title = Text()
+    authors = Nested(Author)
+    abstract = Text()
+    pub_venue = Text()
+    venue_type =Keyword()
+    pub_year = Keyword()
+    volume = Keyword()
+    number = Keyword()
+    pages = Keyword()
+    publisher = Text()
+    pub_address = Text()
+    tech_report_num = Keyword()
+
+    class Index:
+        name = 'paper_metadata_correction_next'
+
+class PaperMetadataCorrectionES(Document):
+    user_email = Keyword()
+    paper_id = Keyword()
+    title = Text()
+    authors = Nested(Author)
+    abstract = Text()
+    venue = Text()
+    venue_type = Text()
+    year = Integer()
+    volume = Text()
+    number = Text()
+    pages = Text()
+    publisher = Text()
+    pub_address = Text()
+    tech_report_num = Text()
+
+    class Index:
+        name = 'paper_metadata_correction_nextv1'
+
+
 
 class KeyMap(Document):
     paper_id = Text()
-
+    
     class Index:
         name = settings.KEYMAP_INDEX
 
@@ -55,7 +94,7 @@ class Cluster(Document):
     abstract = Text()
     is_citation = Boolean()
     created_at = Date(default_timezone='UTC')
-    authors = Nested(Author)
+    authors = Nested(type='authors')
     self_cites = Integer()
     num_cites = Integer()
     cited_by = Keyword(multi=True)
@@ -102,12 +141,14 @@ class Cluster(Document):
             return
         self.keys.extend(keys)
 
+
     def save(self, **kwargs):
         if self.title is not None:
             self.title_suggest = {
                 'input': [self.title],
             }
         return super().save(**kwargs)
+
 
 
 class UserRequest(Document):
@@ -122,6 +163,6 @@ class UserRequest(Document):
     authors = Nested(Author)
     pub_info = Nested(PubInfo)
     status = Keyword()
-
+    reviewer_comment = Text()
     class Index:
         name = settings.REQUESTS_INDEX
