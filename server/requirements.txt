@@ -11,3 +11,4 @@ zeep~=3.4.0
 nltk~=3.5
 web.py==0.62
 aiofiles==0.6.0
+slowapi==0.1.4

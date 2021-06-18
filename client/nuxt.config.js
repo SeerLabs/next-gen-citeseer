@@ -54,7 +54,7 @@ port: "3000"
         '@nuxtjs/pwa',
         ['@nuxtjs/recaptcha', {
             hideBadge: true,
-            siteKey: '6LdjreIZAAAAACuiEgvWpl8EFFeI-EaO5x_Fozst',
+            siteKey: process.env.RECAPTCHA_SITE_KEY,
             version: 3,
         }],
         '@nuxtjs/style-resources'
@@ -65,7 +65,7 @@ port: "3000"
      ** See https://axios.nuxtjs.org/options
      */
     axios: {
-        baseURL: 'http://localhost:8000/api',
+        baseURL: process.env.DEBUG === "true" ? 'http://localhost:8000/api' : 'http://localhost:8080/api'
     },
 
     vuetify: {
@@ -99,7 +99,7 @@ port: "3000"
 
     privateRuntimeConfig: {
         axios: {
-            baseURL: 'http://localhost:8000/api'
+            baseURL: process.env.DEBUG === "true" ? 'http://localhost:8000/api' : 'http://localhost:8080/api'
         }
     }
 };
