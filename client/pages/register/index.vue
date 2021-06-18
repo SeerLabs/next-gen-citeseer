@@ -95,8 +95,6 @@ export default {
         // if (recaptchaStatus) {
           await this.registerUser({email: this.email, password: this.password, fullName: this.fullName})
           .then((response) => {
-              console.log("res status")
-              console.log(response.status)
               this.$router.push('/login');
               this.showNotification({ 
                   text: "Account successfully created. Please check your inbox for a confirmation email to login.", 
@@ -105,7 +103,6 @@ export default {
           
           })
           .catch((error) => {
-            console.log(error.response)
             if (error.response.status === 401){
               this.showNotification({
                       text: error.response.data.detail,
