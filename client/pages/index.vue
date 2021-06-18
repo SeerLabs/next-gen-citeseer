@@ -1,17 +1,17 @@
 <template>
     <div id="homepage">
         <img id="logo" src="../assets/img/csx_logo.png" alt="CiteSeerX" />
-        <search-box />
+        <search-box/>
     </div>
 </template>
 
 <script>
 import SearchBox from '~/components/SearchBox.vue';
+
 export default {
     components: {
         SearchBox
     },
-    layout: 'layout_default'
 };
 </script>
 

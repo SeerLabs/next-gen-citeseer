@@ -1,3 +1,5 @@
+import { stubFalse } from 'lodash';
+
 export default {
 config: {
 nuxt: {
@@ -36,7 +38,7 @@ port: "3000"
     /*
      ** Plugins to load before mounting the App
      */
-    plugins: ['~/plugins/axios'],
+    plugins: [{ src: '~/plugins/persistedState.client.js' }, '~/plugins/axios'],
     /*
      ** Nuxt.js dev-modules
      */
@@ -52,6 +54,8 @@ port: "3000"
         // Doc: https://axios.nuxtjs.org/usage
         '@nuxtjs/axios',
         '@nuxtjs/pwa',
+
+        'nuxt-vuex-localstorage',
         ['@nuxtjs/recaptcha', {
             hideBadge: true,
             siteKey: process.env.RECAPTCHA_SITE_KEY,
@@ -65,7 +69,7 @@ port: "3000"
      ** See https://axios.nuxtjs.org/options
      */
     axios: {
-        baseURL: 'http://localhost:8000/api',
+        baseURL: '/api',
     },
 
     vuetify: {
@@ -99,7 +103,7 @@ port: "3000"
 
     privateRuntimeConfig: {
         axios: {
-            baseURL: 'http://localhost:8000/api'
+            baseURL: '/api'
         }
     }
 };
