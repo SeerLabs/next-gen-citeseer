@@ -33,10 +33,10 @@
                         :cid="cid"
                         title="Similar Articles"
                     />
-                    <version-history-card
+                    <!-- <version-history-card
                         id="version-history"
                         title="Version History"
-                    />
+                    /> -->
                 </v-col>
                 <v-col cols="3">
                     <v-card id="table-of-contents">
@@ -51,9 +51,9 @@
                             >
                                 <h6>Similar Articles</h6>
                             </a>
-                            <a href="#version-history">
+                            <!-- <a href="#version-history">
                                 <h6>Version History</h6>
-                            </a>
+                            </a> -->
                         </v-card-text>
                     </v-card>
                 </v-col>
@@ -68,13 +68,12 @@ import $ from 'jquery';
 import { mapActions } from 'vuex';
 import DocumentViewHeader from '~/components/DocView/DocumentViewHeader.vue';
 import CitationCard from '~/components/DocView/CitationCard.vue';
-import VersionHistoryCard from '~/components/DocView/VersionHistoryCard.vue';
 
 export default {
     components: {
         DocumentViewHeader,
         CitationCard,
-        VersionHistoryCard
+        
     },
     async fetch() {
       // const res = await axios.get('https://facebook.com');
@@ -94,32 +93,6 @@ export default {
             abstract: '',
             nCitations: 0,
 
-            documents: [
-                {
-                    title: 'Document Title',
-                    type: 'DOCUMENT',
-                    authors: 'Abcdefg Lastname',
-                    year: '2018',
-                    abstract: 'Lorem ipsum',
-                    numCitations: 20
-                },
-                {
-                    title: 'ABCDEFG',
-                    type: 'DOCUMENT',
-                    authors: 'Hijklmno Pqrstuv',
-                    year: '2020',
-                    abstract: 'Lorem ipsum',
-                    numCitations: 3
-                },
-                {
-                    title: 'EFGHIJK',
-                    type: 'CITATION',
-                    authors: 'Firstname Lastname',
-                    year: '2021',
-                    abstract: 'Lorem ipsum',
-                    numCitations: 30
-                }
-            ],
             totalPageResults: 1000
         };
     },
@@ -182,7 +155,7 @@ export default {
             // document.getElementById(id).scrollIntoView();
         }
     },
-    layout: 'layout_search'
+    layout: 'search'
 };
 </script>
 
