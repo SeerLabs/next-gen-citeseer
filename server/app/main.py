@@ -1,18 +1,13 @@
 import uvicorn as uvicorn
-from fastapi_jwt_auth.exceptions import AuthJWTException
 from fastapi import FastAPI, Request, HTTPException, status
 from fastapi.responses import JSONResponse, PlainTextResponse
+from fastapi.exceptions import RequestValidationError
 from fastapi.middleware.cors import CORSMiddleware
 import os
-from routers import document_routes, elastic_routes, authentication_routes
-from limiter import limiter
+from routers import document_routes, elastic_routes
 import requests
 
-from slowapi import _rate_limit_exceeded_handler
-from slowapi.errors import RateLimitExceeded
-
 DEBUG = os.environ['DEBUG'] == 'true'
-
 RECAPTCHA_SECRET_KEY = os.environ['RECAPTCHA_SECRET_KEY']
 RECAPTCHA_API_ENDPOINT = "https://www.google.com/recaptcha/api/siteverify"
 app = FastAPI()
@@ -34,15 +29,6 @@ app.add_middleware(
 
 app.include_router(document_routes.router, tags=['document_routes'], prefix="/api")
 app.include_router(elastic_routes.router, tags=['elastic_routes'], prefix="/api")
-app.include_router(authentication_routes.router, tags=['authentication_routes'], prefix="/api")
-@app.exception_handler(AuthJWTException)
-def authjwt_exception_handler(request: Request, exc: AuthJWTException):
-    return JSONResponse(
-        status_code=exc.status_code,
-        content={"detail": exc.message}
-    )
-app.state.limiter = limiter
-app.add_exception_handler(RateLimitExceeded, _rate_limit_exceeded_handler)
 
 @app.middleware("http")
 async def recaptcha_check(request: Request, call_next):
@@ -61,17 +47,11 @@ async def recaptcha_check(request: Request, call_next):
     return response
 
 @app.get("/")
-<<<<<<< HEAD
 def pong():
     if DEBUG:
       return {"message": "Running in debug mode."}
     else:
       return {"message": "Running in production mode."}
-=======
-@limiter.limit("5/minute")
-def pong(request: Request):
-    return {"ping": "pong!"}
->>>>>>> dev
 
 
 if __name__ == "__main__":

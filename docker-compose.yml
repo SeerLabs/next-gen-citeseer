@@ -8,13 +8,15 @@ services:
         - 8000:8000
       volumes:
         - ./server:/api
+      environment:
+        - RECAPTCHA_SECRET_KEY
       env_file:
         - ./variables/development.env
     client:
       build: ./client
       container_name: client
       restart: always
-      command: 'npm run dev'
+      command: 'npm run start'
       ports:
         - 3000:3000
       volumes:
@@ -29,14 +31,12 @@ services:
       restart: always
       image: nginx:latest
       ports:
-        - 8080:8080
+        - 8081:8080
       volumes:
         - .:/next-gen-seer
         - ./nginx.conf:/etc/nginx/conf.d/nginx.conf
       depends_on:
         - server
         - client
-      env_file:
-        - ./variables/development.env
 
 

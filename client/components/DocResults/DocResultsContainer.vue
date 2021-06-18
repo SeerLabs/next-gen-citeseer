@@ -10,21 +10,18 @@
             </v-col>
             <v-col sm="3">
                 <v-select
-                    v-model="sortBy"
                     class="my-2 results-dropdown"
                     :items="sortDropdown"
-                    item-text="text"
-                    item-value="sortByKey"
+                    :value="sortDropdown[0]"
                     label="Sort By"
                     outlined
                     dense
+                    target="#document-results-sorting"
                 />
             </v-col>
         </v-row>
-        <div v-if="loading" id="loading">
-            <v-progress-linear rounded indeterminate color="teal" />
-        </div>
-        <doc-results-list v-else :documents="documents" />
+
+        <doc-results-list :documents="documents" />
     </v-container>
 </template>
 
@@ -40,13 +37,12 @@ export default {
         documents: { type: Array, default: null },
         totalPageResults: { type: Number, default: 0 },
         page: { type: Number, default: 0 },
-        sortDropdown: { type: Array, required: true },
-        loading: {type: Boolean, default: false }
+        sortDropdown: { type: Array, required: true }
     },
     data() {
         return {
             pageSize: 10,
-            sortBy: this.sortDropdown[0].sortByKey
+            sortByDisplay: 'Relevance'
         };
     },
     computed: {
@@ -54,9 +50,10 @@ export default {
             return this.pageSize * (this.currentPage - 1) + 1;
         }
     },
-    watch: {
-        sortBy() {
-            this.$emit('input', this.sortBy);
+    methods: {
+        sortResults(event) {
+            this.sortByDisplay = event.target.text;
+            this.$emit('input', event.target.name);
         }
     }
 };

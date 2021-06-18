@@ -98,7 +98,7 @@ export default {
                 });
         }
     },
-    layout: 'search'
+    layout: 'layout_search'
 };
 </script>
 

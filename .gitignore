@@ -124,5 +124,3 @@ dmypy.json
 .idea/
 .DS_Store
 .prettierrc
-
-.ini

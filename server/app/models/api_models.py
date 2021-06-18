@@ -2,11 +2,6 @@ from typing import Optional, List, Dict
 
 from pydantic import BaseModel, typing
 
-class Author(BaseModel):
-    name: str
-    affiliation: Optional[str]
-    address: Optional[str]
-    email: Optional[str]
 
 class Paper(BaseModel):
     id: Optional[str]
@@ -72,22 +67,6 @@ class Cluster(BaseModel):
     cpages: Optional[str]
     cventype: Optional[str]
 
-
-class PaperMetadataCorrection(BaseModel):
-    id: str
-    title: str
-    authors: List[Author]
-    abstract: str
-    venue: str
-    venue_type: str
-    year: str
-    volume:str
-    number:str
-    pages: str
-    publisher: str
-    pub_address: str
-    tech_report_num: str
-    
 class Suggestion(BaseModel):
     type: str
     text: str
@@ -137,7 +116,6 @@ class SearchQuery(BaseModel):
     queryString: str
     page: int
     pageSize: int
-<<<<<<< HEAD
     yearStart: Optional[str]
     yearEnd: Optional[str]
     author: Optional[List[str]]
@@ -151,26 +129,3 @@ class AggregationQuery(BaseModel):
 
 class AggregationResponse(BaseModel):
     aggregations: Dict[str, Facets]
-=======
-
-class MGetRequest(BaseModel):
-    paper_id_list: List[str]
-
-
-class UserRequest(BaseModel):
-    paper_id: str
-    reason_or_details: str
-    title:str
-    abstract: str
-    authors: List[Author] 
-    meeting: Optional[str]
-    publisher: Optional[str]    
-    publish_date: Optional[str]
-    reviewer_comment: Optional[str]
-class ProcessRequest(BaseModel):
-    request_id: str
-    reviewer_comment: str
-class UserRequestResponse(BaseModel):
-    request_id: str
-    user_request: UserRequest
->>>>>>> dev
