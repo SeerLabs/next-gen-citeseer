@@ -1,7 +1,8 @@
 from typing import Optional
 
 import uvicorn as uvicorn
-import os
+import os, sys
+sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 from fastapi import FastAPI
 from starlette.responses import FileResponse
 
@@ -19,4 +20,4 @@ def get_pdf(doi: str, type: Optional[str] = "pdf", rep_id: Optional[str] = "1"):
 
 
 if __name__ == "__main__":
-    uvicorn.run(app, host=settings.REPO_SERVER_HOST, port=8889)
+    uvicorn.run(app, host=settings.REPO_SERVER_HOST, port=8115)

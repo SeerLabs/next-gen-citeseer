@@ -1,14 +1,18 @@
-from typing import Optional, List, Dict
+from typing import Optional, List
 
 from pydantic import BaseModel, typing
 
+class Author(BaseModel):
+    name: str
+    affiliation: Optional[str]
+    address: Optional[str]
+    email: Optional[str]
 
 class Paper(BaseModel):
     id: Optional[str]
     title: Optional[str]
     venue: Optional[str]
     year: Optional[str]
-    publisher: Optional[str]
     n_cited_by: Optional[int]
     n_self_cites: Optional[int]
     abstract: str = None
@@ -19,18 +23,6 @@ class Paper(BaseModel):
     source: str
     urls: List[str] = []
     cluster_id: Optional[str]
-
-class PublicationInfo(BaseModel):
-    key: Optional[str]
-    doc_count: Optional[int]
-
-class Facets(BaseModel):
-    pub_info_year_count: Optional[int]
-    pub_info_year_list: List[PublicationInfo]
-    pub_info_publisher_count: Optional[int]
-    pub_info_publisher_list: List[PublicationInfo]
-    authors_count: Optional[int]
-    authors_fullname_terms: List[PublicationInfo]
 
 class Citation(BaseModel):
     id: str
@@ -67,6 +59,22 @@ class Cluster(BaseModel):
     cpages: Optional[str]
     cventype: Optional[str]
 
+
+class PaperMetadataCorrection(BaseModel):
+    id: str
+    title: str
+    authors: List[Author]
+    abstract: str
+    venue: str
+    venue_type: str
+    year: str
+    volume:str
+    number:str
+    pages: str
+    publisher: str
+    pub_address: str
+    tech_report_num: str
+    
 class Suggestion(BaseModel):
     type: str
     text: str
@@ -81,12 +89,6 @@ class SearchQueryResponse(BaseModel):
     query_id: str
     total_results: int
     response: List[Paper]
-    aggregations: Dict[str, Facets]
-
-class SearchAuthorResponse(BaseModel):
-    query_id: str
-    total_results: int
-    response:List[str]
 
 class PaperDetailResponse(BaseModel):
     query_id: str
@@ -116,10 +118,24 @@ class SearchQuery(BaseModel):
     queryString: str
     page: int
     pageSize: int
-    yearStart: Optional[str]
-    yearEnd: Optional[str]
-    author: Optional[List[str]]
-    publisher: Optional[List[str]]
 
-class SearchFilter(BaseModel):
-    queryString: str
+class MGetRequest(BaseModel):
+    paper_id_list: List[str]
+
+
+class UserRequest(BaseModel):
+    paper_id: str
+    reason_or_details: str
+    title:str
+    abstract: str
+    authors: List[Author] 
+    meeting: Optional[str]
+    publisher: Optional[str]    
+    publish_date: Optional[str]
+    reviewer_comment: Optional[str]
+class ProcessRequest(BaseModel):
+    request_id: str
+    reviewer_comment: str
+class UserRequestResponse(BaseModel):
+    request_id: str
+    user_request: UserRequest

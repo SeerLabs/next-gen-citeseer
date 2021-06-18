@@ -135,7 +135,7 @@ export default {
             this.searchQuery();
         }
     },
-    layout: 'layout_search'
+    layout: 'search'
 };
 </script>
 
