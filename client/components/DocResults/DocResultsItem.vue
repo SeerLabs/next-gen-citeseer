@@ -25,18 +25,27 @@
                 </nuxt-link>
             </v-col>
             <v-col cols="8" class="links">
-                <a href="http://google.com">+Cite</a>
+                <a >+Cite</a>
                 <a :href="pdfUrl" target="_blank">+View PDF</a>
-                <a href="http://google.com">+Save</a>
-                <a href="http://google.com">+Add to ExportCart</a>
+                <add-to-collection-dialog
+                    :doc-id="docId"
+                    :collection-names="collectionNames"
+                    :button-type="'searchItem'"
+                />
+                <a>+Add to ExportCart</a>
             </v-col>
         </v-row>
     </v-container>
 </template>
 
 <script>
+
+import AddToCollectionDialog from '~/components/MyCiteSeer/AddToCollectionDialog.vue'
 export default {
     name: 'DocResultsItem',
+    components: {
+        AddToCollectionDialog
+    },
     props: {
         docId: { type: String, default: '' },
         clusterId: { type: String, default: '' },
@@ -46,7 +55,8 @@ export default {
         year: { type: String, default: '' },
         abstract: { type: String, default: '' },
         nCitedBy: { type: Number, default: 0 },
-        nSelfCites: { type: Number, default: 0 }
+        nSelfCites: { type: Number, default: 0 },
+        collectionNames: {type: Array, default: null}
     },
     computed: {
         docUrl() {
