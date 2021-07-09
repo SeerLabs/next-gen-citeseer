@@ -4,9 +4,9 @@
             <v-col sm="9">
                 Results {{ (page - 1) * pageSize + 1 }} -
                 {{
-                Math.min((page - 1) * pageSize + pageSize, totalPageResults)
+                Math.min((page - 1) * pageSize + pageSize, totalPageResults * pageSize)
                 }}
-                of {{ totalPageResults }}
+                of {{ totalPageResults * pageSize }}
             </v-col>
             <v-col sm="3">
                 <v-select

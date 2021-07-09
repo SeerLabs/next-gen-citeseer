@@ -21,7 +21,9 @@
             </v-col>
             <v-col id="search-results-cards">
                 <search-results-filter class="mb-md-10" />
-                <search-results-external-links />
+                <search-results-external-links 
+                    :query="queryString"
+                />
             </v-col>
         </v-row>
     </div>
@@ -88,7 +90,7 @@ export default {
             this.searchPaper( {queryString: this.queryString, page: this.page, pageSize: this.pageSize} )
                 .then(res => {
                     this.documents = res.response;
-                    this.totalPageResults = res.total_results;
+                    this.totalPageResults = Math.ceil(Math.min(res.total_results, 10000) / this.pageSize);
                     this.loadingState = false;
                 })
                 .catch(error => {

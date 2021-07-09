@@ -150,7 +150,47 @@
                             </v-card-actions>
                         </v-card>
                         </v-dialog>
-                        
+                   <v-dialog
+                        v-model="claimDialog"
+                        width="550"
+                    >
+                    <template v-slot:activator="{ on, attrs }">
+                        <v-btn
+                        v-bind="attrs"
+                        v-on="on"
+                        >
+                        Claim as Author
+                        </v-btn>
+                    </template>
+
+                    <v-card>
+                        <v-card-title>
+                            Are an Author of this Paper?
+                        </v-card-title>
+                        <v-card-text>
+                            If you are one of the authors of this paper,
+                             you can claim it to your account.
+                        </v-card-text>
+                        <v-card-actions>
+                        <v-spacer></v-spacer>
+                        <v-btn
+                            color="primary"
+                            text
+                            @click="claimAsAuthor"
+                        >
+                            CLAIM
+                        </v-btn>
+                        <v-btn
+                            color="secondary"
+                            text
+                            @click="claimDialog = false"
+                        >
+                            CANCEL
+                        </v-btn>
+                        </v-card-actions>
+                    </v-card>
+                    </v-dialog>
+                       
                 </v-card-text>
             </v-card>
         </v-col>
@@ -183,6 +223,7 @@ export default {
             newCollectionName: '',
             selectedCollection: null,
             correctErrorDialog: false,
+            claimDialog: false,
             loading: true,
             tempTitle: this.title,
             tempAuthors: this.authors,
@@ -191,6 +232,7 @@ export default {
             tempAbstract: this.abstract,
             tempReason: '',
             tempPublisher: '',
+            user_email: '',
         };
     },
     computed: {
@@ -206,6 +248,7 @@ export default {
         .then((profile) => {
           console.log(profile)
           this.liked = profile.liked_papers.includes(this.docId)
+          this.user_email = profile.email
           this.monitered = profile.monitered_papers.includes(this.$docId)
           for (const i in profile.collections){
             this.collectionNames.push(profile.collections[i].collection_name)
@@ -222,7 +265,7 @@ export default {
     },
     methods: {
         ...mapActions(['getUserProfile', 'addLikedPaper', 'deleteLikedPaper', 'addMoniteredPaper', 
-        'deleteMoniteredPaper', 'editNew']),
+        'deleteMoniteredPaper', 'editNew', 'authorClaim']),
         toggleReadMore() {
             this.showAbstract = !this.showAbstract;
         },
@@ -287,6 +330,13 @@ export default {
                 publishDate: this.tempPubDate.toString()
             })
             this.correctErrorDialog = false;
+        },
+        claimAsAuthor(){
+            if(!this.isLoggedIn()){
+                return;
+            }
+            this.authorClaim({token: this.auth.token, email: this.user_email, paperId: this.docId})
+            this.claimDialog = false;
         }
     }
 };

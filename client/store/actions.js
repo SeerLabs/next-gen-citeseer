@@ -159,6 +159,21 @@ export default {
             return error;
         });
     },
+    authorClaim(context, {token, email, paperId}){
+        const config = {
+            headers: {
+                "Authorization": `Bearer ${token}`
+            }
+        }
+        return this.$axios.$post('/author_claim', {email, "paper_id": paperId}, config)
+        .then(function(response) {
+            return response;
+        })
+        .catch(function(error) {
+            return error;
+        });
+ 
+    },
     updateProfile(context, {email}){
         const config = {headers: {
             'content-type': 'application/x-www-form-urlencoded;charset=utf-8'
