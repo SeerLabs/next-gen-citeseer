@@ -12,6 +12,7 @@
                 :venue="venue"
                 :n-citation="nCitation"
                 :doc-id="docId"
+                :has-pdf="idType === 'pid'"
             />
 
             <!-- Citations Row -->

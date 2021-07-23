@@ -141,6 +141,7 @@ class SearchQuery(BaseModel):
     yearEnd: Optional[str]
     author: Optional[List[str]]
     publisher: Optional[List[str]]
+    must_have_pdf: bool
 
 class SearchFilter(BaseModel):
     queryString: str
@@ -153,7 +154,6 @@ class AggregationResponse(BaseModel):
 
 class MGetRequest(BaseModel):
     paper_id_list: List[str]
-
 
 class UserRequest(BaseModel):
     paper_id: str
