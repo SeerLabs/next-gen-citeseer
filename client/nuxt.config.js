@@ -58,7 +58,7 @@ port: "3000"
         'nuxt-vuex-localstorage',
         ['@nuxtjs/recaptcha', {
             hideBadge: true,
-            siteKey: process.env.RECAPTCHA_SITE_KEY,
+            siteKey: '6LdjreIZAAAAACuiEgvWpl8EFFeI-EaO5x_Fozst',
             version: 3,
         }],
         '@nuxtjs/style-resources'
