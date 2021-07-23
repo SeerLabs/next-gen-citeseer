@@ -71,7 +71,8 @@ export default {
                 years: { start: 0, end: new Date().getFullYear() },
                 authors: [],
                 publishers: []
-            }
+            },
+            includePdfs: false
         };
     },
     computed: {
@@ -80,24 +81,23 @@ export default {
         }
     },
     watch: {
-        '$route.query.query'() {
+        '$route.query'() {
             this.queryString = this.$route.query.query;
+            this.includePdfs = this.$route.query.pdf || true;
             this.searchQuery();
         }
     },
     created() {
         // make search query immediately when page is loaded
         this.queryString = this.$route.query.query;
+        this.includePdfs = this.$route.query.pdf || true;
         this.searchQuery();
     },
     methods: {
         ...mapActions(['searchPaper']),
         searchQuery() {
             this.loadingState = true;
-            // push params
-
-            console.log(this.filters.authors);
-            
+            // push params            
             const query = {
               queryString: this.queryString,
               page: this.page,
@@ -105,7 +105,8 @@ export default {
               yearStart: String(this.filters.years.start),
               yearEnd: String(this.filters.years.end),
               author: this.filters.authors,
-              publisher: this.filters.publishers
+              publisher: this.filters.publishers,
+              includePdfs: this.includePdfs
             }
 
             this.searchPaper(query)

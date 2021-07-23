@@ -32,6 +32,7 @@ export default {
         if (yearStart === "0") {
             yearStart = null;
         }
+      
         return this.$axios
             .$post('/search', {
                 queryString,
@@ -63,6 +64,7 @@ export default {
         return this.$axios
             .$post('/searchAuthor', {
                 queryString
+                must_have_pdf: includePdfs
             })
             .catch(function(error) {
                 // eslint-disable-next-line
