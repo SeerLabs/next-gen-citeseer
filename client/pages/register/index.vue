@@ -3,19 +3,32 @@
     <div class="container">
       <div class="columns">
         <div class="column is-4 is-offset-4">
-          <h2 class="title has-text-centered">Welcome back!</h2>
+          <h2 class="title has-text-centered">Register!</h2>
 
           <Notification v-if="error" :message="error"/>
 
-          <form method="post" @submit.prevent="submitLogin">
+          <form method="post" @submit.prevent="register">
             <div class="field">
               <label class="label">Email</label>
               <div class="control">
                 <v-text-field
                   v-model="email"
-                  type="text"
+                  type="email"
                   class="input"
                   name="email"
+                  required
+                />
+              </div>
+            </div>
+            <div class="field">
+              <label class="label">Full Name</label>
+              <div class="control">
+                <v-text-field
+                  v-model="fullName"
+                  type="text"
+                  class="input"
+                  name="fullName"
+                  required
                 />
               </div>
             </div>
@@ -27,20 +40,17 @@
                   type="password"
                   class="input"
                   name="password"
+                  required
                 />
               </div>
             </div>
             <div class="control">
-              <v-btn type="submit" class="button is-dark is-fullwidth">Log In</v-btn>
+              <v-btn type="submit">Register</v-btn>
             </div>
           </form>
+
           <div class="has-text-centered" style="margin-top: 20px">
-            <p>
-              Don't have an account? <nuxt-link to="/register">Register</nuxt-link>
-            </p>
-            <p>
-              Forgot password? <nuxt-link to="/forgot_password">Click here</nuxt-link>
-            </p>
+            Already got an account? <nuxt-link to="/login">Login</nuxt-link>
           </div>
         </div>
       </div>
@@ -49,7 +59,7 @@
 </template>
 
 <script>
-import { mapMutations, mapState, mapActions } from 'vuex'
+import { mapGetters, mapMutations, mapActions } from 'vuex'
 import Notification from '~/components/Notification'
 
 export default {
@@ -59,64 +69,54 @@ export default {
   data() {
     return {
       email: '',
+      fullName: '',
       password: '',
       error: null
     }
   },
   computed: {
-    ...mapState(['auth'])
-  },
-  /*
-  async beforeCreate() {
-    if (this.auth && this.auth.token) {
+    ...mapGetters({
+        loggedIn: 'auth/loggedIn',
+  })},
+  created() {
+      if (this.loggedIn) {
         this.$router.push("/myciteseer/profile")
-    }
-    else {
-      try {
-        // await this.$recaptcha.init()
-      } catch(e) {
-        // eslint-disable-next-line
-        console.log(e);
       }
-    }
-  }, */
+  },
+
   methods: {
-    ...mapMutations('auth', ['login']),
     ...mapMutations(['showNotification']),
-    ...mapActions(['loginUser']),
-    async submitLogin() {
+    ...mapActions(['checkRecaptcha', 'registerUser']),
+    async register() {
       try {
-        // const recaptchaToken = await this.$recaptcha.execute('login');
-        // const recaptchaStatus = (await authService.checkRecaptcha(recaptchaToken)).data.success;
+        // const token = await this.$recaptcha.execute('login');
+        // const recaptchaStatus = (await this.checkRecaptcha(token)).data.success;
+
         // if (recaptchaStatus) {
-          await this.loginUser({email: this.email, password: this.password})
+          await this.registerUser({email: this.email, password: this.password, fullName: this.fullName})
           .then((response) => {
-            this.login(response);
-            this.$router.push('/');
+              this.$router.push('/login');
+              this.showNotification({ 
+                  text: "Account successfully created. Please check your inbox for a confirmation email to login.", 
+                  type: "success"
+                })
+          
           })
           .catch((error) => {
             if (error.response.status === 401){
               this.showNotification({
-                text: "Invalid email address or password.",
-                type: "error"
-              })
+                      text: error.response.data.detail,
+                      type: "error"
+                    })
             }
-            else{
-              this.showNotification({
-                text: `Error: ${error.message}`, 
-                type: "error"
-              })
-            }
-              // eslint-disable-next-line
-              console.log(error);
-
           });
         // }
       } catch(error) {
-          // eslint-disable-next-line
-          console.log(error);
+        
+        // eslint-disable-next-line
+        console.log(error);
       }
-    },
-  },
+    }
+  }
 }
 </script>
