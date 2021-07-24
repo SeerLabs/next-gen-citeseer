@@ -23,7 +23,17 @@ port: "3000"
                 content: process.env.npm_package_description || ''
             }
         ],
-        link: [{ rel: 'icon', type: 'image/x-icon', href: '/favicon.ico' }]
+        link: [
+            { 
+                rel: 'icon',
+                type: 'image/x-icon',
+                href: '/favicon.ico',
+            },
+            {
+                rel: 'stylesheet',
+                href: 'https://fonts.googleapis.com/css2?family=Open+Sans:wght@300;400;600;700&display=swap',
+            }
+        ]
     },
     /*
      ** Customize the progress-bar color
@@ -42,7 +52,8 @@ port: "3000"
      */
     buildModules: [
         // Doc: https://github.com/nuxt-community/eslint-module
-        '@nuxtjs/eslint-module'
+        '@nuxtjs/eslint-module',
+        '@nuxtjs/vuetify',
     ],
     /*
      ** Nuxt.js modules
@@ -65,7 +76,7 @@ port: "3000"
      ** See https://axios.nuxtjs.org/options
      */
     axios: {
-        baseURL: '/api',
+        baseURL: process.env.DEBUG ? 'http://localhost:8000/api' : '/api',
     },
 
     vuetify: {
@@ -75,6 +86,28 @@ port: "3000"
         },
         icons: {
             iconfont: 'md'
+        },
+        theme: {
+            options: {
+                customProperties: true,
+            },
+            themes: {
+                light: {
+                    primary: {
+                        base: '#2882A6',
+                        lighten3: '#68A7C0',
+                        lighten5: '#93C0D2',
+                    },
+                    secondary: {
+                        base:'#FFFFFF',
+                        darken3: '#BBBBBB',
+                        darken5: '#7D7D7D',
+                    },
+                    tertiary: '#101A1D',
+                    accent: '#E8871E',
+                    error: '#D33D49',
+                }
+            }
         }
     },
     /*
@@ -99,7 +132,7 @@ port: "3000"
 
     privateRuntimeConfig: {
         axios: {
-            baseURL: '/api'
+            baseURL: process.env.DEBUG ? 'http://localhost:8000/api' : '/api',
         }
     }
 };

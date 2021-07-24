@@ -1,15 +1,19 @@
+<!--add prop :loading="isLoading" to v-combobox for loading animation-->
 <template>
     <v-combobox
         v-model="searchQuery"
         :items="items"
-        :loading="isLoading"
         :search-input.sync="textInput"
         :hide-no-data="!textInput"
-        filled
         clearable
         hide-selected
+        hide-details
+        filled
+        outlined
+        flat
+        solo
         item-text="description"
-        placeholder="Search"
+        placeholder="Search CiteSeer"
         @keydown.enter="submitInput"
     >
         <template v-slot:append>

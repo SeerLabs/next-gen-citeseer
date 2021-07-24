@@ -3,11 +3,13 @@
         <v-app v-cloak>
             <nav-bar />
             <v-main>
-                <v-container id="page-container">
-                    <nuxt keep-alive />
-                </v-container>
+                <div id="bg-wrapper">
+                    <v-container id="page-container">
+                        <nuxt keep-alive />
+                    </v-container>
+                </div>
             </v-main>
-            <footer-bar />
+            <footer-bar id="footer"/>
         </v-app>
     </div>
 </template>
@@ -34,13 +36,16 @@ export default {
 </script>
 
 <style>
-#page-container {
-    margin: auto auto;
-    margin-bottom: 400px;
+#bg-wrapper {
+    background-image: url('../assets/img/bg_colored.png');
+    background-size: cover;
+    background-position: bottom;
+    background-size: 100% 60%;
+    height: 100%;
 }
 
-#app {
-    text-align: left;
+.v-btn {
+    text-transform: none;
 }
 
 [v-cloak] {
