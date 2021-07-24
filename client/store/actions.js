@@ -63,7 +63,7 @@ export default {
     searchAuthor(context, { queryString }) {
         return this.$axios
             .$post('/searchAuthor', {
-                queryString
+                queryString,
                 must_have_pdf: includePdfs
             })
             .catch(function(error) {
