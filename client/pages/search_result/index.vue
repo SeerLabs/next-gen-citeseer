@@ -130,8 +130,6 @@ export default {
         },
 
         onFacetChange(key, filters) {
-            console.log(key);
-            console.log(filters);
             this.filters[key] = filters;
             this.searchQuery();
         }

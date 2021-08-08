@@ -60,7 +60,7 @@ export default {
                 });    
     },
 
-    searchAuthor(context, { queryString }) {
+    searchAuthor(context, { queryString, includePdfs }) {
         return this.$axios
             .$post('/searchAuthor', {
                 queryString,

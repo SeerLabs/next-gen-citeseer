@@ -134,8 +134,6 @@ export default {
                       ]
                     }
 
-                    console.log(this.facets);
-
                     this.loadingState = false;
                 })
                 .catch((error) => {
