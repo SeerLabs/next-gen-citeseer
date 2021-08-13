@@ -27,7 +27,7 @@ export default {
       return this.$axios.$get('/similar/' + id, { params: {algo}})
     },
 
-    searchPaper(context, { queryString, page, pageSize, yearStart=null, yearEnd=null, author=null, publisher=null}) {
+    searchPaper(context, { queryString, page, pageSize, includePdfs=true, yearStart=null, yearEnd=null, author=null, publisher=null}) {
 
         if (yearStart === "0") {
             yearStart = null;
@@ -38,10 +38,11 @@ export default {
                 queryString,
                 page,
                 pageSize,
+                must_have_pdf: includePdfs,
                 yearStart,
                 yearEnd,
                 author,
-                publisher
+                publisher,
             })
             .catch(function(error) {
                 // eslint-disable-next-line
