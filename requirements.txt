@@ -1,7 +1,0 @@
-fastapi==0.54.2
-uvicorn==0.11.5
-pathlib==1.0.1
-requests==2.23.0
-elasticsearch==7.7.0
-pydantic~=1.5.1
-starlette~=0.13.2
