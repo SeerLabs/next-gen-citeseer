@@ -25,6 +25,7 @@
                 <v-card-text class="d-flex flex-column mb-6">
                     <!-- PDF Button -->
                     <v-btn
+                        v-if="hasPdf"
                         id="pdf-btn"
                         squared
                         :href="getPDFUrl"
@@ -224,7 +225,8 @@ export default {
         venue: { type: String, default: '' },
         year: { type: String, default: '' },
         nCitation: { type: Number, default: 0 },
-        abstract: { type: String, default: '' }
+        abstract: { type: String, default: '' },
+        hasPdf: { type: Boolean, default: false }
     },
     data() {
         return {

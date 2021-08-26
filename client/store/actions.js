@@ -27,12 +27,45 @@ export default {
       return this.$axios.$get('/similar/' + id, { params: {algo}})
     },
 
-    searchPaper(context, { queryString, page, pageSize }) {
+    searchPaper(context, { queryString, page, pageSize, includePdfs=true, yearStart=null, yearEnd=null, author=null, publisher=null}) {
+
+        if (yearStart === "0") {
+            yearStart = null;
+        }
+      
         return this.$axios
             .$post('/search', {
                 queryString,
                 page,
-                pageSize
+                pageSize,
+                must_have_pdf: includePdfs,
+                yearStart,
+                yearEnd,
+                author,
+                publisher,
+            })
+            .catch(function(error) {
+                // eslint-disable-next-line
+                console.log(error.response);
+            });
+    },
+
+    getAggregations(context, { queryString }) {
+        return this.$axios
+                .$post('/aggregate', {
+                    queryString
+                })
+                .catch(function(error) {
+                    // eslint-disable-next-line
+                    console.log(error.response);
+                });    
+    },
+
+    searchAuthor(context, { queryString, includePdfs }) {
+        return this.$axios
+            .$post('/searchAuthor', {
+                queryString,
+                must_have_pdf: includePdfs
             })
             .catch(function(error) {
                 // eslint-disable-next-line
