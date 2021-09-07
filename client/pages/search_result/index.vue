@@ -20,10 +20,13 @@
                 />
             </v-col>
             <v-col id="search-results-cards">
-                <search-results-filter class="mb-md-10" />
-                <search-results-external-links 
-                    :query="queryString"
+                <search-results-filter
+                    class="mb-md-10"
+                    :query-string="queryString"
+                    @year-change="value => onYearFacetChange(value)"
+                    @facet-change="({key, filters}) => onFacetChange(key, filters)"
                 />
+                <search-results-external-links />
             </v-col>
         </v-row>
     </div>
@@ -63,41 +66,72 @@ export default {
                 },
                 { text: 'Year', callback: () => (this.sortBy = 'year') }
             ],
-            error: false
+            error: false,
+            filters: {
+                years: { start: 0, end: new Date().getFullYear() },
+                authors: [],
+                publishers: []
+            },
+            includePdfs: false
         };
     },
     computed: {
         totalNumRows() {
-            return this.totalPageResults / this.pageSize;
+            return Math.ceil(this.totalPageResults / this.pageSize);
         }
     },
     watch: {
-        '$route.query.query'() {
+        '$route.query'() {
             this.queryString = this.$route.query.query;
+            this.includePdfs = this.$route.query.pdf || true;
             this.searchQuery();
         }
     },
     created() {
         // make search query immediately when page is loaded
         this.queryString = this.$route.query.query;
+        this.includePdfs = this.$route.query.pdf || true;
         this.searchQuery();
     },
     methods: {
         ...mapActions(['searchPaper']),
         searchQuery() {
             this.loadingState = true;
-            // push params
-            this.searchPaper( {queryString: this.queryString, page: this.page, pageSize: this.pageSize} )
+            // push params            
+            const query = {
+              queryString: this.queryString,
+              page: this.page,
+              pageSize: this.pageSize,
+              yearStart: String(this.filters.years.start),
+              yearEnd: String(this.filters.years.end),
+              author: this.filters.authors,
+              publisher: this.filters.publishers,
+              includePdfs: this.includePdfs
+            }
+
+            this.searchPaper(query)
                 .then(res => {
                     this.documents = res.response;
                     this.totalPageResults = Math.ceil(Math.min(res.total_results, 10000) / this.pageSize);
                     this.loadingState = false;
                 })
-                .catch(error => {
+                .catch((error) => {
                     // eslint-disable-next-line
                     console.log(error.message);
                     this.error = true;
                 });
+        },
+
+        onYearFacetChange(value) {
+            this.filters.years.start = value[0];
+            this.filters.years.end = value[1];
+
+            this.searchQuery();
+        },
+
+        onFacetChange(key, filters) {
+            this.filters[key] = filters;
+            this.searchQuery();
         }
     },
     layout: 'search'

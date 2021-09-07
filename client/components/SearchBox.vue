@@ -1,23 +1,40 @@
 <template>
-    <v-combobox
-        v-model="searchQuery"
-        :items="items"
-        :loading="isLoading"
-        :search-input.sync="textInput"
-        :hide-no-data="!textInput"
-        filled
-        clearable
-        hide-selected
-        item-text="description"
-        placeholder="Search"
-        @keydown.enter="submitInput"
-    >
-        <template v-slot:append>
-            <div id="search-button" @click="submitInput">
-                <v-icon class="ml-3">search</v-icon>
-            </div>
-        </template>
-    </v-combobox>
+    <v-card flat>
+      <v-combobox
+          v-model="searchQuery"
+          class="mb-0 pb-0"
+          :items="items"
+          :loading="isLoading"
+          :search-input.sync="textInput"
+          :hide-no-data="!textInput"
+          filled
+          clearable
+          hide-selected
+          item-text="description"
+          placeholder="Search"
+          @keydown.enter="submitInput"
+          
+      >
+          <template v-slot:append>
+              <div id="search-button" @click="submitInput">
+                  <v-icon class="ml-3">search</v-icon>
+              </div>
+          </template>
+      </v-combobox>
+      <v-container
+        class="pa-0"
+        fluid
+      >
+        <v-checkbox 
+          id="pdf-checkbox"
+          v-model="includeWithoutPdfs"
+          class="pt-0 mt-0"
+          dense
+          label="Include results without PDF"
+          @click="submitInput"
+        />
+      </v-container>
+    </v-card>
 </template>
 
 <script>
@@ -32,7 +49,8 @@ export default {
             searchQuery: '',
             textInput: '',
             entries: [],
-            isLoading: false
+            isLoading: false,
+            includeWithoutPdfs: false
         };
     },
     computed: {
@@ -66,7 +84,7 @@ export default {
         searchQuery() {
             if (this.searchQuery && this.searchQuery.type) {
                 const idType =
-                    this.searchQuery.type === 'paper' ? 'pid' : 'cid';
+                    this.searchQuery.type === 'paper' ? 'cid' : 'pid';
 
                 this.$router.push({
                     name: 'doc_view-idType-id',
@@ -77,6 +95,7 @@ export default {
     },
     created() {
         this.textInput = this.$route.query.query || '';
+        this.includeWithoutPdfs = this.$route.query.pdf != null && !this.$route.query.pdf || false;
         this.searchQuery = this.textInput;
     },
     methods: {
@@ -88,7 +107,8 @@ export default {
                 this.$router.push({
                     name: 'search_result',
                     query: {
-                        query: this.textInput
+                        query: this.textInput,
+                        pdf: !this.includeWithoutPdfs
                     }
                 });
             }
@@ -100,5 +120,11 @@ export default {
 <style scoped>
 #search-button {
     cursor: pointer;
+}
+</style>
+
+<style>
+.v-label {
+  margin-bottom: 0 !important;
 }
 </style>

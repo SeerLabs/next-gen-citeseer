@@ -7,7 +7,7 @@ EXPOSE 8000
 COPY requirements.txt ./
 RUN pip install -r requirements.txt
 
-COPY . ./
-WORKDIR /app
+COPY . ./api
+WORKDIR /api/app
 
 CMD python main.py
