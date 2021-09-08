@@ -13,6 +13,7 @@
                     :abstract="item.abstract"
                     :n-cited-by="item.n_cited_by"
                     :n-self-cites="item.n_self_cites"
+                    :collection-names="collectionNames"
                 />
                 
             </li>
@@ -21,8 +22,8 @@
 </template>
 
 <script>
+import { mapState, mapActions } from 'vuex'
 import DocResultsItem from './DocResultsItem';
-
 export default {
     name: 'DocResultsList',
     components: {
@@ -30,6 +31,28 @@ export default {
     },
     props: {
         documents: { type: Array, default: null }
+    },
+    data(){
+        return{
+            collectionNames: [],
+        };
+    },
+    computed: {
+        ...mapState(['auth']),    
+    },
+    beforeMount() {
+      if (this.auth.loggedIn) {
+        this.getUserProfile({token: this.auth.token})
+        .then((profile) => {
+          for (const i in profile.collections){
+            this.collectionNames.push(profile.collections[i].collection_name)
+          }
+        })
+      }
+    },
+    methods:{
+
+        ...mapActions(['getUserProfile'])
     }
 };
 </script>

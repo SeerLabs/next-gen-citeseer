@@ -42,68 +42,12 @@
                     <v-btn @click="toggleLikePaper">
                       {{ liked ? "Unlike Paper" : "Like Paper" }}
                     </v-btn>
-
-                    <v-dialog
-                        v-model="collectionDialog"
-                        width="500"
-                        >
-                        <template v-slot:activator="{ on, attrs }">
-                            <v-btn
-                            v-bind="attrs"
-                            v-on="on"
-                            >
-                            Add To A Collection
-                            </v-btn>
-                        </template>
-
-                        <v-card>
-                            <v-card-title >
-                                Existing Collection
-                            </v-card-title>
-                            <v-card-text>
-                                <v-select
-                                    v-model="selectedCollection"
-                                    :items="collectionNames"
-                                    label="Select from a existing collection"
-                                    item-value="text"
-                                    >
-                                    </v-select>
-                                <v-btn
-                                    @click="addExistingCollectionPaper()"
-                                >
-                                    Add to Collection
-                                </v-btn>
-                            </v-card-text>
-                            <v-card-title >
-                                Make A New Collection
-                            </v-card-title>
-
-                            <v-card-text>
-                                <v-text-field
-                                    v-model="newCollectionName"
-                                    label="Collection Name"
-                                ></v-text-field>
-                                <v-btn
-                                    @click="addToNewCollection()"
-                                >
-                                    Add to New Collection
-                                </v-btn>
-                            </v-card-text>
-                            
-                            <v-divider></v-divider>
-
-                            <v-card-actions>
-                            <v-spacer></v-spacer>
-                            <v-btn
-                                color="primary"
-                                text
-                                @click="collectionDialog = false"
-                            >
-                                Close
-                            </v-btn>
-                            </v-card-actions>
-                        </v-card>
-                    </v-dialog>
+                    <add-to-collection-dialog
+                        :doc-id="docId"
+                        :collection-names="collectionNames"
+                        :button-type="'viewPage'"
+                    />
+                    
                     <v-dialog
                         v-model="correctErrorDialog"
                         persistent
@@ -207,7 +151,47 @@
                             </v-card-actions>
                         </v-card>
                         </v-dialog>
-                        
+                   <v-dialog
+                        v-model="claimDialog"
+                        width="550"
+                    >
+                    <template v-slot:activator="{ on, attrs }">
+                        <v-btn
+                        v-bind="attrs"
+                        v-on="on"
+                        >
+                        Claim as Author
+                        </v-btn>
+                    </template>
+
+                    <v-card>
+                        <v-card-title>
+                            Are an Author of this Paper?
+                        </v-card-title>
+                        <v-card-text>
+                            If you are one of the authors of this paper,
+                             you can claim it to your account.
+                        </v-card-text>
+                        <v-card-actions>
+                        <v-spacer></v-spacer>
+                        <v-btn
+                            color="primary"
+                            text
+                            @click="claimAsAuthor"
+                        >
+                            CLAIM
+                        </v-btn>
+                        <v-btn
+                            color="secondary"
+                            text
+                            @click="claimDialog = false"
+                        >
+                            CANCEL
+                        </v-btn>
+                        </v-card-actions>
+                    </v-card>
+                    </v-dialog>
+                       
                 </v-card-text>
             </v-card>
         </v-col>
@@ -216,8 +200,11 @@
 
 <script>
 import { mapState, mapActions } from 'vuex'
-
+import AddToCollectionDialog from '~/components/MyCiteSeer/AddToCollectionDialog.vue'
 export default {
+    components: {
+        AddToCollectionDialog
+    },
     props: {
         docId: { type: String, default: '' },
         title: { type: String, default: '' },
@@ -238,6 +225,7 @@ export default {
             newCollectionName: '',
             selectedCollection: null,
             correctErrorDialog: false,
+            claimDialog: false,
             loading: true,
             tempTitle: this.title,
             tempAuthors: this.authors,
@@ -246,6 +234,7 @@ export default {
             tempAbstract: this.abstract,
             tempReason: '',
             tempPublisher: '',
+            user_email: '',
         };
     },
     computed: {
@@ -258,12 +247,13 @@ export default {
     beforeMount() {
       if (this.auth.loggedIn) {
         this.getUserProfile({token: this.auth.token})
-        .then((response) => {
-          const profile = response.data;
+        .then((profile) => {
+          console.log(profile)
           this.liked = profile.liked_papers.includes(this.docId)
+          this.user_email = profile.email
           this.monitered = profile.monitered_papers.includes(this.$docId)
           for (const i in profile.collections){
-            this.collectionNames.push(profile.collections[i].collectionName)
+            this.collectionNames.push(profile.collections[i].collection_name)
           }
           this.loading = false;
         })
@@ -277,7 +267,7 @@ export default {
     },
     methods: {
         ...mapActions(['getUserProfile', 'addLikedPaper', 'deleteLikedPaper', 'addMoniteredPaper', 
-        'deleteMoniteredPaper', 'addPaperToCollection', 'addCollectionName', 'addPaperToCollection', 'editNew']),
+        'deleteMoniteredPaper', 'editNew', 'authorClaim']),
         toggleReadMore() {
             this.showAbstract = !this.showAbstract;
         },
@@ -314,34 +304,6 @@ export default {
             this.monitered = !this.monitered
         },
 
-        addExistingCollectionPaper() {
-            if (!this.isLoggedIn()) {
-                return;
-            }
-            if (this.selectedCollection){
-                this.addPaperToCollection({token: this.auth.token, pid: this.docId, collectionName: this.selectedCollection})
-                this.collectionDialog = false
-            }
-            else{
-                alert("Please select an existing collection")
-            }
-            
-        },
-        
-        addToNewCollection(){
-            if (!this.isLoggedIn()) {
-                return;
-            }
-            if (this.newCollectionName){
-                this.addCollectionName({token: this.auth.token, collectionName: this.newCollectionName})
-                this.addPaperToCollection({token: this.auth.token, pid: this.docId, collectionName: this.newCollectionName})
-                this.collectionDialog = false;
-            }
-            else{
-                alert("Please enter name of new collection.")
-            }
-        },
-
         submitCorrectMetadataRequest(){
             if (!this.isLoggedIn()) {
                 return;
@@ -370,6 +332,13 @@ export default {
                 publishDate: this.tempPubDate.toString()
             })
             this.correctErrorDialog = false;
+        },
+        claimAsAuthor(){
+            if(!this.isLoggedIn()){
+                return;
+            }
+            this.authorClaim({token: this.auth.token, email: this.user_email, paperId: this.docId})
+            this.claimDialog = false;
         }
     }
 };

@@ -112,7 +112,7 @@ export default {
             this.searchPaper(query)
                 .then(res => {
                     this.documents = res.response;
-                    this.totalPageResults = res.total_results;
+                    this.totalPageResults = Math.ceil(Math.min(res.total_results, 10000) / this.pageSize);
                     this.loadingState = false;
                 })
                 .catch((error) => {
