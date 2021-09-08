@@ -90,7 +90,7 @@ export default {
         queryString: { type: String, default: '' }
     },
     data() {
-        const yearMin = 0;
+        const yearMin = 1931;
         const yearMax = new Date().getFullYear();
 
         return {

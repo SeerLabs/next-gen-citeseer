@@ -69,7 +69,7 @@ port: "3000"
      ** See https://axios.nuxtjs.org/options
      */
     axios: {
-        baseURL: '/api',
+        baseURL: 'http://localhost:8000/api',
     },
 
     vuetify: {
@@ -103,7 +103,7 @@ port: "3000"
 
     privateRuntimeConfig: {
         axios: {
-            baseURL: '/api'
+            baseURL: 'http://localhost:8000/api'
         }
     }
 };

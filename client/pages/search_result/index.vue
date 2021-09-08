@@ -8,13 +8,13 @@
                 <doc-results-container
                     v-model="sortBy"
                     :documents="documents"
-                    :total-page-results="totalPageResults"
+                    :total-results="totalResults"
                     :page="page"
                     :sort-dropdown="sortDropdown"
                 />
                 <v-pagination
                     v-model="page"
-                    :length="totalPageResults"
+                    :length="totalPages"
                     :total-visible="8"
                     @input="searchQuery"
                 />
@@ -50,8 +50,10 @@ export default {
         return {
             queryString: '',
             documents: [],
-            totalPageResults: 0,
+            totalResults: 0,
+            // Number of results displayed on one page
             pageSize: 10,
+            // Current page number
             page: 1,
             loadingState: false,
             sortBy: 'relevance',
@@ -68,7 +70,7 @@ export default {
             ],
             error: false,
             filters: {
-                years: { start: 0, end: new Date().getFullYear() },
+                years: { start: 1913, end: new Date().getFullYear() },
                 authors: [],
                 publishers: []
             },
@@ -76,9 +78,9 @@ export default {
         };
     },
     computed: {
-        totalNumRows() {
-            return Math.ceil(this.totalPageResults / this.pageSize);
-        }
+        totalPages() {
+            return Math.ceil(this.totalResults / this.pageSize);
+        },
     },
     watch: {
         '$route.query'() {
@@ -112,8 +114,9 @@ export default {
             this.searchPaper(query)
                 .then(res => {
                     this.documents = res.response;
-                    this.totalPageResults = Math.ceil(Math.min(res.total_results, 10000) / this.pageSize);
+                    this.totalResults = Math.ceil(Math.min(res.total_results, 10000));
                     this.loadingState = false;
+                   
                 })
                 .catch((error) => {
                     // eslint-disable-next-line

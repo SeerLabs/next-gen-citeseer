@@ -1,4 +1,5 @@
 import qs from 'qs'
+
 export default {
     getPaperWithPaperId ({context}, { pid }) {
       return this.$axios.$get('/paper', { params: {paper_id: pid}})

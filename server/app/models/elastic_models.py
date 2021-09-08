@@ -8,6 +8,8 @@ import settings
 IMPORTANT: ANY UPDATES TO THIS FILE MUST ALSO BE MADE IN elastic_models.py
 file of PDFMEF REPOSITORY AND VICE-VERSA
 '''
+
+
 class Author(InnerDoc):
     author_suggest = Completion()
     cluster_id = Keyword()
@@ -36,6 +38,7 @@ class PubInfo(InnerDoc):
     pub_place = Text()
     pub_address = Text()
 
+
 class CorrectPaperMetadataES(Document):
     paper_id = Keyword()
     user_email = Keyword()
@@ -43,7 +46,7 @@ class CorrectPaperMetadataES(Document):
     authors = Nested(Author)
     abstract = Text()
     pub_venue = Text()
-    venue_type =Keyword()
+    venue_type = Keyword()
     pub_year = Keyword()
     volume = Keyword()
     number = Keyword()
@@ -54,6 +57,7 @@ class CorrectPaperMetadataES(Document):
 
     class Index:
         name = 'paper_metadata_correction_next'
+
 
 class PaperMetadataCorrectionES(Document):
     user_email = Keyword()
@@ -75,10 +79,9 @@ class PaperMetadataCorrectionES(Document):
         name = 'paper_metadata_correction_nextv1'
 
 
-
 class KeyMap(Document):
     paper_id = Text()
-    
+
     class Index:
         name = settings.KEYMAP_INDEX
 
@@ -141,14 +144,12 @@ class Cluster(Document):
             return
         self.keys.extend(keys)
 
-
     def save(self, **kwargs):
         if self.title is not None:
             self.title_suggest = {
                 'input': [self.title],
             }
         return super().save(**kwargs)
-
 
 
 class UserRequest(Document):
@@ -164,5 +165,6 @@ class UserRequest(Document):
     pub_info = Nested(PubInfo)
     status = Keyword()
     reviewer_comment = Text()
+
     class Index:
         name = settings.REQUESTS_INDEX

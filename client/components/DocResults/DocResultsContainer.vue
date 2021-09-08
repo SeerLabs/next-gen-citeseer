@@ -4,9 +4,9 @@
             <v-col sm="9">
                 Results {{ (page - 1) * pageSize + 1 }} -
                 {{
-                Math.min((page - 1) * pageSize + pageSize, totalPageResults * pageSize)
+                Math.min((page - 1) * pageSize + pageSize, totalResults * pageSize)
                 }}
-                of {{ totalPageResults * pageSize }}
+                of {{ totalResults }}
             </v-col>
             <v-col sm="3">
                 <v-select
@@ -38,7 +38,7 @@ export default {
     },
     props: {
         documents: { type: Array, default: null },
-        totalPageResults: { type: Number, default: 0 },
+        totalResults: { type: Number, default: 0 },
         page: { type: Number, default: 0 },
         sortDropdown: { type: Array, required: true },
         loading: {type: Boolean, default: false }

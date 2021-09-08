@@ -24,6 +24,7 @@ elastic_service = ElasticService()
 
 rate_limit_string = "5/minute"
 
+
 @router.post('/search', response_model=SearchQueryResponse)
 @limiter.limit(rate_limit_string)
 def perform_search(request: Request, searchQuery: SearchQuery):
@@ -32,32 +33,36 @@ def perform_search(request: Request, searchQuery: SearchQuery):
     s = s.filter('term', has_pdf=True)
 
     if searchQuery.yearStart is not None and searchQuery.yearEnd is not None:
-        q= Q("nested", path="pub_info", query=Q("range", **{'pub_info.year.keyword':{'gte': searchQuery.yearStart , 'lte': searchQuery.yearEnd }}))
+        q = Q("nested", path="pub_info", query=Q(
+            "range", **{'pub_info.year.keyword': {'gte': searchQuery.yearStart, 'lte': searchQuery.yearEnd}}))
         s = s.query(q)
 
     if searchQuery.publisher is not None and len(searchQuery.publisher) > 0:
-        publisher_queries =[]
+        publisher_queries = []
         for pub in searchQuery.publisher:
-            q=Q("nested", path="pub_info", query=Q("term", **{'pub_info.publisher.keyword':pub}))
+            q = Q("nested", path="pub_info", query=Q(
+                "term", **{'pub_info.publisher.keyword': pub}))
             publisher_queries.append(q)
-        s = s.query('bool',should=publisher_queries)
+        s = s.query('bool', should=publisher_queries)
 
     if searchQuery.author is not None and len(searchQuery.author) > 0:
-        athr_queries =[]
+        athr_queries = []
         for athr in searchQuery.author:
-            q=Q("nested", path="authors", query=Q("term", **{'authors.fullname.keyword':athr}))
+            q = Q("nested", path="authors", query=Q(
+                "term", **{'authors.fullname.keyword': athr}))
             athr_queries.append(q)
-        s = s.query('bool',should=athr_queries)
+        s = s.query('bool', should=athr_queries)
 
     if searchQuery.must_have_pdf:
         s = s.filter('term', has_pdf=True)
-        
-    s = s.query('multi_match', query=searchQuery.queryString, fields=['title', 'text'])
+
+    s = s.query('multi_match', query=searchQuery.queryString,
+                fields=['title', 'text'])
 
     s.aggs.bucket('all_pub_info1', 'nested', path='pub_info') \
         .metric('pub_info_year_count', 'cardinality', field='pub_info.year.keyword') \
         .bucket('pub_info_year_list', 'terms', field='pub_info.year.keyword')
-    
+
     s.aggs.bucket('all_authors', 'nested', path='authors') \
         .metric('authors_count', 'cardinality', field='authors.fullname.keyword') \
         .bucket('authors_fullname_terms', 'terms', field='authors.fullname.keyword')
@@ -70,24 +75,27 @@ def perform_search(request: Request, searchQuery: SearchQuery):
     response = s.execute()
     result_list = []
     for doc_hit in response['hits']['hits']:
-        result_list.append(build_paper_entity(cluster_id=doc_hit['_id'], doc=doc_hit['_source']))
+        result_list.append(build_paper_entity(
+            cluster_id=doc_hit['_id'], doc=doc_hit['_source']))
     total_results = response['hits']['total']['value']
     aggregations = {"agg": build_facets(response['aggregations']['all_pub_info1'],
-                                response['aggregations']['all_pub_info2'],
-                                response['aggregations']['all_authors'])}
+                                        response['aggregations']['all_pub_info2'],
+                                        response['aggregations']['all_authors'])}
     return SearchQueryResponse(query_id=str(uuid4()), total_results=total_results, response=result_list, aggregations=aggregations)
 
-@router.post('/aggregate',response_model=AggregationResponse)
+
+@router.post('/aggregate', response_model=AggregationResponse)
 def perform_aggregations(searchQuery: AggregationQuery):
     s = elastic_models.Cluster.search(using=elastic_service.get_connection())
     s = s.filter('term', has_pdf=True)
 
-    s = s.query('multi_match', query=searchQuery.queryString, fields=['title', 'text'])
+    s = s.query('multi_match', query=searchQuery.queryString,
+                fields=['title', 'text'])
 
     s.aggs.bucket('all_pub_info1', 'nested', path='pub_info') \
         .metric('pub_info_year_count', 'cardinality', field='pub_info.year.keyword') \
         .bucket('pub_info_year_list', 'terms', field='pub_info.year.keyword')
-    
+
     s.aggs.bucket('all_authors', 'nested', path='authors') \
         .metric('authors_count', 'cardinality', field='authors.fullname.keyword') \
         .bucket('authors_fullname_terms', 'terms', field='authors.fullname.keyword')
@@ -95,13 +103,12 @@ def perform_aggregations(searchQuery: AggregationQuery):
     s.aggs.bucket('all_pub_info2', 'nested', path='pub_info') \
         .metric('pub_info_publisher_count', 'cardinality', field='pub_info.publisher.keyword') \
         .bucket('pub_info_publisher_list', 'terms', field='pub_info.publisher.keyword')
-    
+
     response = s.execute()
     aggregations = {"agg": build_facets(response['aggregations']['all_pub_info1'],
-                                response['aggregations']['all_pub_info2'],
-                                response['aggregations']['all_authors'])}
+                                        response['aggregations']['all_pub_info2'],
+                                        response['aggregations']['all_authors'])}
     return AggregationResponse(aggregations=aggregations)
-
 
 
 @router.get('/paper')
@@ -109,7 +116,8 @@ def perform_aggregations(searchQuery: AggregationQuery):
 def paper_info(request: Request, paper_id: Optional[str] = None, cluster_id: Optional[str] = None):
     # if Called with cluster ID
     if cluster_id is not None:
-        cluster = elastic_models.Cluster.get(id=cluster_id, using=elastic_service.get_connection())
+        cluster = elastic_models.Cluster.get(
+            id=cluster_id, using=elastic_service.get_connection())
         print(cluster.to_dict())
         paper_entity_response = build_paper_entity(cluster_id=cluster_id,
                                                    doc=cluster.to_dict())
@@ -123,6 +131,7 @@ def paper_info(request: Request, paper_id: Optional[str] = None, cluster_id: Opt
                                                doc=response['hits']['hits'][0]['_source'])
     return PaperDetailResponse(query_id=str(uuid4()), paper=paper_entity_response)
 
+
 @router.post('/mget_paper/')
 def paper_list(mget_request: MGetRequest):
     s = elastic_models.Cluster.search(using=elastic_service.get_connection())
@@ -130,7 +139,8 @@ def paper_list(mget_request: MGetRequest):
     response = s.execute()
     result_list = []
     for doc_hit in response['hits']['hits']:
-        result_list.append(build_paper_entity(cluster_id=doc_hit['_id'], doc=doc_hit['_source']))
+        result_list.append(build_paper_entity(
+            cluster_id=doc_hit['_id'], doc=doc_hit['_source']))
     total_results = response['hits']['total']['value']
     return SearchQueryResponse(query_id=str(uuid4()), total_results=total_results, response=result_list)
 
@@ -154,8 +164,10 @@ def citations(request: Request, id: str, page: int = 1, pageSize: int = 10):
 @router.get('/showCiting/{cid}')
 @limiter.limit(rate_limit_string)
 def show_citing_papers(request: Request, cid: str, sort: str, page: int, pageSize: int):
-    cluster = elastic_models.Cluster.get(id=cid, using=elastic_service.get_connection())
-    primary_cluster_detail = build_cluster_entity(id=cid, doc=cluster.to_dict(skip_empty=False))
+    cluster = elastic_models.Cluster.get(
+        id=cid, using=elastic_service.get_connection())
+    primary_cluster_detail = build_cluster_entity(
+        id=cid, doc=cluster.to_dict(skip_empty=False))
     papers_that_cite = []
     result_list = []
     total_results = 0
@@ -169,7 +181,8 @@ def show_citing_papers(request: Request, cid: str, sort: str, page: int, pageSiz
         search = search[start:start + pageSize]
         response = search.execute()
         for doc_hit in response['hits']['hits']:
-            result_list.append(build_paper_entity(cluster_id=doc_hit['_id'], doc=doc_hit['_source']))
+            result_list.append(build_paper_entity(
+                cluster_id=doc_hit['_id'], doc=doc_hit['_source']))
         total_results = response['hits']['total']['value']
     return showCitingClustersResponse(query_id=str(uuid4()), total_results=total_results,
                                       cluster=primary_cluster_detail, papers=result_list)
@@ -195,11 +208,13 @@ def _get_sort_param(param: str) -> dict:
 @limiter.limit(rate_limit_string)
 def get_suggestions(request: Request, query: str):
     s = elastic_models.Cluster.search(using=ElasticService().get_connection())
-    s = s.suggest('auto_complete', query, completion={'field': 'title_suggest'})
+    s = s.suggest('auto_complete', query, completion={
+                  'field': 'title_suggest'})
     response = s.execute()
     suggestions = []
     for option in response.suggest.auto_complete[0].options:
-        suggestions.append(Suggestion(type="paper", text=option._source.title, id=option._id))
+        suggestions.append(Suggestion(
+            type="paper", text=option._source.title, id=option._id))
     return AutoCompleteResponse(query_id=str(uuid4()), query=query, suggestions=suggestions)
 
 
@@ -220,23 +235,26 @@ def similar_papers(request: Request, id: str, algo: str):
 
     result_list = []
     for doc in res['hits']['hits']:
-        result_list.append(build_similar_papers_entity(_id=doc['_id'], doc=doc['_source']))
+        result_list.append(build_similar_papers_entity(
+            _id=doc['_id'], doc=doc['_source']))
     total_results = res['hits']['total']['value']
     return SimilarPapersResponse(query_id=str(uuid4()), total_results=total_results, similar_papers=result_list)
 
-@router.post('/searchAuthor',response_model=SearchAuthorResponse)
+
+@router.post('/searchAuthor', response_model=SearchAuthorResponse)
 def search_facet(searchQuery: SearchFilter):
     s = elastic_models.Cluster.search(using=elastic_service.get_connection())
-    q=searchQuery.queryString
-    s=s.query("nested", path="authors", query=Q('multi_match', query=q, fields=['authors.fullname']))
+    q = searchQuery.queryString
+    s = s.query("nested", path="authors", query=Q(
+        'multi_match', query=q, fields=['authors.fullname']))
     response = s.execute()
-    result_list,res = [],[]
+    result_list, res = [], []
     tofilter = q.split(" ")
     for doc_hit in response['hits']['hits']:
         authorlist = getKeyOrDefault(doc_hit['_source'], 'authors')
         for author in authorlist:
-            result_list.append(getKeyOrDefault(author,'fullname'))
-    
+            result_list.append(getKeyOrDefault(author, 'fullname'))
+
     result_list = list(set(result_list))
     for ele in result_list:
         for name in tofilter:
@@ -245,7 +263,8 @@ def search_facet(searchQuery: SearchFilter):
                 break
 
     total_results = response['hits']['total']['value']
-    return SearchAuthorResponse(query_id=str(uuid4()),total_results=total_results,response=res)
+    return SearchAuthorResponse(query_id=str(uuid4()), total_results=total_results, response=res)
+
 
 @router.delete('/delete/{id}')
 @limiter.limit(rate_limit_string)
@@ -271,7 +290,8 @@ def delete_paper(request: Request, id: str):
     search_cluster.delete()
 
     # Delete KeyMaps
-    search_keymap = elastic_models.KeyMap.search(using=elastic_service.get_connection())
+    search_keymap = elastic_models.KeyMap.search(
+        using=elastic_service.get_connection())
     search_keymap = search_keymap.query('match', paper_id=cluster_id)
     search_keymap.delete()
 
@@ -287,13 +307,15 @@ def delete_paper(request: Request, id: str):
 @limiter.limit(rate_limit_string)
 def unlist_paper(request: Request, id: str):
     # Get Cluster for paper
-    search_cluster = elastic_models.Cluster.search(using=elastic_service.get_connection())
+    search_cluster = elastic_models.Cluster.search(
+        using=elastic_service.get_connection())
     search_cluster = search_cluster.filter('term', paper_id=id)
     response = search_cluster.execute()
     cluster_id = response['hits']['hits'][0]['_id']
 
     # Make PDF availability as False
-    cluster = elastic_models.Cluster.get(id=cluster_id, using=elastic_service.get_connection())
+    cluster = elastic_models.Cluster.get(
+        id=cluster_id, using=elastic_service.get_connection())
     cluster.has_pdf = False
     cluster.save(using=elastic_service.get_connection())
 
@@ -316,23 +338,28 @@ def build_paper_entity(cluster_id, doc):
     paper_id = getKeyOrDefault(doc, 'paper_id', [''])[0]
     return Paper(id=paper_id,
                  title=getKeyOrDefault(doc, 'title'),
-                 venue=getKeyOrDefault(getKeyOrDefault(doc, 'pub_info'), 'title'),
-                 year=getKeyOrDefault(getKeyOrDefault(doc, 'pub_info'), 'year'),
-                 publisher=getKeyOrDefault(getKeyOrDefault(doc, 'pub_info'), 'publisher'),
+                 venue=getKeyOrDefault(
+                     getKeyOrDefault(doc, 'pub_info'), 'title'),
+                 year=getKeyOrDefault(
+                     getKeyOrDefault(doc, 'pub_info'), 'year'),
+                 publisher=getKeyOrDefault(
+                     getKeyOrDefault(doc, 'pub_info'), 'publisher'),
                  n_cited_by=len(getKeyOrDefault(doc, 'cited_by', default=[])),
                  n_self_cites=getKeyOrDefault(doc, 'selfCites', default=0),
                  abstract=getKeyOrDefault(doc, 'abstract'),
                  bibtex="test_bibtex",
                  authors=get_authors_in_list(doc, 'authors'),
-                 journal=getKeyOrDefault(getKeyOrDefault(doc, 'pub_info'), 'publisher'),
-                 publish_time=getKeyOrDefault(getKeyOrDefault(doc, 'pub_info'), 'date'),
+                 journal=getKeyOrDefault(getKeyOrDefault(
+                     doc, 'pub_info'), 'publisher'),
+                 publish_time=getKeyOrDefault(
+                     getKeyOrDefault(doc, 'pub_info'), 'date'),
                  source="",
                  cluster_id=cluster_id)
 
 
 def get_authors_in_list(doc, field) -> List[str]:
-    return [getKeyOrDefault(field, 'fullname', default="") for 
-           field in getKeyOrDefault(doc, field, default={})]
+    return [getKeyOrDefault(field, 'fullname', default="") for
+            field in getKeyOrDefault(doc, field, default={})]
     # return [getKeyOrDefault(field, 'forename', default="") + " " + getKeyOrDefault(field, 'surname', default="") for
     #         field in getKeyOrDefault(doc, field, default={})]
 
@@ -340,16 +367,21 @@ def get_authors_in_list(doc, field) -> List[str]:
 def build_citation_entity(_id, doc):
     return Citation(id=_id,
                     cluster=_id,
-                    in_collection=getKeyOrDefault(doc, 'has_pdf', default=False),
+                    in_collection=getKeyOrDefault(
+                        doc, 'has_pdf', default=False),
                     authors=get_authors_in_list(doc, 'authors'),
                     title=getKeyOrDefault(doc, 'title'),
-                    venue=getKeyOrDefault(getKeyOrDefault(doc, 'pub_info'), 'title'),
+                    venue=getKeyOrDefault(
+                        getKeyOrDefault(doc, 'pub_info'), 'title'),
                     venue_type=getKeyOrDefault(doc, 'venueType'),
-                    year=getKeyOrDefault(getKeyOrDefault(doc, 'pub_info'), 'year'),
+                    year=getKeyOrDefault(
+                        getKeyOrDefault(doc, 'pub_info'), 'year'),
                     pages=getKeyOrDefault(doc, 'pages'),
                     editors=getKeyOrDefault(doc, 'editors'),
-                    publisher=getKeyOrDefault(getKeyOrDefault(doc, 'pub_info'), 'publisher'),
-                    pub_address=getKeyOrDefault(getKeyOrDefault(doc, 'pub_info'), 'pub_address'),
+                    publisher=getKeyOrDefault(
+                        getKeyOrDefault(doc, 'pub_info'), 'publisher'),
+                    pub_address=getKeyOrDefault(
+                        getKeyOrDefault(doc, 'pub_info'), 'pub_address'),
                     volume=getKeyOrDefault(doc, 'volume'),
                     number=getKeyOrDefault(doc, 'number'),
                     tech=getKeyOrDefault(doc, 'tech'),
@@ -364,13 +396,17 @@ def build_similar_papers_entity(_id, doc):
                     in_collection=get_in_collection_as_int(doc),
                     authors=get_authors_in_list(doc, 'authors'),
                     title=getKeyOrDefault(doc, 'title'),
-                    venue=getKeyOrDefault(getKeyOrDefault(doc, 'pub_info'), 'title'),
+                    venue=getKeyOrDefault(
+                        getKeyOrDefault(doc, 'pub_info'), 'title'),
                     venue_type=getKeyOrDefault(doc, 'venueType'),
-                    year=getKeyOrDefault(getKeyOrDefault(doc, 'pub_info'), 'year'),
+                    year=getKeyOrDefault(
+                        getKeyOrDefault(doc, 'pub_info'), 'year'),
                     pages=getKeyOrDefault(doc, 'pages'),
                     editors=getKeyOrDefault(doc, 'editors'),
-                    publisher=getKeyOrDefault(getKeyOrDefault(doc, 'pub_info'), 'publisher'),
-                    pub_address=getKeyOrDefault(getKeyOrDefault(doc, 'pub_info'), 'pub_address'),
+                    publisher=getKeyOrDefault(
+                        getKeyOrDefault(doc, 'pub_info'), 'publisher'),
+                    pub_address=getKeyOrDefault(
+                        getKeyOrDefault(doc, 'pub_info'), 'pub_address'),
                     volume=getKeyOrDefault(doc, 'volume'),
                     number=getKeyOrDefault(doc, 'number'),
                     tech=getKeyOrDefault(doc, 'tech'),
@@ -388,35 +424,41 @@ def get_in_collection_as_int(doc):
 
 def build_cluster_entity(id, doc):
     return Cluster(cluster_id=id,
-                   incollection=getKeyOrDefault(doc, 'in_collection', default=0),
-                   cpublisher=getKeyOrDefault(getKeyOrDefault(doc, 'pub_info'), 'publisher'),
-                   cyear=getKeyOrDefault(getKeyOrDefault(doc, 'pub_info'), 'year', default=0),
+                   incollection=getKeyOrDefault(
+                       doc, 'in_collection', default=0),
+                   cpublisher=getKeyOrDefault(
+                       getKeyOrDefault(doc, 'pub_info'), 'publisher'),
+                   cyear=getKeyOrDefault(getKeyOrDefault(
+                       doc, 'pub_info'), 'year', default=0),
                    observations=getKeyOrDefault(doc, 'observations'),
                    selfCites=getKeyOrDefault(doc, 'selfCites'),
                    ctitle=getKeyOrDefault(doc, 'title'),
                    ctech=getKeyOrDefault(doc, 'ctech'),
                    cvol=getKeyOrDefault(doc, 'cvol'),
-                   cvenue=getKeyOrDefault(getKeyOrDefault(doc, 'pub_info'), 'pub_place'),
+                   cvenue=getKeyOrDefault(getKeyOrDefault(
+                       doc, 'pub_info'), 'pub_place'),
                    cnum=getKeyOrDefault(doc, 'cnum'),
                    cpages=getKeyOrDefault(doc, 'cpages'),
                    cventype=getKeyOrDefault(doc, 'cventype'))
 
 
-def build_facets(agg_dict_yr,agg_dict_pub,agg_dict_athr):
-    return Facets(pub_info_year_count= getKeyOrDefault(getKeyOrDefault(agg_dict_yr,'pub_info_year_count'),'value'),
-                 pub_info_year_list= get_aggregation_list(
-                     getKeyOrDefault(getKeyOrDefault(agg_dict_yr,'pub_info_year_list'),'buckets')),
-                 pub_info_publisher_count= getKeyOrDefault(getKeyOrDefault(agg_dict_pub,'pub_info_publisher_count'),'value'),
-                 pub_info_publisher_list= get_aggregation_list(
-                     getKeyOrDefault(getKeyOrDefault(agg_dict_pub,'pub_info_publisher_list'),'buckets')),
-                 authors_count= getKeyOrDefault(getKeyOrDefault(agg_dict_athr,'authors_count'),'value'),
-                 authors_fullname_terms= get_aggregation_list(
-                     getKeyOrDefault(getKeyOrDefault(agg_dict_athr,'authors_fullname_terms'),'buckets')))
+def build_facets(agg_dict_yr, agg_dict_pub, agg_dict_athr):
+    return Facets(pub_info_year_count=getKeyOrDefault(getKeyOrDefault(agg_dict_yr, 'pub_info_year_count'), 'value'),
+                  pub_info_year_list=get_aggregation_list(
+        getKeyOrDefault(getKeyOrDefault(agg_dict_yr, 'pub_info_year_list'), 'buckets')),
+        pub_info_publisher_count=getKeyOrDefault(getKeyOrDefault(
+            agg_dict_pub, 'pub_info_publisher_count'), 'value'),
+        pub_info_publisher_list=get_aggregation_list(
+        getKeyOrDefault(getKeyOrDefault(agg_dict_pub, 'pub_info_publisher_list'), 'buckets')),
+        authors_count=getKeyOrDefault(getKeyOrDefault(
+            agg_dict_athr, 'authors_count'), 'value'),
+        authors_fullname_terms=get_aggregation_list(
+        getKeyOrDefault(getKeyOrDefault(agg_dict_athr, 'authors_fullname_terms'), 'buckets')))
 
 
 def get_aggregation_list(bucket):
     agg_list = []
     for item in bucket:
-        agg_list.append(PublicationInfo(key=item['key'], doc_count=item['doc_count']))
+        agg_list.append(PublicationInfo(
+            key=item['key'], doc_count=item['doc_count']))
     return agg_list
-
