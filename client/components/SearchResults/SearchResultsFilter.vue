@@ -123,7 +123,7 @@ export default {
 
                     if ('authors_fullname_terms' in aggregations) {
                       this.facets = [
-                        ...this.facets,
+                     
                         {
                           key: 'authors',
                           items: aggregations.authors_fullname_terms,

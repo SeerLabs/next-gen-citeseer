@@ -66,7 +66,10 @@ export default {
                     text: 'Citations',
                     callback: () => (this.sortBy = 'num_citations')
                 },
-                { text: 'Year', callback: () => (this.sortBy = 'year') }
+                { 
+                    text: 'Year', 
+                    callback: () => (this.sortBy = 'year') 
+                }
             ],
             error: false,
             filters: {
@@ -97,6 +100,7 @@ export default {
     },
     methods: {
         ...mapActions(['searchPaper']),
+
         searchQuery() {
             this.loadingState = true;
             // push params            
