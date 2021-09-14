@@ -1,12 +1,12 @@
 import { stubFalse } from 'lodash';
 
 export default {
-config: {
-nuxt: {
-host: "0.0.0.0",
-port: "3000"
-}
-},
+    config: {
+        nuxt: {
+            host: "0.0.0.0",
+            port: "3000"
+        }
+    },
     mode: 'universal',
     /*
      ** Headers of the page
@@ -79,31 +79,53 @@ port: "3000"
         },
         icons: {
             iconfont: 'md'
-        }
-    },
-    /*
-     ** Build configuration
-     */
-    build: {
-        /*
-         ** You can extend webpack config here
-         */
-        extend(config, ctx) {
-            config.module.rules.push({
-                enforce: 'pre',
-                test: /\.(js|vue)$/,
-                loader: 'eslint-loader',
-                exclude: /(node_modules)/,
-                options: {
-                    fix: true
+        },
+        theme: {
+            options: {
+                customProperties: true,
+            },
+            themes: {
+                light: {
+                    primary: {
+                        base: '#30769E',
+                        lighten3: '#4496C5',
+                        lighten5: '#63A7CF',
+                    },
+                    secondary: {
+                        base: '#FFFFFF',
+                        darken3: '#BBBBBB',
+                        darken5: '#7D7D7D',
+                    },
+                    tertiary: '#101A1D',
+                    accent: '#FAC748',
+                    error: '#D33D49',
                 }
-            });
-        }
-    },
+            }
+        },
+        /*
+         ** Build configuration
+         */
+        build: {
+            /*
+             ** You can extend webpack config here
+             */
+            extend(config, ctx) {
+                config.module.rules.push({
+                    enforce: 'pre',
+                    test: /\.(js|vue)$/,
+                    loader: 'eslint-loader',
+                    exclude: /(node_modules)/,
+                    options: {
+                        fix: true
+                    }
+                });
+            }
+        },
 
-    privateRuntimeConfig: {
-        axios: {
-            baseURL: 'http://localhost:8000/api'
+        privateRuntimeConfig: {
+            axios: {
+                baseURL: 'http://localhost:8000/api'
+            }
         }
     }
-};
+}

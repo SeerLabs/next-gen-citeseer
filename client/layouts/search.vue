@@ -27,6 +27,7 @@ export default {
 </script>
 
 <style>
+
 #search-box-container {
     margin: 1.5em 0;
 }

@@ -59,7 +59,6 @@ export default {
 
 <style>
 #page-container {
-    margin: auto;
     margin-bottom: 400px;
 }
 

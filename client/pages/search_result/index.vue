@@ -146,6 +146,7 @@ export default {
 </script>
 
 <style>
+
 .search-result {
     margin-bottom: 0.5em;
 }

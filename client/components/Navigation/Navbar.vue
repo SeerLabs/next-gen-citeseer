@@ -1,21 +1,21 @@
 <template>
     <header>
-        <v-app-bar id="navbar" dark>
+        <v-app-bar id="navbar" color="primary" flat>
             <v-toolbar-title href="#">
-                <nuxt-link class="navbar-home-link" :to="{ path: '/' }">
-                    CiteSeerX
+                <nuxt-link :to="{ path: '/' }">
+                    <v-btn text>CiteSeerX</v-btn>
                 </nuxt-link>
             </v-toolbar-title>
 
             <v-spacer></v-spacer>
 
             <div v-if="loggedIn">
-              <nuxt-link class="navbar-home-link" to="/myciteseer/profile"><v-btn>Profile</v-btn></nuxt-link>
-              <v-btn class="navbar-home-link" @click="logoutUser">Logout</v-btn>
+              <nuxt-link to="/myciteseer/profile"><v-btn text>Profile</v-btn></nuxt-link>
+              <v-btn text @click="logoutUser">Logout</v-btn>
             </div>
             <div v-else>
-              <nuxt-link class="navbar-home-link" to="/register"><v-btn>Register</v-btn></nuxt-link>
-              <nuxt-link class="navbar-home-link" to="/login"><v-btn>Login</v-btn></nuxt-link>
+              <nuxt-link to="/register"><v-btn>Register</v-btn></nuxt-link>
+              <nuxt-link to="/login"><v-btn>Login</v-btn></nuxt-link>
             </div>
         </v-app-bar>
     </header>
@@ -58,9 +58,4 @@ header {
     margin-bottom: 1.5em;
 }
 
-.navbar-home-link {
-    color: white;
-    text-decoration: none;
-    margin-right: 1.em;
-}
 </style>
