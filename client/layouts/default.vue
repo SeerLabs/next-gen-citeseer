@@ -11,7 +11,7 @@
                       {{ notificationText }}
                     </v-alert>
 
-                    <nuxt v-if="!$slots.default" keep-alive />
+                    <nuxt v-if="!$slots.default" keep-alive  />
                     <slot />
                 </v-container>
             </v-main>
@@ -59,8 +59,10 @@ export default {
 
 <style>
 #page-container {
-    margin-bottom: 400px;
+  margin: auto;
+  margin-bottom: 400px;
 }
+
 
 #app {
     text-align: left;

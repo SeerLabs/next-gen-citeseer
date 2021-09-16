@@ -24,8 +24,40 @@
                     Cited by {{ nCitedBy }} ({{ nSelfCites }} self-citations)
                 </nuxt-link>
             </v-col>
+
             <v-col cols="8" class="links">
-                <a >+Cite</a>
+                <v-dialog
+                    max-width="40%"
+                >
+                    <template v-slot:activator="{ on, attrs }">
+                        <a v-bind="attrs" v-on="on">+Cite</a>
+                    </template>
+                    <v-card class="pa-5">
+                        <v-card-title>
+                            Cite This Paper
+                        </v-card-title>
+                        <v-card-text>
+                            <v-container>
+                                <v-row>
+                                    <textarea 
+                                    id="bibtex"
+                                    :value="bibtex"
+                                    ></textarea>
+                                </v-row>
+                            </v-container>
+                        </v-card-text>
+                  
+                        <v-card-actions>
+                            <v-btn
+                                color="primary"
+                                @click="copyBibtex"
+                            >
+                                <v-icon left>content_copy</v-icon>
+                                {{ copied ? 'Copied!' : 'Copy' }}
+                            </v-btn>
+                        </v-card-actions>
+                    </v-card>
+                </v-dialog>
                 <a :href="pdfUrl" target="_blank">+View PDF</a>
                 <add-to-collection-dialog
                     :doc-id="docId"
@@ -34,6 +66,7 @@
                 />
                 <a>+Add to ExportCart</a>
             </v-col>
+
         </v-row>
     </v-container>
 </template>
@@ -46,7 +79,7 @@ export default {
     components: {
         AddToCollectionDialog
     },
-    props: {
+     props: {
         docId: { type: String, default: '' },
         clusterId: { type: String, default: '' },
         title: { type: String, default: '' },
@@ -57,6 +90,12 @@ export default {
         nCitedBy: { type: Number, default: 0 },
         nSelfCites: { type: Number, default: 0 },
         collectionNames: {type: Array, default: null}
+    },
+    data() {
+        return {
+            // Register if a bibtex is copied
+            copied: false,
+        }  
     },
     computed: {
         docUrl() {
@@ -72,6 +111,23 @@ export default {
         },
         showCitingUrl() {
             return '/show_citing/' + this.clusterId;
+        },
+        // TODO: Add in other fields required for a full bibtex
+        bibtex() {
+            return `@article{Citekey,` + 
+            `\n\ttitle={${this.title}},` +
+            `\n\tauthor={${this.authors.join(' and ')}},` +
+            `\n\tyear={${this.year}}`
+                    
+        }
+    },
+    methods: {
+        // Copy the generated Bibtex by clicking the copy button
+        copyBibtex() {
+            const textarea = document.getElementById("bibtex");
+            textarea.select();
+            document.execCommand("copy");
+            this.copied = true;
         }
     }
 };
@@ -102,5 +158,15 @@ export default {
 
 .links a {
     margin-left: 1em;
+}
+
+#bibtex {
+    width: 100%;
+    min-height: 8rem;
+    padding: 5px;
+
+    background-color: #ededed;
+    font-family: monospace;
+    white-space: pre;
 }
 </style>
