@@ -1,11 +1,17 @@
 <template>
     <layout-default>
-        <v-row>
-            <v-col id="search-box-container" cols="8">
-                <search-box v-model="searchQuery" />
-            </v-col>
-        </v-row>
+        <v-container>
+            <v-row>
+                <v-col cols="8">
+                    <search-box v-model="searchQuery" />
+                </v-col>
+            </v-row>
+        </v-container>
+
+        
         <nuxt keep-alive />
+  
+
     </layout-default>
 </template>
 
@@ -28,9 +34,7 @@ export default {
 
 <style>
 
-#search-box-container {
-    margin: 1.5em 0;
-}
+
 
 [v-cloak] {
     display: none;

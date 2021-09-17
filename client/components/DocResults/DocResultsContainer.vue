@@ -64,7 +64,6 @@ export default {
 
 <style scoped>
 .document-results-container {
-    background-color: var(--v-secondary-darken3);
     margin-bottom: 2em;
     padding: 0.5em;
 }

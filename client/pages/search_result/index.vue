@@ -1,10 +1,11 @@
 <template>
-    <div v-cloak>
+    <div v-cloak id="search-results-container">
+        <v-container>
         <v-row>
             <v-col v-if="loadingState" md="8">
                 <v-progress-linear rounded indeterminate color="teal" />
             </v-col>
-            <v-col v-else id="search-results-list" md="8">
+            <v-col v-else md="8">
                 <doc-results-container
                     v-model="sortBy"
                     :documents="documents"
@@ -29,6 +30,7 @@
                 <search-results-external-links />
             </v-col>
         </v-row>
+        </v-container>
     </div>
 </template>
 
@@ -145,14 +147,14 @@ export default {
 };
 </script>
 
-<style>
+<style scoped>
 
 .search-result {
     margin-bottom: 0.5em;
 }
 
-#search-results-list {
-    margin-bottom: 1em;
+#search-results-container {
+    background-color: #F4F4F4;
 }
 
 .spinner {

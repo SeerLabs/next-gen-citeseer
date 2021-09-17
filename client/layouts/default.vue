@@ -2,8 +2,7 @@
     <div>
         <v-app v-cloak>
             <nav-bar />
-            <v-main>
-                <v-container id="page-container">
+            <v-main id="page-container">
                     <v-alert
                       :value="displayNotification"
                       :type="notificationType"
@@ -13,7 +12,6 @@
 
                     <nuxt v-if="!$slots.default" keep-alive  />
                     <slot />
-                </v-container>
             </v-main>
             <footer-bar />
         </v-app>
@@ -59,7 +57,6 @@ export default {
 
 <style>
 #page-container {
-  margin: auto;
   margin-bottom: 400px;
 }
 
