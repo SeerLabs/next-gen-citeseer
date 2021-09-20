@@ -1,7 +1,7 @@
 <template>
     <div id="search-results-external-links">
-        <v-card :title="filter_title">
-            <v-card-title>{{ filter_title }}</v-card-title>
+        <v-card :title="filter_title" outlined>
+            <v-toolbar flat dense color="primary"><h5 class="secondary--text ma-0">Try your query at</h5></v-toolbar>
             <v-card-text>
                 <v-container>
                 <b-row rows="3">
@@ -40,7 +40,6 @@ export default {
     },
     data() {
         return {
-            filter_title: 'Try your query at',
             semantic_scholar_url: 'https://www.semanticscholar.org/search?q=' + this.query,
         };
     }

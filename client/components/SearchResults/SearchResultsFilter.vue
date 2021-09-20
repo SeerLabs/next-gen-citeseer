@@ -1,6 +1,6 @@
 <template>
-    <v-card id="search-results-filter">
-        <v-card-title>Filter results</v-card-title>
+    <v-card id="search-results-filter" outlined>
+        <v-toolbar flat dense color="primary"><h5 class="secondary--text ma-0">Filter results</h5></v-toolbar>
         <v-card-text>
             <div class="d-flex justify-space-between">
                 <h6>Year</h6>
@@ -13,6 +13,7 @@
                     hide-details
                     class="align-center"
                     @change="$emit('year-change', yearRange)"
+                    
                 >
                     <template v-slot:prepend>
                         {{ yearRange[0] }}
@@ -169,6 +170,10 @@ export default {
 .facet-menu {
     margin-top: 1rem;
     width: 7vw;
+}
+
+>>>.v-slider__track-container {
+    height: 10px;
 }
 </style>
 

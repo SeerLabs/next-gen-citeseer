@@ -3,7 +3,7 @@
         <v-row no-gutters>
             <v-col cols="12" class="result-title">
                 <nuxt-link :to="{ path: docUrl }">
-                    <h4 class="text--primary">{{ title }}</h4>
+                    <h5 class="text--primary">{{ title }}</h5>
                 </nuxt-link>
             </v-col>
             <v-col cols="6" class="result-type">

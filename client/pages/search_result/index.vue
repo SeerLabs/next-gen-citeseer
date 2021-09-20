@@ -20,7 +20,7 @@
                     @input="searchQuery"
                 />
             </v-col>
-            <v-col id="search-results-cards">
+            <v-col id="search-results-cards" md="4">
                 <search-results-filter
                     class="mb-md-10"
                     :query-string="queryString"
