@@ -117,7 +117,9 @@ export default {
             return `@article{Citekey,` + 
             `\n\ttitle={${this.title}},` +
             `\n\tauthor={${this.authors.join(' and ')}},` +
-            `\n\tyear={${this.year}}`
+            `\n\tyear={${this.year}}` +
+            `\n\tjournal={}` +
+            '\n}'
                     
         }
     },
