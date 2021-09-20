@@ -2,7 +2,7 @@
     <div>
         <v-app v-cloak>
             <nav-bar />
-            <v-main id="page-container">
+            <v-main>
                     <v-alert
                       :value="displayNotification"
                       :type="notificationType"
@@ -13,7 +13,7 @@
                     <nuxt v-if="!$slots.default" keep-alive  />
                     <slot />
             </v-main>
-            <footer-bar />
+            <footer-bar></footer-bar>
         </v-app>
     </div>
 </template>
@@ -56,13 +56,18 @@ export default {
 </script>
 
 <style>
-#page-container {
-  margin-bottom: 400px;
-}
-
-
 #app {
     text-align: left;
+    font-family: "Open Sans";
+}
+
+h1, h2, h3, h4, h5 {
+  font-family: "Bitter";
+  font-weight: 600;
+}
+
+a {
+  text-decoration: none;
 }
 
 [v-cloak] {

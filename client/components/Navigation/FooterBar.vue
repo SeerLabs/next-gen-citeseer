@@ -1,5 +1,6 @@
 <template>
-  <footer class="footer-distributed">
+	<v-footer height="200"></v-footer>
+  <!-- <footer class="footer-distributed">
     <div class="footer-left">
       <img id="psu_logo" src="https://raw.githubusercontent.com/jasonchhay/CovidSeer/master/seer/static/img/psu_logo.png" width="250vw">
       <div class="elasticsearch">
@@ -38,11 +39,11 @@
         </div>
       </div>
     </div>
-  </footer>
+  </footer> -->
 </template>
 
 <style scoped>
-	footer {
+	/* footer {
 		margin-top: 1.5em;
 	}
 
@@ -65,11 +66,11 @@
 	.footer-distributed .footer-right{
 		display: inline-block;
 		vertical-align: top;
-	}
+	} */
 
 	/* Footer left */
 
-	.footer-distributed .footer-left{
+	/* .footer-distributed .footer-left{
 		width: 40%;
 		margin-left: 20px;
 		margin-right: 20%;
@@ -77,7 +78,7 @@
 
 	/* The company logo */
 
-	.footer-distributed h3{
+	/* .footer-distributed h3{
 		color:  #ffffff;
 		font: normal 36px 'Cookie', cursive;
 		margin: 0;
@@ -85,10 +86,10 @@
 
 	.footer-distributed h3 span{
 		color:  #5383d3;
-	}
+	} */ 
 
 	/* Footer links */
-
+/* 
 	.footer-distributed .footer-links{
 		color:  #ffffff;
 		margin: 5vh 0 1.5vh;
@@ -112,11 +113,11 @@
 		font-size: 14px;
 		font-weight: normal;
 		margin: 0;
-	}
+	} */
 
 	/* Footer Center */
 
-	.footer-distributed .footer-center{
+	/* .footer-distributed .footer-center{
 		width: 35%;
 		margin-left: 0px;
 	}
@@ -156,11 +157,11 @@
 	.footer-distributed .footer-center p a{
 		color:  #5383d3;
 		text-decoration: none;;
-	}
+	} */
 
 	/* Footer Right */
 
-	.footer-distributed .footer-right{
+	/* .footer-distributed .footer-right{
 		width: 20%;
 		margin-left: -75px;
 		float: right;
@@ -202,11 +203,11 @@
 
 		margin-right: 3px;
 		margin-bottom: 5px;
-	}
+	} */
 
 	/* If you don't want the footer to be responsive, remove these media queries */
 
-	@media (max-width: 880px) {
+	/* @media (max-width: 880px) {
 
 		.footer-distributed{
 			font: bold 14px sans-serif;
@@ -229,5 +230,5 @@
 
 	#psu_logo {
 		margin-bottom: 3vh;
-	}
+	} */
 </style>

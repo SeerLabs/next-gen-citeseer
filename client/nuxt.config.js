@@ -25,7 +25,10 @@ export default {
                 content: process.env.npm_package_description || ''
             }
         ],
-        link: [{ rel: 'icon', type: 'image/x-icon', href: '/favicon.ico' }]
+        link: [
+            { rel: 'icon', type: 'image/x-icon', href: '/favicon.ico' },
+            { rel: 'stylesheet', href: 'https://fonts.googleapis.com/css2?family=Bitter:wght@400;600;700&family=Open+Sans:wght@300;400&display=swap' }
+        ]
     },
     /*
      ** Customize the progress-bar color
@@ -73,6 +76,7 @@ export default {
     },
 
     vuetify: {
+  
         defaultAssets: {
             font: true,
             icons: 'md'
@@ -87,7 +91,7 @@ export default {
             themes: {
                 light: {
                     primary: {
-                        base: '#30769E',
+                        base: '#2593BD',
                         lighten3: '#4496C5',
                         lighten5: '#63A7CF',
                     },

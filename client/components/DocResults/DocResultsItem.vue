@@ -3,7 +3,7 @@
         <v-row no-gutters>
             <v-col cols="12" class="result-title">
                 <nuxt-link :to="{ path: docUrl }">
-                    <h4 class="font-weight-medium">{{ title }}</h4>
+                    <h4 class="text--primary">{{ title }}</h4>
                 </nuxt-link>
             </v-col>
             <v-col cols="6" class="result-type">
@@ -13,24 +13,28 @@
 
         <v-row no-gutters>
             <v-col class="result-info">
-                <h6>{{ authors.join(', ') }} - {{ year }}</h6>
+                <p class="font-italic">{{ authors.join(', ') }} &bull; {{ year }}</p>
                 <p v-if="abstract">{{ abstract.slice(0, 200) }}...</p>
             </v-col>
         </v-row>
 
-        <v-row no-gutters>
-            <v-col cols="4" class="citations">
-                <nuxt-link :to="{ path: showCitingUrl }">
-                    Cited by {{ nCitedBy }} ({{ nSelfCites }} self-citations)
+        <v-row no-gutters justify="space-between">
+            <v-col cols="6">
+                <nuxt-link :to="{ path: showCitingUrl }" class="citation">
+                    Cited by <span class="accent--text">{{ nCitedBy }} Documents</span> &bull; {{ nSelfCites }} self-citations
                 </nuxt-link>
             </v-col>
 
-            <v-col cols="8" class="links">
+            <v-col cols="6" class="links" align="end">
+
+                <!-- TODO: Move the dialog to single component -->
                 <v-dialog
                     max-width="40%"
                 >
                     <template v-slot:activator="{ on, attrs }">
-                        <a v-bind="attrs" v-on="on">+Cite</a>
+                        <button class="ml-4" v-bind=attrs v-on=on>
+                            <v-icon dense>format_quote</v-icon>Cite
+                        </button>
                     </template>
                     <v-card class="pa-5">
                         <v-card-title>
@@ -58,13 +62,20 @@
                         </v-card-actions>
                     </v-card>
                 </v-dialog>
-                <a :href="pdfUrl" target="_blank">+View PDF</a>
+
+                <nuxt-link :to=pdfUrl target="_blank">
+                    <button class="ml-4">
+                        <v-icon dense>description</v-icon>View PDF
+                    </button>
+                </nuxt-link>
+          
                 <add-to-collection-dialog
                     :doc-id="docId"
                     :collection-names="collectionNames"
                     :button-type="'searchItem'"
                 />
-                <a>+Add to ExportCart</a>
+
+                <button class="ml-4"><v-icon dense>shopping_cart</v-icon>Add to Cart</button>
             </v-col>
 
         </v-row>
@@ -130,7 +141,7 @@ export default {
             textarea.select();
             document.execCommand("copy");
             this.copied = true;
-        }
+        },
     }
 };
 </script>
@@ -139,6 +150,7 @@ export default {
 .document-result {
     background-color: white;
     padding: 1rem;
+    border: 2px solid #eaeaea;
 }
 
 .result-type {
@@ -154,12 +166,19 @@ export default {
     margin-bottom: 0.3em;
 }
 
-.links {
-    text-align: right;
+.links button {
+    color: var(--v-secondary-darken5);
+    font-weight: bold;
 }
 
-.links a {
-    margin-left: 1em;
+.links i {
+    padding-right: 4px;
+    vertical-align: middle;
+}
+
+.citation {
+    color: var(--v-secondary-darken5);
+    font-weight: bold;
 }
 
 #bibtex {

@@ -10,10 +10,9 @@
             >
             Add To A Collection
             </v-btn>
-            <a v-if="buttonType == 'searchItem'"
-            v-bind="attrs"
-            v-on="on"
-            >+Save</a>
+            <button class="ml-4" v-if="buttonType == 'searchItem'" v-bind="attrs" v-on="on">
+                <v-icon dense>bookmark_add</v-icon>Save
+            </button>
         </template>
 
         <v-card>

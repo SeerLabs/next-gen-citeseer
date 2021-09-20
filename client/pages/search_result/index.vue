@@ -149,12 +149,10 @@ export default {
 
 <style scoped>
 
-.search-result {
-    margin-bottom: 0.5em;
-}
-
 #search-results-container {
-    background-color: #F4F4F4;
+    background-color: #F7F7F7;
+    padding: 2rem 8rem;
+    border-top: 2px solid #e0e0e0;
 }
 
 .spinner {

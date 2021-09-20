@@ -34,8 +34,6 @@ export default {
 
 <style>
 
-
-
 [v-cloak] {
     display: none;
 }
