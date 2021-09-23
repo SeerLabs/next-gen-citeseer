@@ -3,7 +3,7 @@
         <v-container>
         <v-row>
             <v-col v-if="loadingState" md="8">
-                <v-progress-linear rounded indeterminate color="teal" />
+                <v-progress-linear rounded indeterminate/>
             </v-col>
             <v-col v-else md="8">
                 <doc-results-container

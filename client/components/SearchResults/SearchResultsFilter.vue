@@ -12,6 +12,7 @@
                     :min="yearMin"
                     hide-details
                     class="align-center"
+                    thumb-color="#a9a9a9"
                     @change="$emit('year-change', yearRange)"
                     
                 >
@@ -170,10 +171,6 @@ export default {
 .facet-menu {
     margin-top: 1rem;
     width: 7vw;
-}
-
->>>.v-slider__track-container {
-    height: 10px;
 }
 </style>
 
