@@ -1,5 +1,5 @@
 <template>
-    <v-card id="search-results-filter" outlined>
+    <v-card id="search-results-filter" outlined rounded=0>
         <v-toolbar flat dense color="primary"><h5 class="white--text ma-0">Filter results</h5></v-toolbar>
         <v-card-text>
             <div class="d-flex justify-space-between">
