@@ -1,7 +1,7 @@
 <template>
     <div id="search-results-external-links">
         <v-card :title="filter_title" outlined>
-            <v-toolbar flat dense color="primary"><h5 class="secondary--text ma-0">Try your query at</h5></v-toolbar>
+            <v-toolbar flat dense color="primary"><h5 class="white--text ma-0">Try your query at</h5></v-toolbar>
             <v-card-text>
                 <v-container>
                 <v-row rows="3" justify="center">

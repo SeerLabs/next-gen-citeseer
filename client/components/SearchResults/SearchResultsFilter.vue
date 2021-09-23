@@ -1,6 +1,6 @@
 <template>
     <v-card id="search-results-filter" outlined>
-        <v-toolbar flat dense color="primary"><h5 class="secondary--text ma-0">Filter results</h5></v-toolbar>
+        <v-toolbar flat dense color="primary"><h5 class="white--text ma-0">Filter results</h5></v-toolbar>
         <v-card-text>
             <div class="d-flex justify-space-between">
                 <h6>Year</h6>

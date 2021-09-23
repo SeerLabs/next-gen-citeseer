@@ -96,9 +96,9 @@ export default {
                         lighten5: '#63A7CF',
                     },
                     secondary: {
-                        base: '#FFFFFF',
-                        darken3: '#BBBBBB',
-                        darken5: '#7D7D7D',
+                        base: '#707070',
+                        lighten3: '#8d8d8d',
+                        lighten5: '#bebebe',
                     },
                     tertiary: '#101A1D',
                     accent: '#FAC748',

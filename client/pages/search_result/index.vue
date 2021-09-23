@@ -1,11 +1,49 @@
 <template>
     <div v-cloak id="search-results-container">
         <v-container>
+             <v-row align="center" class="px-3 mb-5">
+                    <v-col md="6">
+                        <p class="mb-0 font-weight-bold secondary--text">Results {{ (page-1) * pageSize + 1 }} - 
+                        {{
+                            Math.min((page - 1) * pageSize + pageSize, totalResults * pageSize)
+                        }}
+                        out of {{ totalResults }}
+                        </p>
+                    </v-col>
+                    <v-col md="2">
+                        <v-select
+                            item-text="text"
+                            label="Sort By"
+                            outlined
+                            dense
+                            hide-details
+                        />
+                    </v-col>
+                </v-row>
         <v-row>
             <v-col v-if="loadingState" md="8">
                 <v-progress-linear rounded indeterminate/>
             </v-col>
             <v-col v-else md="8">
+                <!-- <v-row align="center" class="px-3">
+                    <v-col md="9">
+                        <p class="mb-0 font-weight-bold secondary--text">Results {{ (page-1) * pageSize + 1 }} - 
+                        {{
+                            Math.min((page - 1) * pageSize + pageSize, totalResults * pageSize)
+                        }}
+                        out of {{ totalResults }}
+                        </p>
+                    </v-col>
+                    <v-col md="3">
+                        <v-select
+                            item-text="text"
+                            label="Sort By"
+                            outlined
+                            dense
+                            hide-details
+                        />
+                    </v-col>
+                </v-row> -->
                 <doc-results-container
                     v-model="sortBy"
                     :documents="documents"

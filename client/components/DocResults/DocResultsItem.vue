@@ -167,7 +167,7 @@ export default {
 }
 
 .links button {
-    color: var(--v-secondary-darken5);
+    color: var(--v-secondary-base);
     font-weight: bold;
 }
 
@@ -177,7 +177,7 @@ export default {
 }
 
 .citation {
-    color: var(--v-secondary-darken5);
+    color: var(--v-secondary-base);
     font-weight: bold;
 }
 

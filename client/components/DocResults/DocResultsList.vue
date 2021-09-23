@@ -58,10 +58,6 @@ export default {
 </script>
 
 <style scoped>
-.document-results-list {
-    margin: 1.5em 0 1em 0;
-    padding: 0;
-}
 
 .document-results-list ul {
     list-style: none;
@@ -70,5 +66,10 @@ export default {
 
 .document-results-item {
     margin: 0.5em 0;
+}
+
+/* remove top margin of the first child */
+.document-results-item:first-child {
+    margin-top: 0;
 }
 </style>
