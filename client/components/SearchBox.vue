@@ -1,13 +1,12 @@
 <template>
-    <v-card flat>
+    <v-container>
       <v-combobox
           v-model="searchQuery"
-          class="mb-0 pb-0"
           :items="items"
-          :loading="isLoading"
           :search-input.sync="textInput"
           :hide-no-data="!textInput"
-          filled
+          background-color="#fff"
+          outlined
           clearable
           hide-selected
           item-text="description"
@@ -21,10 +20,6 @@
               </div>
           </template>
       </v-combobox>
-      <v-container
-        class="pa-0"
-        fluid
-      >
         <v-checkbox 
           id="pdf-checkbox"
           v-model="includeWithoutPdfs"
@@ -33,8 +28,7 @@
           label="Include results without PDF"
           @click="submitInput"
         />
-      </v-container>
-    </v-card>
+    </v-container>
 </template>
 
 <script>
