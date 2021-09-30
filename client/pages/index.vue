@@ -1,6 +1,6 @@
 <template>
     <div id="homepage">
-     <v-container class="mt-7">
+     <v-container class="mt-16">
         <img id="logo" src="@/assets/img/csx_logo.png" alt="CiteSeerX"/>
         <h4 id="subtitle" class="mt-3">Search across over 10,000,000 documents, journals, and papers</h4>
 

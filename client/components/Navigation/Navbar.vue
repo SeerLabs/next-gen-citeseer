@@ -3,15 +3,27 @@
         <v-app-bar id="navbar" color="primary" flat>
             <v-toolbar-title href="#">
                 <nuxt-link :to="{ path: '/' }">
-                    <v-btn text>CiteSeerX</v-btn>
+                    <img src="@/assets/img/logo_white.png" alt="CiteSeerX" width="150">
                 </nuxt-link>
             </v-toolbar-title>
 
             <v-spacer></v-spacer>
 
+            <div>
+              <a 
+                v-for="link in links" 
+                :key="link" 
+                :href="link.url" 
+                target="_blank"
+                class="link"
+              >
+                {{ link.title }}
+              </a>
+            </div>
+
             <div v-if="loggedIn">
-              <nuxt-link to="/myciteseer/profile"><v-btn text>Profile</v-btn></nuxt-link>
-              <v-btn text @click="logoutUser">Logout</v-btn>
+              <nuxt-link to="/myciteseer/profile" class="link">Profile</nuxt-link>
+              <a @click=logoutUser>Logout</a>
             </div>
             <div v-else>
               <nuxt-link to="/register"><v-btn>Register</v-btn></nuxt-link>
@@ -26,6 +38,24 @@
 import { mapMutations } from 'vuex'
 
 export default {
+    data() {
+      return {
+        links: [
+          {
+            title: 'About',
+            url: 'http://csxstatic.ist.psu.edu/home',
+          },
+          {
+            title: 'Donate',
+            url: 'http://www.givenow.psu.edu/CiteseerxFund',
+          },
+          {
+            title: 'DMCA',
+            url: 'https://www.psu.edu/copyright-information/',
+          }
+        ],
+      }
+    },
     computed: {
       loggedIn() {
         return this.$store.state.auth.loggedIn
@@ -54,8 +84,8 @@ export default {
 </script>
 
 <style scoped>
-header {
-    margin-bottom: 1.5em;
-}
-
+  .link {
+    color: #ffff !important;
+    margin-right: 4em;
+  }
 </style>
