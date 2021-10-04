@@ -6,7 +6,7 @@ export default {
     },
     
     async getPaperswithPaperIds (context, {pids}) {
-    return await this.$axios.$post(`/mget_paper`, {"paper_id_list": pids})
+    return await this.$axios.$post(`/bulk_get_paper`, {"paper_id_list": pids})
             .then(function(response) {
                 return response.response
             })

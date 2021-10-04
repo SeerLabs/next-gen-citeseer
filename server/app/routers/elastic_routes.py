@@ -132,7 +132,7 @@ def paper_info(request: Request, paper_id: Optional[str] = None, cluster_id: Opt
     return PaperDetailResponse(query_id=str(uuid4()), paper=paper_entity_response)
 
 
-@router.post('/mget_paper')
+@router.post('/bulk_get_paper')
 def paper_list(mget_request: MGetRequest):
     s = elastic_models.Cluster.search(using=elastic_service.get_connection())
     s = s.filter("terms", paper_id=mget_request.paper_id_list)
