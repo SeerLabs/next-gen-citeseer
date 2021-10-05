@@ -1,25 +1,29 @@
 <template>
-    <v-card class="mb-10">
+    <v-card class="mb-10" flat outlined rounded=0>
         <span v-if="true">
-            <div class="citation-card-header">
-                <div>
-                    <v-card-title>{{ title }}</v-card-title>
-                    <v-card-subtitle>
-                        {{ nCitations || 0 }} {{ title.toLowerCase() }}
-                    </v-card-subtitle>
+            <v-toolbar flat dense color="primary"><h5 class="white--text ma-0">{{ title }}</h5></v-toolbar>
+                <div id="subtitle-container">
+                    <v-container>
+                        <v-row>
+                            <v-col cols=10>
+                                <v-card-subtitle>
+                                    {{ nCitations || 0 }} {{ title.toLowerCase() }}
+                                </v-card-subtitle>
+                            </v-col>
+                            <v-col>
+                                <v-select
+                                    v-model="sortSelected"
+                                    dense
+                                    class="m-2 citation-sorting"
+                                    :items="sortDropdown"
+                                    label="Sort By"
+                                    outlined
+                                    @change="getCitations"
+                                />
+                            </v-col>
+                        </v-row>
+                    </v-container>
                 </div>
-                <div class="citation-sorting-container">
-                    <v-select
-                        v-model="sortSelected"
-                        dense
-                        class="m-2 citation-sorting"
-                        :items="sortDropdown"
-                        label="Sort By"
-                        outlined
-                        @change="getCitations"
-                    />
-                </div>
-            </div>
             <v-card-text>
                 <div v-if="loading" id="loading">
                     <v-progress-linear rounded indeterminate color="teal" />
@@ -154,19 +158,9 @@ export default {
 </script>
 
 <style scoped>
-.citation-card-header {
-    display: flex;
-    align-items: flex-start;
-    justify-content: space-between;
-}
 
-div.citation-sorting-container {
-    padding: 16px;
-}
-
-.citation-sorting {
-    width: 150px;
-    text-align: right;
+#subtitle-container {
+    border-bottom: 1px solid var(--v-secondary-lighten5);
 }
 
 .results-dropdown li {

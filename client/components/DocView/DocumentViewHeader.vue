@@ -1,10 +1,9 @@
 <template>
     <v-row id="doc-view-header">
+
         <v-col cols="9">
             <h2>{{ title }}</h2>
-            <h5>{{ authors.join(', ') }}</h5>
-            <h5>{{ venue }} - {{ year }}</h5>
-            <br />
+            <p class="font-italic">{{ authors.join(', ') }} &bull; {{ venue }} &bull; Published {{ year }}</p>
 
             <div
                 id="abstract"
@@ -16,10 +15,12 @@
             >
                 <p>{{ abstract }}</p>
             </div>
+
             <v-btn @click="() => (showAbstract = !showAbstract)">
                 {{ !showAbstract ? 'Show more' : 'Show less' }}
             </v-btn>
         </v-col>
+
         <v-col cols="3">
             <v-card id="document-options">
                 <v-card-text class="d-flex flex-column mb-6">
@@ -344,14 +345,10 @@ export default {
 };
 </script>
 
-<style>
-#doc-view-layout {
-    background: rgb(255, 255, 255);
-}
+<style scoped>
 
 #doc-view-header {
-    margin-bottom: 3em;
-    background: #ffffff;
+    margin: 3em;
 }
 
 #abstract {

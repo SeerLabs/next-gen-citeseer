@@ -1,9 +1,10 @@
 <template>
     <div v-cloak id="doc-view-layout">
         <div v-if="loading" id="loading">
-            <v-progress-linear rounded indeterminate color="teal" />
+            <v-progress-linear rounded indeterminate />
         </div>
-        <span v-else>
+        <v-container v-else>
+            <div id="doc-view-header-container">
             <DocumentViewHeader
                 :title="title"
                 :abstract="abstract"
@@ -14,8 +15,10 @@
                 :doc-id="docId"
                 :has-pdf="idType === 'pid'"
             />
+            </div>
 
             <!-- Citations Row -->
+            <div id="citation-container">
             <v-row>
                 <v-col cols="9">
                     <citation-card
@@ -58,7 +61,8 @@
                     </v-card>
                 </v-col>
             </v-row>
-        </span>
+            </div>
+        </v-container>
     </div>
 </template>
 
@@ -162,14 +166,15 @@ export default {
 <style>
 #loading {
     text-align: center;
-    padding: 50px 0;
-}
-#doc-view-layout {
-    background: rgb(255, 255, 255);
+    padding: 50px 100px;
 }
 
-.citation-card {
-    margin-bottom: 1em;
+#doc-view-layout {
+    border-top: 2px solid #e0e0e0;
+}
+
+#citation-container {
+    margin: 0 3em;
 }
 
 #table-of-contents {

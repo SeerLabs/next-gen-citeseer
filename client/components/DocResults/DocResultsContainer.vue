@@ -1,7 +1,7 @@
 <template>
     <v-container id="document-results-sorting" class="document-results-container pa-0">
         <div v-if="loading" id="loading">
-            <v-progress-linear rounded indeterminate color="teal" />
+            <v-progress-linear rounded indeterminate />
         </div>
         <doc-results-list v-else :documents="documents" />
     </v-container>

@@ -1,6 +1,6 @@
 <template>
     <layout-default>
-        <v-container>
+        <v-container class="pt-10">
             <v-row>
                 <v-col cols="8">
                     <search-box v-model="searchQuery" />

@@ -1,7 +1,7 @@
 <template>
     <div v-cloak id="search-results-container">
         <v-container>
-             <v-row align="center" class="px-3 mb-5">
+             <v-row align="center" class="px-2 mb-5">
                     <v-col md="6">
                         <p class="mb-0 font-weight-bold secondary--text">Results {{ (page-1) * pageSize + 1 }} - 
                         {{
