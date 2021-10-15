@@ -69,13 +69,16 @@
                     </button>
                 </nuxt-link>
           
-                <add-to-collection-dialog
+                <!-- <add-to-collection-dialog
                     :doc-id="docId"
                     :collection-names="collectionNames"
                     :button-type="'searchItem'"
-                />
+                /> -->
 
-                <button class="ml-4"><v-icon dense>shopping_cart</v-icon>Add to Cart</button>
+                <button class="ml-4">
+                    <v-icon dense>thumb_up</v-icon>
+                    <span class="accent--text">123</span> 
+                 </button>
             </v-col>
 
         </v-row>
@@ -84,11 +87,11 @@
 
 <script>
 
-import AddToCollectionDialog from '~/components/MyCiteSeer/AddToCollectionDialog.vue'
+// import AddToCollectionDialog from '~/components/MyCiteSeer/AddToCollectionDialog.vue'
 export default {
     name: 'DocResultsItem',
     components: {
-        AddToCollectionDialog
+        // AddToCollectionDialog
     },
      props: {
         docId: { type: String, default: '' },
