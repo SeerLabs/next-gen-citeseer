@@ -21,14 +21,15 @@
               </a>
             </div>
 
-            <div v-if="loggedIn">
+            <!-- MyCiteSeerX functionalities was removed, need to be added back in.  -->
+            <!-- <div v-if="loggedIn">
               <nuxt-link to="/myciteseer/profile" class="link">Profile</nuxt-link>
               <a @click=logoutUser>Logout</a>
             </div>
             <div v-else>
               <nuxt-link to="/register"><v-btn>Register</v-btn></nuxt-link>
               <nuxt-link to="/login"><v-btn>Login</v-btn></nuxt-link>
-            </div>
+            </div> -->
         </v-app-bar>
     </header>
 </template>
@@ -86,6 +87,6 @@ export default {
 <style scoped>
   .link {
     color: #ffff !important;
-    margin-right: 4em;
+    margin-right: 3em;
   }
 </style>

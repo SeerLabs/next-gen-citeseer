@@ -74,11 +74,11 @@
                     :collection-names="collectionNames"
                     :button-type="'searchItem'"
                 /> -->
-
-                <button class="ml-4">
+                <!-- Add like functionality after MyCiteSeerX is developed -->
+                <!-- <button class="ml-4">
                     <v-icon dense>thumb_up</v-icon>
                     <span class="accent--text">123</span> 
-                 </button>
+                 </button> -->
             </v-col>
 
         </v-row>
