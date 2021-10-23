@@ -17,7 +17,7 @@
             <nuxt-link :to="{ path: '/' }">FAQ</nuxt-link>
         </v-row>
         <v-row justify="center" align="center" class="pt-3">
-            Powered by <img id="elastic-search" src="@/assets/img/logo-elastic-horizontal-color.svg" alt="Elastic Search"/>
+            Powered by <img id="elastic-search" src="@/assets/img/logo-elastic-horizontal-color.svg" alt="ElasticSearch"/>
         </v-row>
             
         </v-container>

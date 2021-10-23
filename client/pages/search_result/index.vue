@@ -46,7 +46,7 @@
                     @year-change="value => onYearFacetChange(value)"
                     @facet-change="({key, filters}) => onFacetChange(key, filters)"
                 />
-                <search-results-external-links />
+                <search-results-external-links :query="queryString"/>
             </v-col>
         </v-row>
         </v-container>
