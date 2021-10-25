@@ -56,8 +56,12 @@ def perform_search(request: Request, searchQuery: SearchQuery):
     if searchQuery.must_have_pdf:
         s = s.filter('term', has_pdf=True)
 
-    s = s.query('multi_match', query=searchQuery.queryString,
-                fields=['title', 'text'])
+    #s = s.query('match', query=searchQuery.queryString,
+    #           fields=['title', 'text'])
+    q1 = Q('match', title=searchQuery.queryString)
+    q2 = Q('match', text=searchQuery.queryString)
+    q = Q('bool', must=q2, should=q1)
+    s = s.query(q)
 
     s.aggs.bucket('all_pub_info1', 'nested', path='pub_info') \
         .metric('pub_info_year_count', 'cardinality', field='pub_info.year.keyword') \
