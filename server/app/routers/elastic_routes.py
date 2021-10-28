@@ -31,7 +31,7 @@ def perform_search(request: Request, searchQuery: SearchQuery):
     s = elastic_models.Cluster.search(using=elastic_service.get_connection())
     start = (searchQuery.page - 1) * searchQuery.pageSize
     s = s.filter('term', has_pdf=True)
-
+    '''
     if searchQuery.yearStart is not None and searchQuery.yearEnd is not None:
         q = Q("nested", path="pub_info", query=Q(
             "range", **{'pub_info.year.keyword': {'gte': searchQuery.yearStart, 'lte': searchQuery.yearEnd}}))
@@ -52,7 +52,7 @@ def perform_search(request: Request, searchQuery: SearchQuery):
                 "term", **{'authors.fullname.keyword': athr}))
             athr_queries.append(q)
         s = s.query('bool', should=athr_queries)
-
+    '''
     if searchQuery.must_have_pdf:
         s = s.filter('term', has_pdf=True)
 
@@ -93,9 +93,12 @@ def perform_aggregations(searchQuery: AggregationQuery):
     s = elastic_models.Cluster.search(using=elastic_service.get_connection())
     s = s.filter('term', has_pdf=True)
 
-    s = s.query('multi_match', query=searchQuery.queryString,
-                fields=['title', 'text'])
-
+    #s = s.query('multi_match', query=searchQuery.queryString,
+    #            fields=['title', 'text'])
+    q1 = Q('match', title=searchQuery.queryString)
+    q2 = Q('match', text=searchQuery.queryString)
+    q = Q('bool', must=q2, should=q1)
+    s = s.query(q)
     s.aggs.bucket('all_pub_info1', 'nested', path='pub_info') \
         .metric('pub_info_year_count', 'cardinality', field='pub_info.year.keyword') \
         .bucket('pub_info_year_list', 'terms', field='pub_info.year.keyword')
