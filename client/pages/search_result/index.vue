@@ -12,7 +12,7 @@
                     </v-col>
                     <v-col md="2">
                         <v-select
-                            item-text="text"
+                            :items="sortDropdown"
                             label="Sort By"
                             outlined
                             dense
