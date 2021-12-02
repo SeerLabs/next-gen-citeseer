@@ -76,6 +76,13 @@ def perform_search(request: Request, searchQuery: SearchQuery):
         .bucket('pub_info_publisher_list', 'terms', field='pub_info.publisher.keyword')
 
     s = s[start:start + searchQuery.pageSize]
+    
+    # Sort the document by relevance, citation and year
+    if searchQuery.sortBy == "relevance":
+	# Remove sorting logic when method has no argument, thus, sort by relevance
+        s = s.sort({"pub_info.year.keyword" : {"order"  : "asc", "missing" : "_last"}})
+    
+
     response = s.execute()
     result_list = []
     for doc_hit in response['hits']['hits']:
@@ -111,7 +118,11 @@ def perform_aggregations(searchQuery: AggregationQuery):
         .metric('pub_info_publisher_count', 'cardinality', field='pub_info.publisher.keyword') \
         .bucket('pub_info_publisher_list', 'terms', field='pub_info.publisher.keyword')
 
+    # Aggreate minimum year
+
     response = s.execute()
+
+    print(response)
     aggregations = {"agg": build_facets(response['aggregations']['all_pub_info1'],
                                         response['aggregations']['all_pub_info2'],
                                         response['aggregations']['all_authors'])}
