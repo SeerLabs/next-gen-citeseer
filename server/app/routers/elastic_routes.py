@@ -75,6 +75,10 @@ def perform_search(request: Request, searchQuery: SearchQuery):
         .metric('pub_info_publisher_count', 'cardinality', field='pub_info.publisher.keyword') \
         .bucket('pub_info_publisher_list', 'terms', field='pub_info.publisher.keyword')
 
+    # Aggregate minimum year | response['aggregations']['pub_info']['min_year'] returns {'value': min_year}
+    s.aggs.bucket('pub_info_path', 'nested', path='pub_info') \
+        .metric('min_year', 'min', field='pub_info.year')
+
     s = s[start:start + searchQuery.pageSize]
     response = s.execute()
     result_list = []
@@ -84,7 +88,9 @@ def perform_search(request: Request, searchQuery: SearchQuery):
     total_results = response['hits']['total']['value']
     aggregations = {"agg": build_facets(response['aggregations']['all_pub_info1'],
                                         response['aggregations']['all_pub_info2'],
-                                        response['aggregations']['all_authors'])}
+                                        response['aggregations']['all_authors'],
+                                        response['aggregations']['pub_info_path'],
+                                        )}
     return SearchQueryResponse(query_id=str(uuid4()), total_results=total_results, response=result_list, aggregations=aggregations)
 
 
@@ -111,10 +117,18 @@ def perform_aggregations(searchQuery: AggregationQuery):
         .metric('pub_info_publisher_count', 'cardinality', field='pub_info.publisher.keyword') \
         .bucket('pub_info_publisher_list', 'terms', field='pub_info.publisher.keyword')
 
+    # Aggregate minimum year | response['aggregations']['pub_info_path']['min_year'] returns {'value': min_year}
+    s.aggs.bucket('pub_info_path', 'nested', path='pub_info') \
+        .metric('min_year', 'min', field='pub_info.year')
+
     response = s.execute()
+
     aggregations = {"agg": build_facets(response['aggregations']['all_pub_info1'],
                                         response['aggregations']['all_pub_info2'],
-                                        response['aggregations']['all_authors'])}
+                                        response['aggregations']['all_authors'],
+                                        response['aggregations']['pub_info_path'],
+                                        )}
+    print(aggregations)
     return AggregationResponse(aggregations=aggregations)
 
 
@@ -449,9 +463,11 @@ def build_cluster_entity(id, doc):
                    cventype=getKeyOrDefault(doc, 'cventype'))
 
 
-def build_facets(agg_dict_yr, agg_dict_pub, agg_dict_athr):
-    return Facets(pub_info_year_count=getKeyOrDefault(getKeyOrDefault(agg_dict_yr, 'pub_info_year_count'), 'value'),
-                  pub_info_year_list=get_aggregation_list(
+def build_facets(agg_dict_yr, agg_dict_pub, agg_dict_athr, agg_min_year):
+    return Facets(
+        minimum_year=getKeyOrDefault(getKeyOrDefault(agg_min_year, 'min_year'), 'value'),
+        pub_info_year_count=getKeyOrDefault(getKeyOrDefault(agg_dict_yr, 'pub_info_year_count'), 'value'),
+        pub_info_year_list=get_aggregation_list(
         getKeyOrDefault(getKeyOrDefault(agg_dict_yr, 'pub_info_year_list'), 'buckets')),
         pub_info_publisher_count=getKeyOrDefault(getKeyOrDefault(
             agg_dict_pub, 'pub_info_publisher_count'), 'value'),
@@ -460,7 +476,8 @@ def build_facets(agg_dict_yr, agg_dict_pub, agg_dict_athr):
         authors_count=getKeyOrDefault(getKeyOrDefault(
             agg_dict_athr, 'authors_count'), 'value'),
         authors_fullname_terms=get_aggregation_list(
-        getKeyOrDefault(getKeyOrDefault(agg_dict_athr, 'authors_fullname_terms'), 'buckets')))
+        getKeyOrDefault(getKeyOrDefault(agg_dict_athr, 'authors_fullname_terms'), 'buckets')),
+        )
 
 
 def get_aggregation_list(bucket):

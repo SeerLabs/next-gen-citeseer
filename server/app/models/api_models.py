@@ -40,6 +40,7 @@ class Facets(BaseModel):
     pub_info_publisher_list: List[PublicationInfo]
     authors_count: Optional[int]
     authors_fullname_terms: List[PublicationInfo]
+    minimum_year: Optional[int]
 
 
 class Citation(BaseModel):
