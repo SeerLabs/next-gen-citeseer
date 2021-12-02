@@ -17,6 +17,7 @@
                             outlined
                             dense
                             hide-details
+                            @input="searchQuery"
                         />
                     </v-col>
                 </v-row>
@@ -30,7 +31,7 @@
                     :documents="documents"
                     :total-results="totalResults"
                     :page="page"
-                    :sort-dropdown="sortDropdown"
+
                 />
                 <v-pagination
                     v-model="page"
@@ -129,6 +130,7 @@ export default {
               queryString: this.queryString,
               page: this.page,
               pageSize: this.pageSize,
+              sortBy: this.sortBy,
               yearStart: String(this.filters.years.start),
               yearEnd: String(this.filters.years.end),
               author: this.filters.authors,
