@@ -69,7 +69,7 @@ def perform_search(request: Request, searchQuery: SearchQuery):
 
     s.aggs.bucket('all_authors', 'nested', path='authors') \
         .metric('authors_count', 'cardinality', field='authors.fullname.keyword') \
-        .bucket('authors_fullname_terms', 'terms', field='authors.fullname.keyword')
+        .bucket('authors_fullname_terms', 'terms', field='authors.fullname.keyword', size=1000)
 
     s.aggs.bucket('all_pub_info2', 'nested', path='pub_info') \
         .metric('pub_info_publisher_count', 'cardinality', field='pub_info.publisher.keyword') \
