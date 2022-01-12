@@ -12,12 +12,13 @@
                     </v-col>
                     <v-col md="2">
                         <v-select
-                            :items="sortDropdown"
+                            :items="items"
+                            v-model="sortBy"
                             label="Sort By"
                             outlined
                             dense
                             hide-details
-                            @input="searchQuery"
+                            @change="searchQuery"
                         />
                     </v-col>
                 </v-row>
@@ -79,20 +80,7 @@ export default {
             page: 1,
             loadingState: false,
             sortBy: 'relevance',
-            sortDropdown: [
-                {
-                    text: 'Relevance',
-                    callback: () => (this.sortBy = 'relevance')
-                },
-                {
-                    text: 'Citations',
-                    callback: () => (this.sortBy = 'num_citations')
-                },
-                { 
-                    text: 'Year', 
-                    callback: () => (this.sortBy = 'year') 
-                }
-            ],
+            items: ['Relevance', 'Citation', 'Year'],
             error: false,
             filters: {
                 years: { start: 1913, end: new Date().getFullYear() },
