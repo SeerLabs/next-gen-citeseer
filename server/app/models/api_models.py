@@ -159,6 +159,7 @@ class SearchQuery(BaseModel):
     author: Optional[List[str]]
     publisher: Optional[List[str]]
     must_have_pdf: bool
+    sortBy: str
 
 
 class SearchFilter(BaseModel):

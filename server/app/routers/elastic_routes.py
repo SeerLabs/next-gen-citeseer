@@ -26,9 +26,10 @@ rate_limit_string = "5/minute"
 
 
 @router.post('/search', response_model=SearchQueryResponse)
-@limiter.limit(rate_limit_string)
+# @limiter.limit(rate_limit_string)
 def perform_search(request: Request, searchQuery: SearchQuery):
     s = elastic_models.Cluster.search(using=elastic_service.get_connection())
+
     start = (searchQuery.page - 1) * searchQuery.pageSize
     s = s.filter('term', has_pdf=True)
     '''
@@ -63,6 +64,12 @@ def perform_search(request: Request, searchQuery: SearchQuery):
     q = Q('bool', must=q2, should=q1)
     s = s.query(q)
 
+    # Apply sorting
+    if searchQuery.sortBy == "Citation":
+        s = s.sort({"cited_by" : {"order" : "desc"}})
+    elif searchQuery.sortBy == "Year":
+        s = s.sort({'pub_info.year' : {'order' : 'desc', 'nested' : {'path' : 'pub_info'}}})
+
     s.aggs.bucket('all_pub_info1', 'nested', path='pub_info') \
         .metric('pub_info_year_count', 'cardinality', field='pub_info.year.keyword') \
         .bucket('pub_info_year_list', 'terms', field='pub_info.year.keyword')
@@ -80,6 +87,7 @@ def perform_search(request: Request, searchQuery: SearchQuery):
         .metric('min_year', 'min', field='pub_info.year')
 
     s = s[start:start + searchQuery.pageSize]
+    print(str(s.to_dict()).replace("'", '"'))
     response = s.execute()
     result_list = []
     for doc_hit in response['hits']['hits']:
@@ -128,7 +136,6 @@ def perform_aggregations(searchQuery: AggregationQuery):
                                         response['aggregations']['all_authors'],
                                         response['aggregations']['pub_info_path'],
                                         )}
-    print(aggregations)
     return AggregationResponse(aggregations=aggregations)
 
 
