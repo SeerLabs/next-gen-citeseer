@@ -28,7 +28,7 @@ export default {
       return this.$axios.$get('/similar/' + id, { params: {algo}})
     },
 
-    searchPaper(context, { queryString, page, pageSize, includePdfs=true, yearStart=null, yearEnd=null, author=null, publisher=null}) {
+    searchPaper(context, { queryString, page, pageSize, sortBy, includePdfs=true, yearStart=null, yearEnd=null, author=null, publisher=null}) {
 
         if (yearStart === "0") {
             yearStart = null;
@@ -39,6 +39,7 @@ export default {
                 queryString,
                 page,
                 pageSize,
+                sortBy,
                 must_have_pdf: includePdfs,
                 yearStart,
                 yearEnd,

@@ -1,4 +1,4 @@
-CLUSTERS_INDEX = "acl_papers_faceted"
+CLUSTERS_INDEX = "acl_papers_faceted_new"
 KEYMAP_INDEX = "key_map04"
 REQUESTS_INDEX = "requestsdemo"
 REPO_SERVER_BASE_PATH = "/data/repo/"

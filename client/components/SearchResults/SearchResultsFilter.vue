@@ -92,18 +92,21 @@ export default {
         queryString: { type: String, default: '' }
     },
     data() {
-        const yearMin = 1931;
         const yearMax = new Date().getFullYear();
 
         return {
             loadingState: false,
 
-            yearMin,
+            yearMin: 1913,
             yearMax,
-            yearRange: [yearMin, yearMax],
-
+   
             facets: [],
         };
+    },
+    computed: {
+        yearRange() {
+            return [this.yearMin, this.yearMax]
+        }
     },
     watch: {
         queryString() {
@@ -125,7 +128,6 @@ export default {
 
                     if ('authors_fullname_terms' in aggregations) {
                       this.facets = [
-                     
                         {
                           key: 'authors',
                           items: aggregations.authors_fullname_terms,
@@ -134,6 +136,10 @@ export default {
                           menu: false
                         }
                       ]
+                    }
+
+                    if ('minimum_year' in aggregations) {
+                        this.yearMin = aggregations.minimum_year
                     }
 
                     this.loadingState = false;

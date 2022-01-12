@@ -12,11 +12,13 @@
                     </v-col>
                     <v-col md="2">
                         <v-select
-                            item-text="text"
+                            :items="items"
+                            v-model="sortBy"
                             label="Sort By"
                             outlined
                             dense
                             hide-details
+                            @change="searchQuery"
                         />
                     </v-col>
                 </v-row>
@@ -30,7 +32,7 @@
                     :documents="documents"
                     :total-results="totalResults"
                     :page="page"
-                    :sort-dropdown="sortDropdown"
+
                 />
                 <v-pagination
                     v-model="page"
@@ -46,7 +48,7 @@
                     @year-change="value => onYearFacetChange(value)"
                     @facet-change="({key, filters}) => onFacetChange(key, filters)"
                 />
-                <search-results-external-links />
+                <search-results-external-links :query="queryString"/>
             </v-col>
         </v-row>
         </v-container>
@@ -78,20 +80,7 @@ export default {
             page: 1,
             loadingState: false,
             sortBy: 'relevance',
-            sortDropdown: [
-                {
-                    text: 'Relevance',
-                    callback: () => (this.sortBy = 'relevance')
-                },
-                {
-                    text: 'Citations',
-                    callback: () => (this.sortBy = 'num_citations')
-                },
-                { 
-                    text: 'Year', 
-                    callback: () => (this.sortBy = 'year') 
-                }
-            ],
+            items: ['Relevance', 'Citation', 'Year'],
             error: false,
             filters: {
                 years: { start: 1913, end: new Date().getFullYear() },
@@ -129,6 +118,7 @@ export default {
               queryString: this.queryString,
               page: this.page,
               pageSize: this.pageSize,
+              sortBy: this.sortBy,
               yearStart: String(this.filters.years.start),
               yearEnd: String(this.filters.years.end),
               author: this.filters.authors,

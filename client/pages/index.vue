@@ -11,12 +11,13 @@
         </v-row>  
 
         <v-row justify="center" class="pt-10">
-            <nuxt-link :to="{ path: '/' }">Want to submit a document?</nuxt-link>
+            <!-- <nuxt-link :to="{ path: '/' }">Want to submit a document?</nuxt-link> -->
+            <a href="http://csxcrawlweb01.ist.psu.edu/submit_pub/" target="_blank">Want to submit a document?</a>
             <v-divider id="divider" vertical class="mx-5 primary lighten-5"></v-divider>
             <nuxt-link :to="{ path: '/' }">FAQ</nuxt-link>
         </v-row>
         <v-row justify="center" align="center" class="pt-3">
-            Powered by <img id="elastic-search" src="@/assets/img/logo-elastic-horizontal-color.svg" alt="Elastic Search"/>
+            Powered by <img id="elastic-search" src="@/assets/img/logo-elastic-horizontal-color.svg" alt="ElasticSearch"/>
         </v-row>
             
         </v-container>

@@ -40,6 +40,7 @@ class Facets(BaseModel):
     pub_info_publisher_list: List[PublicationInfo]
     authors_count: Optional[int]
     authors_fullname_terms: List[PublicationInfo]
+    minimum_year: Optional[int]
 
 
 class Citation(BaseModel):
@@ -159,6 +160,7 @@ class SearchQuery(BaseModel):
     author: Optional[List[str]]
     publisher: Optional[List[str]]
     must_have_pdf: bool
+    sortBy: str
 
 
 class SearchFilter(BaseModel):
