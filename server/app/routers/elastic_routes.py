@@ -81,6 +81,7 @@ def perform_search(request: Request, searchQuery: SearchQuery):
     q2 = Q("match", text=searchQuery.queryString)
     q = Q("bool", must=q2, should=q1)
     s = s.query(q)
+    total_results = s.count(q)
 
     # Apply sorting
     if searchQuery.sortBy == "Citation":
@@ -113,7 +114,7 @@ def perform_search(request: Request, searchQuery: SearchQuery):
         result_list.append(
             build_paper_entity(cluster_id=doc_hit["_id"], doc=doc_hit["_source"])
         )
-    total_results = response["hits"]["total"]["value"]
+    # total_results = response["hits"]["total"]["value"]
     aggregations = {
         "agg": build_facets(
             response["aggregations"]["all_pub_info1"],
