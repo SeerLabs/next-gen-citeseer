@@ -112,7 +112,7 @@ class SearchQueryResponse(BaseModel):
     query_id: str
     total_results: int
     response: List[Paper]
-    # aggregations: Dict[str, Facets]
+    aggregations: Dict[str, Facets]
 
 
 class SearchAuthorResponse(BaseModel):

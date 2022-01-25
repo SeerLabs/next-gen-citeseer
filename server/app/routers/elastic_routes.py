@@ -85,27 +85,27 @@ def perform_search(request: Request, searchQuery: SearchQuery):
     # total_results = s.count(q)
 
     # Apply sorting
-    # if searchQuery.sortBy == "Citation":
-    #     s = s.sort({"cited_by": {"order": "desc"}})
-    # elif searchQuery.sortBy == "Year":
-    #     s = s.sort({"pub_info.year": {"order": "desc", "nested": {"path": "pub_info"}}})
+    if searchQuery.sortBy == "Citation":
+        s = s.sort({"cited_by": {"order": "desc"}})
+    elif searchQuery.sortBy == "Year":
+        s = s.sort({"pub_info.year": {"order": "desc", "nested": {"path": "pub_info"}}})
 
-    # s.aggs.bucket("all_pub_info1", "nested", path="pub_info").metric(
-    #     "pub_info_year_count", "cardinality", field="pub_info.year.keyword"
-    # ).bucket("pub_info_year_list", "terms", field="pub_info.year.keyword")
-    #
-    # s.aggs.bucket("all_authors", "nested", path="authors").metric(
-    #     "authors_count", "cardinality", field="authors.fullname.keyword"
-    # ).bucket("authors_fullname_terms", "terms", field="authors.fullname.keyword")
-    #
-    # s.aggs.bucket("all_pub_info2", "nested", path="pub_info").metric(
-    #     "pub_info_publisher_count", "cardinality", field="pub_info.publisher.keyword"
-    # ).bucket("pub_info_publisher_list", "terms", field="pub_info.publisher.keyword")
+    s.aggs.bucket("all_pub_info1", "nested", path="pub_info").metric(
+        "pub_info_year_count", "cardinality", field="pub_info.year.keyword"
+    ).bucket("pub_info_year_list", "terms", field="pub_info.year.keyword")
+
+    s.aggs.bucket("all_authors", "nested", path="authors").metric(
+        "authors_count", "cardinality", field="authors.fullname.keyword"
+    ).bucket("authors_fullname_terms", "terms", field="authors.fullname.keyword")
+
+    s.aggs.bucket("all_pub_info2", "nested", path="pub_info").metric(
+        "pub_info_publisher_count", "cardinality", field="pub_info.publisher.keyword"
+    ).bucket("pub_info_publisher_list", "terms", field="pub_info.publisher.keyword")
 
     # Aggregate minimum year | response['aggregations']['pub_info']['min_year'] returns {'value': min_year}
-    # s.aggs.bucket("pub_info_path", "nested", path="pub_info").metric(
-    #     "min_year", "min", field="pub_info.year"
-    # )
+    s.aggs.bucket("pub_info_path", "nested", path="pub_info").metric(
+        "min_year", "min", field="pub_info.year"
+    )
 
     s = s[start : start + searchQuery.pageSize]
     # print(str(s.to_dict()).replace("'", '"'))
@@ -117,19 +117,19 @@ def perform_search(request: Request, searchQuery: SearchQuery):
         )
     total_results = response["hits"]["total"]["value"]
     print(total_results, '================')
-    # aggregations = {
-    #     "agg": build_facets(
-    #         response["aggregations"]["all_pub_info1"],
-    #         response["aggregations"]["all_pub_info2"],
-    #         response["aggregations"]["all_authors"],
-    #         response["aggregations"]["pub_info_path"],
-    #     )
-    # }
+    aggregations = {
+        "agg": build_facets(
+            response["aggregations"]["all_pub_info1"],
+            response["aggregations"]["all_pub_info2"],
+            response["aggregations"]["all_authors"],
+            response["aggregations"]["pub_info_path"],
+        )
+    }
     return SearchQueryResponse(
         query_id=str(uuid4()),
         total_results=total_results,
         response=result_list,
-        # aggregations=aggregations,
+        aggregations=aggregations,
     )
 
 
