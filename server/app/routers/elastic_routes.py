@@ -123,7 +123,7 @@ def perform_search(request: Request, searchQuery: SearchQuery):
             response["aggregations"]["pub_info_path"],
         )
     }
-    print(total_results, '===========')
+    print(total_results, "===========")
     return SearchQueryResponse(
         query_id=str(uuid4()),
         total_results=total_results,
