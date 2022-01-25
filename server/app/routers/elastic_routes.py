@@ -108,7 +108,7 @@ def perform_search(request: Request, searchQuery: SearchQuery):
     )
 
     s = s[start : start + searchQuery.pageSize]
-    print(str(s.to_dict()).replace("'", '"'))
+    # print(str(s.to_dict()).replace("'", '"'))
     response = s.execute()
     result_list = []
     for doc_hit in response["hits"]["hits"]:
