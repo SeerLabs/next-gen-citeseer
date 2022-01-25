@@ -116,19 +116,19 @@ def perform_search(request: Request, searchQuery: SearchQuery):
             build_paper_entity(cluster_id=doc_hit["_id"], doc=doc_hit["_source"])
         )
     total_results = response["hits"]["total"]["value"]
-    aggregations = {
-        "agg": build_facets(
-            response["aggregations"]["all_pub_info1"],
-            response["aggregations"]["all_pub_info2"],
-            response["aggregations"]["all_authors"],
-            response["aggregations"]["pub_info_path"],
-        )
-    }
+    # aggregations = {
+    #     "agg": build_facets(
+    #         response["aggregations"]["all_pub_info1"],
+    #         response["aggregations"]["all_pub_info2"],
+    #         response["aggregations"]["all_authors"],
+    #         response["aggregations"]["pub_info_path"],
+    #     )
+    # }
     return SearchQueryResponse(
         query_id=str(uuid4()),
         total_results=total_results,
         response=result_list,
-        aggregations=aggregations,
+        # aggregations=aggregations,
     )
 
 
