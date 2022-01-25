@@ -16,6 +16,7 @@
             <v-divider id="divider" vertical class="mx-5 primary lighten-5"></v-divider>
             <nuxt-link :to="{ path: '/' }">FAQ</nuxt-link>
         </v-row>
+        
         <v-row justify="center" align="center" class="pt-3">
             Powered by <img id="elastic-search" src="@/assets/img/logo-elastic-horizontal-color.svg" alt="ElasticSearch"/>
         </v-row>
@@ -29,7 +30,7 @@ import SearchBox from '~/components/SearchBox.vue';
 
 export default {
     components: {
-        SearchBox
+        SearchBox,
     },
 };
 </script>

@@ -9,7 +9,7 @@
                     >
                       {{ notificationText }}
                     </v-alert>
-
+                    <math-deck-panel></math-deck-panel>
                     <nuxt v-if="!$slots.default" keep-alive  />
                     <slot />
             </v-main>
@@ -22,13 +22,15 @@
 import { mapState } from 'vuex'
 import NavBar from '~/components/Navigation/Navbar.vue';
 import FooterBar from '~/components/Navigation/FooterBar.vue';
+import MathDeckPanel from '~/components/MathDeck/MathDeckPanel.vue';
 
 
 export default {
     name: 'LayoutDefault',
     components: {
         NavBar,
-        FooterBar
+        FooterBar,
+        MathDeckPanel
     },
     computed: {
       ...mapState([
@@ -59,6 +61,7 @@ export default {
 #app {
     text-align: left;
     font-family: "Open Sans";
+    position: 'relative';
 }
 
 h1, h2, h3, h4, h5 {
