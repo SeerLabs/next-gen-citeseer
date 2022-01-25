@@ -82,7 +82,7 @@ def perform_search(request: Request, searchQuery: SearchQuery):
     q = Q("bool", must=q2, should=q1)
     s = s.query(q)
 
-    result_count = s.count(q)
+    result_count = s.count()
     print(result_count,'===========')
 
     # Apply sorting
