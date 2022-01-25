@@ -116,6 +116,7 @@ def perform_search(request: Request, searchQuery: SearchQuery):
             build_paper_entity(cluster_id=doc_hit["_id"], doc=doc_hit["_source"])
         )
     total_results = response["hits"]["total"]["value"]
+    print(total_results, '================')
     # aggregations = {
     #     "agg": build_facets(
     #         response["aggregations"]["all_pub_info1"],
