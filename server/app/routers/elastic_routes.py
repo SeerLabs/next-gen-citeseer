@@ -81,6 +81,7 @@ def perform_search(request: Request, searchQuery: SearchQuery):
     q2 = Q("match", text=searchQuery.queryString)
     q = Q("bool", must=q2, should=q1)
     s = s.query(q)
+
     # total_results = s.count(q)
 
     # Apply sorting
