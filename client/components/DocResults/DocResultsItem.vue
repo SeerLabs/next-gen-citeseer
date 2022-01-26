@@ -13,7 +13,7 @@
 
         <v-row no-gutters>
             <v-col class="result-info">
-                <p class="font-italic">{{ authors.join(', ') }} &bull; {{ year }}</p>
+                <p class="font-italic">{{ authors.join(', ') }} &bull; {{ year != null ? year : "Year Not Found" }}</p>
                 <p v-if="abstract">{{ abstract.slice(0, 200) }}...</p>
             </v-col>
         </v-row>
