@@ -1,13 +1,23 @@
 from typing import List
 
-from elasticsearch_dsl import Document, Text, Completion, Date, Keyword, Integer, Nested, Boolean, InnerDoc
+from elasticsearch_dsl import (
+    Document,
+    Text,
+    Completion,
+    Date,
+    Keyword,
+    Integer,
+    Nested,
+    Boolean,
+    InnerDoc,
+)
 
 import settings
 
-'''
+"""
 IMPORTANT: ANY UPDATES TO THIS FILE MUST ALSO BE MADE IN elastic_models.py
 file of PDFMEF REPOSITORY AND VICE-VERSA
-'''
+"""
 
 
 class Author(InnerDoc):
@@ -20,11 +30,11 @@ class Author(InnerDoc):
     address = Text()
     email = Keyword()
     ord = Integer()
-    created_at = Date(default_timezone='UTC')
+    created_at = Date(default_timezone="UTC")
 
     def save(self, **kwargs):
         self.author_suggest = {
-            'input': [self.forename, self.surname],
+            "input": [self.forename, self.surname],
         }
         return super().save(**kwargs)
 
@@ -56,7 +66,7 @@ class CorrectPaperMetadataES(Document):
     tech_report_num = Keyword()
 
     class Index:
-        name = 'paper_metadata_correction_next'
+        name = "paper_metadata_correction_next"
 
 
 class PaperMetadataCorrectionES(Document):
@@ -76,7 +86,7 @@ class PaperMetadataCorrectionES(Document):
     tech_report_num = Text()
 
     class Index:
-        name = 'paper_metadata_correction_nextv1'
+        name = "paper_metadata_correction_nextv1"
 
 
 class KeyMap(Document):
@@ -96,8 +106,8 @@ class Cluster(Document):
     has_pdf = Boolean()
     abstract = Text()
     is_citation = Boolean()
-    created_at = Date(default_timezone='UTC')
-    authors = Nested(type='authors')
+    created_at = Date(default_timezone="UTC")
+    authors = Nested(type="authors")
     self_cites = Integer()
     num_cites = Integer()
     cited_by = Keyword(multi=True)
@@ -147,7 +157,7 @@ class Cluster(Document):
     def save(self, **kwargs):
         if self.title is not None:
             self.title_suggest = {
-                'input': [self.title],
+                "input": [self.title],
             }
         return super().save(**kwargs)
 

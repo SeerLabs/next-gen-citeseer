@@ -2,6 +2,7 @@ from pydantic import BaseModel, typing
 from typing import List, Optional, Dict
 from fastapi import Form
 
+
 class User(BaseModel):
     email: str
     full_name: str
@@ -11,16 +12,19 @@ class User(BaseModel):
     country: str
     state: str
     collections: List[Dict]
-    monitered_papers:List[str]
+    monitered_papers: List[str]
     liked_papers: List[str]
+
 
 class UserWithToken(User):
     access_token: str
     refresh_token: str
 
+
 class AdminUser(BaseModel):
     username: str
     access_token: str
+
 
 class UserRegistrationForm(BaseModel):
     password: str
@@ -31,6 +35,7 @@ class UserRegistrationForm(BaseModel):
     web_page: str
     country: str
     state: str
+
     @classmethod
     def as_form(
         cls,
@@ -41,16 +46,15 @@ class UserRegistrationForm(BaseModel):
         department: str = Form(""),
         web_page: str = Form(""),
         country: str = Form(""),
-        state: str = Form("")
+        state: str = Form(""),
     ):
         return cls(
-            password = password,
-            email = email,
-            full_name = full_name,
-            organization = organization,
-            department = department,
-            web_page = web_page,
-            country = country,
-            state = state
+            password=password,
+            email=email,
+            full_name=full_name,
+            organization=organization,
+            department=department,
+            web_page=web_page,
+            country=country,
+            state=state,
         )
-    
