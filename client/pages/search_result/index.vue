@@ -129,7 +129,7 @@ export default {
             this.searchPaper(query)
                 .then(res => {
                     this.documents = res.response;
-                    this.totalResults = Math.ceil(Math.min(res.total_results, 10000));
+                    this.totalResults = Math.ceil(res.total_results);
                     this.loadingState = false;
                    
                 })
