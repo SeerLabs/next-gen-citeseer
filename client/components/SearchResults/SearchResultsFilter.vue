@@ -5,6 +5,7 @@
             <div class="d-flex justify-space-between">
                 <h6>Year</h6>
             </div>
+            
             <div>
                 <v-range-slider
                     v-model="yearRange"
@@ -92,26 +93,24 @@ export default {
         queryString: { type: String, default: '' }
     },
     data() {
-        const yearMax = new Date().getFullYear();
 
         return {
             loadingState: false,
 
             yearMin: 1913,
-            yearMax,
+            yearMax: 2022,
+            yearRange: [1913, 2022],
    
             facets: [],
         };
     },
     computed: {
-        yearRange() {
-            return [this.yearMin, this.yearMax]
-        }
+ 
     },
     watch: {
         queryString() {
             this.populateFacets();
-        }
+        },
     },
     mounted() {
         // make search query immediately when page is loaded
@@ -140,6 +139,7 @@ export default {
 
                     if ('minimum_year' in aggregations) {
                         this.yearMin = aggregations.minimum_year
+                        this.yearRange = [aggregations.minimum_year, 2022]
                     }
 
                     this.loadingState = false;
@@ -168,7 +168,7 @@ export default {
           facet.items = facet.items.filter(i => i.key !== item.key);
           facet.filter = facet.filter.filter(i => i !== item.key);
           this.$emit('facet-change', {key: facet.key, filters: facet.filter});
-        }
+        },
     }
 };
 </script>
