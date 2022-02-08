@@ -14,7 +14,7 @@
 export default {
     data() {
         return {
-            equations: ['equation1', 'equation2', 'equation3', 'equation4', 'equation5']
+            equations: ['cos x', 'sin x', 'arcsin x', 'tan x']
         }
     }
 }
