@@ -8,7 +8,7 @@
 				<v-col md="1" class="mr-15">
 					<h5>Information</h5>
 						<ul class="pa-0">
-							<li v-for='i in information' :key='i' class="link-list">
+							<li v-for='i in information' :key='i.id' class="link-list">
 								<a :alt="i.title" :href="i.link" target="_blank">
 									{{ i.title }}
 								</a>
@@ -19,7 +19,7 @@
 				<v-col md="3">
 					<h5>Services</h5>
 						<ul class="pa-0">
-							<li v-for='i in services' :key='i' class="link-list">
+							<li v-for='i in services' :key='i.id' class="link-list">
 								<a  :alt="i.title" :href="i.link" target="_blank">
 									{{ i.title }}
 								</a>

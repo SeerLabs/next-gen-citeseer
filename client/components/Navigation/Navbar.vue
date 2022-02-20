@@ -12,7 +12,7 @@
             <div>
               <a 
                 v-for="link in links" 
-                :key="link" 
+                :key="link.id" 
                 :href="link.url" 
                 target="_blank"
                 class="link"
