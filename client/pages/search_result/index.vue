@@ -119,8 +119,8 @@ export default {
               page: this.page,
               pageSize: this.pageSize,
               sortBy: this.sortBy,
-              yearStart: String(this.filters.years.start),
-              yearEnd: String(this.filters.years.end),
+              yearStart: this.filters.years.start,
+              yearEnd: this.filters.years.end,
               author: this.filters.authors,
               publisher: this.filters.publishers,
               includePdfs: this.includePdfs
@@ -141,7 +141,9 @@ export default {
         },
 
         onYearFacetChange(value) {
+            console.log(value)
             this.filters.years.start = value[0];
+            console.log(this.filters.years.start);
             this.filters.years.end = value[1];
 
             this.searchQuery();
