@@ -155,8 +155,8 @@ class SearchQuery(BaseModel):
     page: int
     pageSize: int
     sortBy: str
-    yearStart: Optional[str]
-    yearEnd: Optional[str]
+    yearStart: Optional[int]
+    yearEnd: Optional[int]
     author: Optional[List[str]]
     publisher: Optional[List[str]]
     must_have_pdf: bool

@@ -1,5 +1,6 @@
 from typing import List, Optional
 from uuid import uuid4
+from datetime import date
 
 from elasticsearch_dsl import UpdateByQuery
 from fastapi import APIRouter, Request
@@ -79,7 +80,15 @@ def perform_search(request: Request, searchQuery: SearchQuery):
     #           fields=['title', 'text'])
     q1 = Q("match", title=searchQuery.queryString)
     q2 = Q("match", text=searchQuery.queryString)
-    q = Q("bool", must=q2, should=q1)
+    q3 = Q("nested", path="pub_info", query=Q(
+            "range", **{'pub_info.year': {'gte': searchQuery.yearStart, 'lte': searchQuery.yearEnd}}))
+
+    # If the year range in query is the default [1913, CurrentYear], then use general query. Else, that means range slider has been used to filter a specfic year range.
+    if (searchQuery.yearStart == 1913 and searchQuery.yearEnd == date.today().year):
+        q = Q("bool", must=q2, should=q1)
+    else:
+        q = Q("bool", must=[q2, q3], should=q1)
+    
     s = s.query(q)
 
     total_results = s.count()
@@ -123,7 +132,7 @@ def perform_search(request: Request, searchQuery: SearchQuery):
             response["aggregations"]["pub_info_path"],
         )
     }
-    print(total_results, "===========")
+    print(s.to_dict())
     return SearchQueryResponse(
         query_id=str(uuid4()),
         total_results=total_results,
@@ -172,7 +181,7 @@ def perform_aggregations(searchQuery: AggregationQuery):
             response["aggregations"]["pub_info_path"],
         )
     }
-    print(aggregations)
+
     return AggregationResponse(aggregations=aggregations)
 
 
