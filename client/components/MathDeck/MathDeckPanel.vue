@@ -1,6 +1,7 @@
 <template>
 
     <v-card v-if="panelExpanded" :style="panelStyle">
+        <!-- Refactor Approach -->
         <v-card-title>MathDeck Search</v-card-title>
         
         <math-search-box></math-search-box>
@@ -16,6 +17,15 @@
         >
             Close
         </v-btn>
+
+        <!-- iframe -->
+        <!-- <iframe src="https://mathdeck.org/#l0TqDpfh9uklOn1SPCibxIq6u8VRotSmyY2vQd2K0_Xh" width="900px" height="600px"></iframe> -->
+
+        <!-- Client-side only --> 
+        <!-- <client-only placeholder="Loading...">
+            <chip></chip>
+        </client-only> -->
+
     </v-card>
     
 
@@ -38,12 +48,14 @@
 import MathSearchBox from './MathSearchBox.vue';
 import EquationViewer from './EquationViewer.vue';
 import ChipDisplay from './ChipDisplay.vue';
+// import Chip from './Chip.vue';
 
 export default {
     components: {
         MathSearchBox,
         EquationViewer,
         ChipDisplay,
+        // Chip
     },
     data() {
         return {
