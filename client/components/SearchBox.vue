@@ -87,6 +87,9 @@ export default {
             }
         }
     },
+    mounted() {
+         window.addEventListener('message', this.receiveMsg, false)
+    },
     created() {
         this.textInput = this.$route.query.query || '';
         this.includeWithoutPdfs = this.$route.query.pdf != null && !this.$route.query.pdf || false;
@@ -105,6 +108,14 @@ export default {
                         pdf: !this.includeWithoutPdfs
                     }
                 });
+            }
+        },
+        receiveMsg(event) {
+            if (event.origin === "http://localhost:8080") {
+                this.searchQuery = event.data
+                this.submitInput()
+            } else {
+                this.searchQuery = ''
             }
         },
     }

@@ -2,7 +2,7 @@
 
     <v-card v-if="panelExpanded" :style="panelStyle">
         <!-- Refactor Approach -->
-        <v-card-title>MathDeck Search</v-card-title>
+        <!-- <v-card-title>MathDeck Search</v-card-title>
         
         <math-search-box></math-search-box>
         <equation-viewer></equation-viewer>
@@ -16,10 +16,17 @@
         @click="toggleCollapse"
         >
             Close
-        </v-btn>
+        </v-btn> -->
 
         <!-- iframe -->
-        <!-- <iframe src="https://mathdeck.org/#l0TqDpfh9uklOn1SPCibxIq6u8VRotSmyY2vQd2K0_Xh" width="900px" height="600px"></iframe> -->
+        <chip></chip>
+
+        <div class="drop-box mt-5" @drop.prevent="onDrop($event)" @dragenter="checkDrop" @dragover="checkDrop">
+        <iframe name="dummyIframe" src="http://localhost:8080/" width="900px" height="700px">
+        </iframe>
+        </div>
+
+        <!-- <iframe name="dummyIframe" src="https://www.mathdeck.org/#uZN2a57wosmbxPVKryMk6YP3mHYCKwBbQ5-GfEAjaGeR" width="900px" height="600px"></iframe> -->
 
         <!-- Client-side only --> 
         <!-- <client-only placeholder="Loading...">
@@ -45,21 +52,22 @@
 
 
 <script>
-import MathSearchBox from './MathSearchBox.vue';
-import EquationViewer from './EquationViewer.vue';
-import ChipDisplay from './ChipDisplay.vue';
-// import Chip from './Chip.vue';
+// import MathSearchBox from './MathSearchBox.vue';
+// import EquationViewer from './EquationViewer.vue';
+// import ChipDisplay from './ChipDisplay.vue';
+import Chip from './Chip.vue';
 
 export default {
     components: {
-        MathSearchBox,
-        EquationViewer,
-        ChipDisplay,
-        // Chip
+        // MathSearchBox,
+        // EquationViewer,
+        // ChipDisplay,
+        Chip
     },
     data() {
         return {
             panelExpanded: false,
+            msg: '',
         }
     },
     computed: {
@@ -84,10 +92,46 @@ export default {
             };
         }
     },
+    mounted() {
+        window.addEventListener('message', this.receiveMsg, false)
+    },
     methods: {
         toggleCollapse() {
             this.panelExpanded = !this.panelExpanded;
-        }
+        },
+        
+        postMessage() {
+            const iframe = window.frames.dummyIframe
+            const json = {type: 'chip', string: '2x+3'}
+            iframe.postMessage(JSON.stringify(json), 'http://localhost:8080/')
+        },
+
+        receiveMsg(event) {
+            if (event.origin === "http://localhost:8080") {
+                this.msg = event.data
+            } else {
+                this.msg = ''
+            }
+      },
+      checkDrop(event) {
+          event.preventDefault()
+      },
+      onDrop(event) {
+          const data = JSON.parse(event.dataTransfer.getData('text/plain'))
+
+          const iframe = window.frames.dummyIframe
+          iframe.postMessage(JSON.stringify(data), 'http://localhost:8080/')
+
+          console.log(data)
+      },
     }
 }
 </script>
+
+<style>
+    .drop-box {
+        border: dashed 3px red;
+        height: 750px;
+        width: 900px;
+    }
+</style>

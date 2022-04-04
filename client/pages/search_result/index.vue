@@ -150,7 +150,7 @@ export default {
         onFacetChange(key, filters) {
             this.filters[key] = filters;
             this.searchQuery();
-        }
+        },
     },
     layout: 'search'
 };
