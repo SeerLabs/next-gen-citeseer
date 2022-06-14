@@ -32,7 +32,7 @@ def perform_search(request: Request, searchQuery: SearchQuery):
     s = s.filter('term', has_pdf=True)
 
     if searchQuery.yearStart is not None and searchQuery.yearEnd is not None:
-        q= Q("nested", path="pub_info", query=Q("range", **{'pub_info.year.keyword':{'gte': searchQuery.yearStart , 'lte': searchQuery.yearEnd }}))
+        q= Q("nested", path="pub_info", query=Q("range", **{'pub_info.int_year.keyword':{'gte': searchQuery.yearStart , 'lte': searchQuery.yearEnd }}))
         s = s.query(q)
 
     if searchQuery.publisher is not None and len(searchQuery.publisher) > 0:
@@ -55,8 +55,8 @@ def perform_search(request: Request, searchQuery: SearchQuery):
     s = s.query('multi_match', query=searchQuery.queryString, fields=['title', 'text'])
 
     s.aggs.bucket('all_pub_info1', 'nested', path='pub_info') \
-        .metric('pub_info_year_count', 'cardinality', field='pub_info.year.keyword') \
-        .bucket('pub_info_year_list', 'terms', field='pub_info.year.keyword')
+        .metric('pub_info_year_count', 'cardinality', field='pub_info.int_year.keyword') \
+        .bucket('pub_info_year_list', 'terms', field='pub_info.int_year.keyword')
     
     s.aggs.bucket('all_authors', 'nested', path='authors') \
         .metric('authors_count', 'cardinality', field='authors.fullname.keyword') \
@@ -85,8 +85,8 @@ def perform_aggregations(searchQuery: AggregationQuery):
     s = s.query('multi_match', query=searchQuery.queryString, fields=['title', 'text'])
 
     s.aggs.bucket('all_pub_info1', 'nested', path='pub_info') \
-        .metric('pub_info_year_count', 'cardinality', field='pub_info.year.keyword') \
-        .bucket('pub_info_year_list', 'terms', field='pub_info.year.keyword')
+        .metric('pub_info_year_count', 'cardinality', field='pub_info.int_year.keyword') \
+        .bucket('pub_info_year_list', 'terms', field='pub_info.int_year.keyword')
     
     s.aggs.bucket('all_authors', 'nested', path='authors') \
         .metric('authors_count', 'cardinality', field='authors.fullname.keyword') \
@@ -177,9 +177,9 @@ def show_citing_papers(request: Request, cid: str, sort: str, page: int, pageSiz
 
 def _get_sort_param(param: str) -> dict:
     if param == "yearAsc":
-        return {"pub_info.year": {'order': "asc", "nested": {"path": "pub_info"}}}
+        return {"pub_info.int_year": {'order': "asc", "nested": {"path": "pub_info"}}}
     elif param == "yearDesc":
-        return {"pub_info.year": {'order': "desc", "nested": {"path": "pub_info"}}}
+        return {"pub_info.int_year": {'order': "desc", "nested": {"path": "pub_info"}}}
     elif param == "citCount":
         return {"_script": {"type": "number",
                             "script": {
@@ -188,7 +188,7 @@ def _get_sort_param(param: str) -> dict:
                             "order": "desc"}}
     else:
         # default sort by year desc
-        return {"pub_info.year": {'order': "desc", "nested": {"path": "pub_info"}}}
+        return {"pub_info.int_year": {'order': "desc", "nested": {"path": "pub_info"}}}
 
 
 @router.get('/suggest')
