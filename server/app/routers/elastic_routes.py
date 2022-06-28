@@ -67,6 +67,7 @@ def perform_search(request: Request, searchQuery: SearchQuery):
         .bucket('pub_info_publisher_list', 'terms', field='pub_info.publisher.keyword')
 
     s = s[start:start + searchQuery.pageSize]
+    print(s.to_dict())
     response = s.execute()
     result_list = []
     for doc_hit in response['hits']['hits']:
