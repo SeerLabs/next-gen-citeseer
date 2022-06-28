@@ -81,7 +81,7 @@ def perform_search(request: Request, searchQuery: SearchQuery):
     q1 = Q("match", title=searchQuery.queryString)
     q2 = Q("match", text=searchQuery.queryString)
     q3 = Q("nested", path="pub_info", query=Q(
-            "range", **{'pub_info.year': {'gte': searchQuery.yearStart, 'lte': searchQuery.yearEnd}}))
+            "range", **{'pub_info.int_year': {'gte': searchQuery.yearStart, 'lte': searchQuery.yearEnd}}))
 
     # If the year range in query is the default [1913, CurrentYear], then use general query. Else, that means range slider has been used to filter a specfic year range.
     if (searchQuery.yearStart == 1913 and searchQuery.yearEnd == date.today().year):
@@ -97,11 +97,11 @@ def perform_search(request: Request, searchQuery: SearchQuery):
     if searchQuery.sortBy == "Citation":
         s = s.sort({"cited_by": {"order": "desc"}})
     elif searchQuery.sortBy == "Year":
-        s = s.sort({"pub_info.year": {"order": "desc", "nested": {"path": "pub_info"}}})
+        s = s.sort({"pub_info.int_year": {"order": "desc", "nested": {"path": "pub_info"}}})
 
     s.aggs.bucket("all_pub_info1", "nested", path="pub_info").metric(
-        "pub_info_year_count", "cardinality", field="pub_info.year.keyword"
-    ).bucket("pub_info_year_list", "terms", field="pub_info.year.keyword")
+        "pub_info_year_count", "cardinality", field="pub_info.int_year"
+    ).bucket("pub_info_year_list", "terms", field="pub_info.int_year")
 
     s.aggs.bucket("all_authors", "nested", path="authors").metric(
         "authors_count", "cardinality", field="authors.fullname.keyword"
@@ -113,12 +113,14 @@ def perform_search(request: Request, searchQuery: SearchQuery):
 
     # Aggregate minimum year | response['aggregations']['pub_info']['min_year'] returns {'value': min_year}
     s.aggs.bucket("pub_info_path", "nested", path="pub_info").metric(
-        "min_year", "min", field="pub_info.year"
+        "min_year", "min", field="pub_info.int_year"
     )
 
     s = s[start : start + searchQuery.pageSize]
     # print(str(s.to_dict()).replace("'", '"'))
+    print(s.to_dict())
     response = s.execute()
+    print(response.to_dict())
     result_list = []
     for doc_hit in response["hits"]["hits"]:
         result_list.append(
@@ -153,8 +155,8 @@ def perform_aggregations(searchQuery: AggregationQuery):
     q = Q("bool", must=q2, should=q1)
     s = s.query(q)
     s.aggs.bucket("all_pub_info1", "nested", path="pub_info").metric(
-        "pub_info_year_count", "cardinality", field="pub_info.year.keyword"
-    ).bucket("pub_info_year_list", "terms", field="pub_info.year.keyword")
+        "pub_info_year_count", "cardinality", field="pub_info.int_year"
+    ).bucket("pub_info_year_list", "terms", field="pub_info.int_year")
 
     s.aggs.bucket("all_authors", "nested", path="authors").metric(
         "authors_count", "cardinality", field="authors.fullname.keyword"
@@ -168,7 +170,7 @@ def perform_aggregations(searchQuery: AggregationQuery):
 
     # Aggregate minimum year | response['aggregations']['pub_info_path']['min_year'] returns {'value': min_year}
     s.aggs.bucket("pub_info_path", "nested", path="pub_info").metric(
-        "min_year", "min", field="pub_info.year"
+        "min_year", "min", field="pub_info.int_year"
     )
 
     response = s.execute()
@@ -283,9 +285,9 @@ def show_citing_papers(request: Request, cid: str, sort: str, page: int, pageSiz
 
 def _get_sort_param(param: str) -> dict:
     if param == "yearAsc":
-        return {"pub_info.year": {"order": "asc", "nested": {"path": "pub_info"}}}
+        return {"pub_info.int_year": {"order": "asc", "nested": {"path": "pub_info"}}}
     elif param == "yearDesc":
-        return {"pub_info.year": {"order": "desc", "nested": {"path": "pub_info"}}}
+        return {"pub_info.int_year": {"order": "desc", "nested": {"path": "pub_info"}}}
     elif param == "citCount":
         return {
             "_script": {
@@ -296,7 +298,7 @@ def _get_sort_param(param: str) -> dict:
         }
     else:
         # default sort by year desc
-        return {"pub_info.year": {"order": "desc", "nested": {"path": "pub_info"}}}
+        return {"pub_info.int_year": {"order": "desc", "nested": {"path": "pub_info"}}}
 
 
 @router.get("/suggest")
