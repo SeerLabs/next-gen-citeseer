@@ -35,8 +35,9 @@
                 offset-y
                 transition="scale-transition"
             >
+                <!-- Disabling search author functionality for now
                 <template v-slot:activator="{ on, attrs }">
-                    <v-btn
+                    <v-btn 
                         color="indigo"
                         dark
                         v-bind="attrs"
@@ -44,6 +45,7 @@
                         v-on="on"
                     >{{facet.key.toUpperCase()}}</v-btn>
                 </template>
+                -->
                 <v-card>
                     <v-card-title>{{ facet.key.charAt(0).toUpperCase() + facet.key.slice(1) }}</v-card-title>
                     <v-list>

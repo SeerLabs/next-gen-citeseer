@@ -1,5 +1,6 @@
 <template>
     <div v-cloak id="doc-view-layout">
+        <client-only>
         <div v-if="loading" id="loading">
             <v-progress-linear rounded indeterminate />
         </div>
@@ -63,6 +64,7 @@
             </v-row>
             </div>
         </v-container>
+        </client-only>
     </div>
 </template>
 
@@ -121,6 +123,10 @@ export default {
                 this.loading = false;
                 return;
         }
+
+        if(typeof data === 'undefined')
+            return;
+        console.log("printing data {} " + data)
         this.cid = data.paper.cluster_id
         this.title = data.paper.title;
         this.year = data.paper.year;

@@ -2,7 +2,15 @@ import qs from 'qs'
 
 export default {
     getPaperWithPaperId ({context}, { pid }) {
-      return this.$axios.$get('/paper', { params: {paper_id: pid}})
+        return this.$axios
+        .$get('/paper', { params: {paper_id: pid}})
+        .then(function(response) {
+            return response;
+        })
+        .catch(function(error) {
+            console.log("error {}" + error);
+        });
+       
     },
     
     async getPaperswithPaperIds (context, {pids}) {
