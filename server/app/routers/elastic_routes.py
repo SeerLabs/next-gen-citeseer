@@ -50,7 +50,7 @@ def perform_search(request: Request, searchQuery: SearchQuery):
     s = elastic_models.Cluster.search(using=elastic_service.get_connection())
 
     start = (searchQuery.page - 1) * searchQuery.pageSize
-    s = s.filter("term", has_pdf=True)
+    #s = s.filter("term", has_pdf=True)
     """
     if searchQuery.yearStart is not None and searchQuery.yearEnd is not None:
         q = Q("nested", path="pub_info", query=Q(
@@ -146,7 +146,8 @@ def perform_search(request: Request, searchQuery: SearchQuery):
 @router.post("/aggregate", response_model=AggregationResponse)
 def perform_aggregations(searchQuery: AggregationQuery):
     s = elastic_models.Cluster.search(using=elastic_service.get_connection())
-    s = s.filter("term", has_pdf=True)
+    if searchQuery.must_have_pdf:
+        s = s.filter("term", has_pdf=True)
 
     # s = s.query('multi_match', query=searchQuery.queryString,
     #            fields=['title', 'text'])
