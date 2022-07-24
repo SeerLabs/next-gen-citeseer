@@ -3,7 +3,7 @@
         <v-container>
              <v-row align="center" class="px-2 mb-5">
                     <v-col md="6">
-                        <p class="mb-0 font-weight-bold secondary--text">Results {{ (page-1) * pageSize + 1 }} - 
+                        <p class="mb-0 font-weight-bold secondary--text">Results {{ (page-1) * pageSize + 1 }} -
                         {{
                             Math.min((page - 1) * pageSize + pageSize, totalResults * pageSize)
                         }}
@@ -98,14 +98,14 @@ export default {
     watch: {
         '$route.query'() {
             this.queryString = this.$route.query.query;
-            this.includePdfs = this.$route.query.pdf || true;
+            this.includePdfs = this.$route.query.pdf;
             this.searchQuery();
         }
     },
     created() {
         // make search query immediately when page is loaded
         this.queryString = this.$route.query.query;
-        this.includePdfs = this.$route.query.pdf || true;
+        this.includePdfs = this.$route.query.pdf;
         this.searchQuery();
     },
     methods: {
@@ -113,7 +113,7 @@ export default {
 
         searchQuery() {
             this.loadingState = true;
-            // push params            
+            // push params
             const query = {
               queryString: this.queryString,
               page: this.page,
@@ -125,13 +125,14 @@ export default {
               publisher: this.filters.publishers,
               includePdfs: this.includePdfs
             }
+            console.log(this.includePdfs)
 
             this.searchPaper(query)
                 .then(res => {
                     this.documents = res.response;
                     this.totalResults = Math.ceil(res.total_results);
                     this.loadingState = false;
-                   
+
                 })
                 .catch((error) => {
                     // eslint-disable-next-line
