@@ -79,7 +79,7 @@ export default {
     components: {
         DocumentViewHeader,
         CitationCard,
-        
+
     },
     async fetch() {
       // const res = await axios.get('https://facebook.com');
@@ -124,9 +124,6 @@ export default {
                 return;
         }
 
-        if(typeof data === 'undefined')
-            return;
-        console.log("printing data {} " + data)
         this.cid = data.paper.cluster_id
         this.title = data.paper.title;
         this.year = data.paper.year;

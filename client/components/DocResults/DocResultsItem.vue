@@ -2,7 +2,7 @@
     <v-container fluid class="document-result">
         <v-row no-gutters>
             <v-col cols="12" class="result-title">
-                <nuxt-link :to="{ path: docUrl }">
+                <nuxt-link :to="{ path: docUrl }"  target="_blank">
                     <h5 class="text--primary">{{ title }}</h5>
                 </nuxt-link>
             </v-col>
@@ -43,14 +43,14 @@
                         <v-card-text>
                             <v-container>
                                 <v-row>
-                                    <textarea 
+                                    <textarea
                                     id="bibtex"
                                     :value="bibtex"
                                     ></textarea>
                                 </v-row>
                             </v-container>
                         </v-card-text>
-                  
+
                         <v-card-actions>
                             <v-btn
                                 color="primary"
@@ -68,7 +68,7 @@
                         <v-icon dense>description</v-icon>View PDF
                     </button>
                 </nuxt-link>
-          
+
                 <!-- <add-to-collection-dialog
                     :doc-id="docId"
                     :collection-names="collectionNames"
@@ -77,7 +77,7 @@
                 <!-- Add like functionality after MyCiteSeerX is developed -->
                 <!-- <button class="ml-4">
                     <v-icon dense>thumb_up</v-icon>
-                    <span class="accent--text">123</span> 
+                    <span class="accent--text">123</span>
                  </button> -->
             </v-col>
 
@@ -109,7 +109,7 @@ export default {
         return {
             // Register if a bibtex is copied
             copied: false,
-        }  
+        }
     },
     computed: {
         docUrl() {
@@ -128,13 +128,13 @@ export default {
         },
         // TODO: Add in other fields required for a full bibtex
         bibtex() {
-            return `@article{Citekey,` + 
+            return `@article{Citekey,` +
             `\n\ttitle={${this.title}},` +
             `\n\tauthor={${this.authors.join(' and ')}},` +
             `\n\tyear={${this.year}}` +
             `\n\tjournal={}` +
             '\n}'
-                    
+
         }
     },
     methods: {
