@@ -146,8 +146,7 @@ def perform_search(request: Request, searchQuery: SearchQuery):
 @router.post("/aggregate", response_model=AggregationResponse)
 def perform_aggregations(searchQuery: AggregationQuery):
     s = elastic_models.Cluster.search(using=elastic_service.get_connection())
-    if searchQuery.must_have_pdf:
-        s = s.filter("term", has_pdf=True)
+    #s = s.filter("term", has_pdf=True)
 
     # s = s.query('multi_match', query=searchQuery.queryString,
     #            fields=['title', 'text'])
