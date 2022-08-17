@@ -13,7 +13,6 @@
 									{{ i.title }}
 								</a>
 							</li>
-						
 						</ul>
 				</v-col>
 				<v-col md="3">
@@ -24,13 +23,12 @@
 									{{ i.title }}
 								</a>
 							</li>
-						
 						</ul>
 				</v-col>
 				<v-col md="3">
 					<h5>About</h5>
 					<p>CiteSeer<sup>X</sup> is an evolving scientific literature digital library and search engine.</p>
-					<p id="copyright">@2007-2021 The Pennsylvania State University</p>
+					<p id="copyright">@2007-{{ new Date().getFullYear() }} The Pennsylvania State University</p>
 				</v-col>
 			</v-row>
 		</v-container>
@@ -55,7 +53,6 @@ export default {
 					title: "Data",
 					link: "http://csxstatic.ist.psu.edu/downloads/data",
 				},
-				
 			],
 			services: [
 				{
