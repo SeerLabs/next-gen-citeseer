@@ -29,14 +29,13 @@
                         :cid="cid"
                         title="Citations"
                     />
-
-                    <citation-card
+                    <!-- <citation-card
                         id="similar-articles"
                         class="citation-card"
                         :doc-id="docId"
                         :cid="cid"
                         title="Similar Articles"
-                    />
+                    /> -->
                     <!-- <version-history-card
                         id="version-history"
                         title="Version History"
@@ -46,15 +45,20 @@
                     <v-card id="table-of-contents">
                         <v-card-title>Table of Contents</v-card-title>
                         <v-card-text>
+                            <a href="#abstract"
+                               @click="scrollToTop()"
+                            >
+                                <h6>Abstract</h6>
+                            </a>
                             <a href="#citations">
                                 <h6>Citation</h6>
                             </a>
-                            <a
+                            <!-- <a
                                 href="#similar-articles"
                                 @click="scroll('similar-article-card')"
                             >
                                 <h6>Similar Articles</h6>
-                            </a>
+                            </a> -->
                             <!-- <a href="#version-history">
                                 <h6>Version History</h6>
                             </a> -->
@@ -160,7 +164,11 @@ export default {
         scroll(id) {
             return null;
             // document.getElementById(id).scrollIntoView();
+        },
+        scrollToTop() {
+            window.scrollTo({top: 0, left: 0, behavior: 'smooth'})
         }
+
     },
     layout: 'search'
 };

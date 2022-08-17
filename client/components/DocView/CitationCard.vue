@@ -29,8 +29,8 @@
                     <v-progress-linear rounded indeterminate color="teal" />
                 </div>
                 <div v-else>
-                    <citation-list 
-                        :doc-id="docId" 
+                    <citation-list
+                        :doc-id="docId"
                         :title="title"
                         :citations="citations"
                         :n-citations="nCitations"
@@ -87,22 +87,22 @@ export default {
         switch (this.title) {
             case 'Citations':
                 this.sortSelected = 'Relevance';
-                this.sortDropdown = [ 
+                this.sortDropdown = [
                     'Relevance',
                     'Recency'
                 ];
-                
+
                 this.getCitations();
                 break;
-            case 'Similar Articles':
-                this.sortSelected = 'Co-Citation';
-                this.sortDropdown = [
-                    'Co-Citation',
-                    'Active Bibliography',
-                    'TF-IDF'
-                ];
-                this.getCitations();
-                break;
+            // case 'Similar Articles':
+                // this.sortSelected = 'Co-Citation';
+                // this.sortDropdown = [
+                    // 'Co-Citation',
+                    // 'Active Bibliography',
+                    // 'TF-IDF'
+                // ];
+                // this.getCitations();
+                // break;
         }
     },
     methods: {
@@ -134,7 +134,6 @@ export default {
                     if (this.sortSelected === 'TF-IDF'){
                         queryId = this.docId;
                     }
-                    
                     this.getSimilarPaper({
                         id: queryId,
                         algo: this.sortSelected
