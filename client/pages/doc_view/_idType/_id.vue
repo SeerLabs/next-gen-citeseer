@@ -45,10 +45,10 @@
                     <v-card id="table-of-contents">
                         <v-card-title>Table of Contents</v-card-title>
                         <v-card-text>
-                            <a href="#abstract"
+                            <a href="#gototop"
                                @click="scrollToTop()"
                             >
-                                <h6>Abstract</h6>
+                                <h6>Go To Top</h6>
                             </a>
                             <a href="#citations">
                                 <h6>Citation</h6>
