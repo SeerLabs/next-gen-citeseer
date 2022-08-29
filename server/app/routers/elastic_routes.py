@@ -84,10 +84,12 @@ def perform_search(request: Request, searchQuery: SearchQuery):
             "range", **{'pub_info.int_year': {'gte': searchQuery.yearStart, 'lte': searchQuery.yearEnd}}))
 
     # If the year range in query is the default [1913, CurrentYear], then use general query. Else, that means range slider has been used to filter a specfic year range.
-    if (searchQuery.yearStart == 1913 and searchQuery.yearEnd == date.today().year):
+    if (searchQuery.yearStart == 1913 and searchQuery.yearEnd == date.today().year and searchQuery.must_have_pdf):
         q = Q("bool", must=q2, should=q1)
-    else:
+    elif (searchQuery.must_have_pdf):
         q = Q("bool", must=[q2, q3], should=q1)
+    else:
+        q = Q("bool", should=[q1, q2])
     
     s = s.query(q)
 
