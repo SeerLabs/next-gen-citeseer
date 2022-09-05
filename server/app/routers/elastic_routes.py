@@ -462,7 +462,7 @@ def build_paper_entity(cluster_id, doc):
     paper_id = getKeyOrDefault(doc, "paper_id", [""])[0]
 
     print("I'm here")
-    print(getKeyOrDefault(doc, "cited_by", default=[]))
+    print(doc)
     return Paper(
         id=paper_id,
         title=getKeyOrDefault(doc, "title"),
