@@ -234,13 +234,16 @@ def paper_list(mget_request: MGetRequest):
 
 @router.get("/citations/{id}")
 @limiter.limit(rate_limit_string)
-def citations(request: Request, id: str, page: int = 1, pageSize: int = 10):
+def citations(request: Request, id: str, sortBy: str, page: int = 1, pageSize: int = 10):
     s = elastic_models.Cluster.search(using=elastic_service.get_connection())
     start = (page - 1) * pageSize
     s = s.filter("term", cited_by=id)
     s = s[start : start + pageSize]
+    if sortBy == "Recency":
+        s = s.sort({"pub_info.int_year": {"order": "desc"}})
     print(s.to_dict())
     response = s.execute()
+    print(response.to_dict())
     result_list = []
     for doc_hit in response["hits"]["hits"]:
         result_list.append(
