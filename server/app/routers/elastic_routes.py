@@ -460,6 +460,9 @@ def user_request_correction(request: Request, paper_id: str):
 
 def build_paper_entity(cluster_id, doc):
     paper_id = getKeyOrDefault(doc, "paper_id", [""])[0]
+
+    print("I'm here")
+    print(getKeyOrDefault(doc, "cited_by", default=[]))
     return Paper(
         id=paper_id,
         title=getKeyOrDefault(doc, "title"),
