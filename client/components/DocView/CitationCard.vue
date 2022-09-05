@@ -115,7 +115,8 @@ export default {
                     this.getCitationsEntities({
                             id: this.docId,
                             page: this.currentPage,
-                            pageSize: this.perPage
+                            pageSize: this.perPage,
+                            sortBy: this.sortSelected
                         })
                         .then(response => {
                             this.citations = response.citations;

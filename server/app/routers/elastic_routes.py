@@ -239,6 +239,7 @@ def citations(request: Request, id: str, page: int = 1, pageSize: int = 10):
     start = (page - 1) * pageSize
     s = s.filter("term", cited_by=id)
     s = s[start : start + pageSize]
+    print(s.to_dict())
     response = s.execute()
     result_list = []
     for doc_hit in response["hits"]["hits"]:
