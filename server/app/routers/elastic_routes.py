@@ -240,7 +240,7 @@ def citations(request: Request, id: str, sortBy: str, page: int = 1, pageSize: i
     s = s.filter("term", cited_by=id)
     s = s[start : start + pageSize]
     if sortBy == "Recency":
-        s = s.sort({"pub_info.int_year": {"order": "desc"}})
+        s = s.sort({"pub_info.int_year": {"order": "desc", "nested": {"path": "pub_info"}}})
     print(s.to_dict())
     response = s.execute()
     print(response.to_dict())
