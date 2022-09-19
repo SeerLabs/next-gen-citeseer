@@ -21,7 +21,10 @@ def get_pdf(doi: str, type: Optional[str] = "pdf", rep_id: Optional[str] = "1"):
     #print("here")
     #print(os.getcwd())
     #print(os.listdir())
-    return FileResponse(pdf_repo_path)
+    #return FileResponse(pdf_repo_path)
+    with tempfile.NamedTemporaryFile(mode="w+b", suffix=".pdf", delete=False) as FOUT:
+        FOUT.write(pdf_repo_path)
+        return FileResponse(FOUT.name, media_type="application/pdf")
 
 
 if __name__ == "__main__":
