@@ -1,7 +1,7 @@
 
 <template>
   <object id="fit-screen" :data="pdfURL" type="application/pdf">
-    <embed :src="pdfURL" type="application/pdf">
+    <embed :src="pdfURL" type="application/pdf" width="100%" height="1000px"/>
   </object>
 </template>
 
@@ -19,10 +19,4 @@ export default {
 }
 </script>
 
-<style>
-#fit-screen {
-   margin: 0px;
-   height: 100vh;
-   width: 100%;
-}
-</style>
+
