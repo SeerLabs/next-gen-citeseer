@@ -5,12 +5,12 @@
             <v-card-text>
                 <v-container>
                 <v-row justify="center">
-                    <v-col 
+                    <v-col
                         v-for="(site, index) in sites"
                         :key="index"
                         cols="4"
                         align="center"
-                    >   
+                    >
                         <a :href="site.url" target="_blank">
                             <img id="icon" :src="site.logo" :alt="site.name"/>
                         </a>
@@ -41,10 +41,10 @@ export default {
                     url: 'https://scholar.google.com/scholar?hl=en&as_sdt=0%2C39&q=' + this.query,
                     logo: require('../../assets/img/google_scholar.png'),
                 },
-                'microsoft' : {
-                    name: 'Microsoft Academic Research',
-                    url: 'https://academic.microsoft.com/search?q=' + this.query,
-                    logo: require('../../assets/img/microsoft_research.jpg'),
+                'archive' : {
+                    name: 'Archive',
+                    url: 'https://archive.org/search.php?query=' + this.query + '&sin=TXT',
+                    logo: require('../../assets/img/archive.png'),
                 },
                 'google': {
                     name: 'Google',
