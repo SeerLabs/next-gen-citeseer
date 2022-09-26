@@ -17,14 +17,12 @@ def get_pdf(doi: str, type: Optional[str] = "pdf", rep_id: Optional[str] = "1"):
     pdf_repo_path = os.path.join(settings.REPO_SERVER_BASE_PATH, chunks[0],
                                  chunks[1], chunks[2], chunks[3], chunks[4], chunks[5],
                                  chunks[6], doi, filename)
-    #os.chdir(pdf_repo_path)
-    #print("here")
-    #print(os.getcwd())
-    #print(os.listdir())
-    #return FileResponse(pdf_repo_path)
-    with tempfile.NamedTemporaryFile(mode="w+b", suffix=".pdf", delete=False) as FOUT:
-        FOUT.write(pdf_repo_path)
-        return FileResponse(FOUT.name, media_type="application/pdf")
+    #with tempfile.NamedTemporaryFile(mode="w+b", suffix=".pdf", delete=False) as FOUT:
+        #FOUT.write(pdf_repo_path)
+        #return FileResponse(FOUT.name, media_type="application/pdf")
+
+    return FileResponse(pdf_repo_path)
+
 
 
 if __name__ == "__main__":
