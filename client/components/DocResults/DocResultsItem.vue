@@ -19,11 +19,11 @@
         </v-row>
 
         <v-row no-gutters justify="space-between">
-            <v-col cols="6">
-                <nuxt-link :to="{ path: showCitingUrl }" class="citation">
-                    Cited by <span class="accent--text">{{ nCitedBy }} Documents</span> &bull; {{ nSelfCites }} self-citations
-                </nuxt-link>
-            </v-col>
+             <v-col cols="6">
+                  <!-- <nuxt-link :to="{ path: showCitingUrl }" class="citation">
+                     Cited by <span class="accent--text">{{ nCitedBy }} Documents</span> &bull; {{ nSelfCites }} self-citations
+                 </nuxt-link> -->
+             </v-col>
 
             <v-col cols="6" class="links" align="end">
 
