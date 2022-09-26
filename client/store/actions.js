@@ -1,6 +1,11 @@
 import qs from 'qs'
 
 export default {
+
+    getTotalCount(context) {
+      return this.$axios.$get('/count')
+    },
+
     getPaperWithPaperId ({context}, { pid }) {
         return this.$axios
         .$get('/paper', { params: {paper_id: pid}})

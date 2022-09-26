@@ -2,7 +2,7 @@
     <div id="homepage">
      <v-container class="mt-16">
         <img id="logo" src="@/assets/img/csx_logo.png" alt="CiteSeerX"/>
-        <h4 id="subtitle" class="mt-3">Search across over 5,000,000 documents, journals, and papers</h4>
+        <h4 id="subtitle" class="mt-3">Search across over 1,000,000 documents, journals, and papers</h4>
 
         <v-row justify="center" class="mt-10">
             <v-col md="10">
@@ -25,14 +25,37 @@
 </template>
 
 <script>
+import { mapActions } from 'vuex';
 import SearchBox from '~/components/SearchBox.vue';
+
 
 export default {
     components: {
         SearchBox
     },
+    data() {
+        return {
+             count: 7000000
+        };
+    },
+    computed: {
+        totalDocs() {
+            return Math.ceil(this.count);
+        }
+    },
+    methods: {
+           ...mapActions(['getTotalCount']),
+           getCount() {
+              this.getTotalCount({
+              }).then((response) => {
+                 this.count = response;
+              });
+           }
+    }
 };
 </script>
+
+
 
 <style scoped>
 #homepage {

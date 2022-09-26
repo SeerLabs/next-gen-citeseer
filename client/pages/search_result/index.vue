@@ -80,7 +80,7 @@ export default {
             page: 1,
             loadingState: false,
             sortBy: 'relevance',
-            items: ['Relevance', 'Citation', 'Year'],
+            items: ['Relevance', 'Year'],
             error: false,
             filters: {
                 years: { start: 1913, end: new Date().getFullYear() },

@@ -13,11 +13,11 @@
 
         <v-row no-gutters>
             <v-col class="result-info">
-                <p class="font-italic">{{ authors.join(', ') }} &bull; {{ year }}</p>
+                <p class="font-italic"></p>
                 <p v-if="abstract">{{ abstract.slice(0, 200) }}...</p>
             </v-col>
         </v-row>
-
+        <!-- {{ authors.join(', ') }} -->
         <v-row no-gutters justify="space-between">
              <v-col cols="6">
                   <!-- <nuxt-link :to="{ path: showCitingUrl }" class="citation">
