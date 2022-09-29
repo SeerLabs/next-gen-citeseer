@@ -10,7 +10,7 @@
 export default {
   data () {
     return {
-      pdfURL: `http://localhost:8115/document?repid=rep1&type=pdf&doi=`
+      pdfURL: `https://csxfe00.ist.psu.edu/document?repid=rep1&type=pdf&doi=`
     }
   },
   mounted () {

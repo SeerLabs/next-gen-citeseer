@@ -17,13 +17,18 @@ RECAPTCHA_SECRET_KEY = os.environ["RECAPTCHA_SECRET_KEY"]
 RECAPTCHA_API_ENDPOINT = "https://www.google.com/recaptcha/api/siteverify"
 app = FastAPI()
 
+#origins = [
+#    "http://localhost:3000",
+#    "http://0.0.0.0:8080" "http://0.0.0.0:8000",
+#    "http://0.0.0.0:8115",
+#    "http://0.0.0.0:3000/",
+#    "http://istcsxfe01.ist.psu.edu",
+#]
+
 origins = [
-    "http://localhost:3000",
-    "http://0.0.0.0:8080" "http://0.0.0.0:8000",
-    "http://0.0.0.0:8115",
-    "http://0.0.0.0:3000/",
-    "http://istcsxfe01.ist.psu.edu",
-]
+        "*"
+        ]
+
 app.add_middleware(
     CORSMiddleware,
     allow_origins=origins,

@@ -24,19 +24,24 @@ services:
           - server
       env_file:
         - ./variables/development.env
-    nginx:
-      container_name: web
-      restart: always
-      image: nginx:latest
+    document:        
+      build: ./server
+      container_name: document
       ports:
-        - 8081:8080
+        - 8115:8115
+      command: ["python3", "/api/app/repository/repo_server.py"]
       volumes:
-        - .:/next-gen-seer
-        - ./nginx.conf:/etc/nginx/conf.d/nginx.conf
-      depends_on:
-        - server
-        - client
+        - ./server:/api
+        - /data/csxrepo01_repo:/data/csxrepo01_repo
+        - ./next-gen-citeseer:/next-gen-citeseer
       env_file:
-        - ./variables/development.env
+        - ./variables/development.env 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
 
 
