@@ -10,6 +10,7 @@ services:
         - ./server:/api
       env_file:
         - ./variables/development.env
+      restart: always
     client:
       build: ./client
       container_name: client
@@ -24,6 +25,7 @@ services:
           - server
       env_file:
         - ./variables/development.env
+      restart: always
     document:        
       build: ./server
       container_name: document
@@ -35,7 +37,8 @@ services:
         - /data/csxrepo01_repo:/data/csxrepo01_repo
         - ./next-gen-citeseer:/next-gen-citeseer
       env_file:
-        - ./variables/development.env 
+        - ./variables/development.env
+      restart: always 
  
  
  
