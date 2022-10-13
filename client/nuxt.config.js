@@ -12,7 +12,7 @@ export default {
      ** Headers of the page
      */
     head: {
-        title: process.env.npm_package_name || '',
+        title: 'CiteSeerX' || '',
         meta: [
             { charset: 'utf-8' },
             {
@@ -26,7 +26,7 @@ export default {
             }
         ],
         link: [
-            { rel: 'icon', type: 'image/x-icon', href: '/favicon.ico' },
+            { rel: 'icon', type: 'image/png', href: '/favicon.png' },
             { rel: 'stylesheet', href: 'https://fonts.googleapis.com/css2?family=Bitter:wght@400;600;700&family=Open+Sans:wght@300;400&display=swap' }
         ]
     },
@@ -76,7 +76,7 @@ export default {
     },
 
     vuetify: {
-  
+
         defaultAssets: {
             font: true,
             icons: 'md'

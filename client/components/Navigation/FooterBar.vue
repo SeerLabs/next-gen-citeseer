@@ -2,10 +2,10 @@
 	<v-footer height="200" dark>
 		<v-container>
 			<v-row>
-				<v-col md="3">
+				<v-col md="2.5">
 					<img src="@/assets/img/ist_logo.svg" alt="Penn State IST"/>
 				</v-col>
-				<v-col md="1" class="mr-15">
+				<v-col md="2" class="mr-15">
 					<h5>Information</h5>
 						<ul class="pa-0">
 							<li v-for='i in information' :key='i.id' class="link-list">
