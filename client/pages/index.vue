@@ -25,7 +25,6 @@
 </template>
 
 <script>
-import { mapActions } from 'vuex';
 import SearchBox from '~/components/SearchBox.vue';
 
 
@@ -33,25 +32,6 @@ export default {
     components: {
         SearchBox
     },
-    data() {
-        return {
-             count: 7000000
-        };
-    },
-    computed: {
-        totalDocs() {
-            return Math.ceil(this.count);
-        }
-    },
-    methods: {
-           ...mapActions(['getTotalCount']),
-           getCount() {
-              this.getTotalCount({
-              }).then((response) => {
-                 this.count = response;
-              });
-           }
-    }
 };
 </script>
 
