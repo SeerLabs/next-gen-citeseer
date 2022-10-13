@@ -1,8 +1,8 @@
 {
-    "name": "client",
+    "name": "CiteSeerX",
     "version": "1.0.0",
     "private": true,
-    "description": "My superior Nuxt.js project",
+    "description": "CiteSeerX",
     "author": "Kevin Kuo",
     "scripts": {
         "build": "nuxt build",
