@@ -72,7 +72,7 @@ export default {
      ** See https://axios.nuxtjs.org/options
      */
     axios: {
-        baseURL: 'https://csxfe03.ist.psu.edu/api',
+        baseURL: 'https://citeseerx.ist.psu.edu/api',
     },
 
     vuetify: {
@@ -128,7 +128,7 @@ export default {
 
         privateRuntimeConfig: {
             axios: {
-                baseURL: 'https://csxfe03.ist.psu.edu/api'
+                baseURL: 'https://citeseerx.ist.psu.edu/api'
             }
         }
     }
