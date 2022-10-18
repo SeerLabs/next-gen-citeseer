@@ -27,7 +27,8 @@ app = FastAPI()
 
 origins = [
         "https://csxfe02.ist.psu.edu/",
-        "https://citeseerx.ist.psu.edu/"
+        "https://citeseerx.ist.psu.edu/",
+        "https://csxstaging.ist.psu.edu"
         ]
 
 app.add_middleware(

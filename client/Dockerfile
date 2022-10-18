@@ -1,4 +1,4 @@
-FROM node:12.19.0
+FROM node:16.18.0
 
 ENV APP_ROOT /src
 
