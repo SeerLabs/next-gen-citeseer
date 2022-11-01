@@ -1,6 +1,6 @@
 
 <template>
-  <object id="fit-screen" :data="pdfURL" type="application/pdf">
+<object id="fit-screen" :data="pdfURL" type="application/pdf" width="100%" height="1000px">
     <embed :src="pdfURL" type="application/pdf" width="100%" height="1000px"/>
   </object>
 </template>

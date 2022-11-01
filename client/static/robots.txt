@@ -9,11 +9,15 @@ User-agent: Baiduspider+
 Disallow: /
 
 User-agent: Googlebot
+Disallow: /
 Disallow: /doc_view/pid*
 Disallow: /pdf*
 
+User-agent: PetalBot
+Disallow: /
 
 User-agent: Bingbot
+Disallow: /
 Disallow: /doc_view/pid*
 Disallow: /pdf*
 
@@ -24,6 +28,7 @@ Crawl-delay: 10
 
 #added msnbot with more delay - was hitting hard with different ip's
 User-agent: msnbot
+Disallow: /
 Disallow: /doc_view/pid*
 Disallow: /pdf*
 Crawl-delay: 40
