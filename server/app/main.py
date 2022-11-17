@@ -4,7 +4,7 @@ from fastapi import FastAPI, Request, HTTPException, status
 from fastapi.responses import JSONResponse, PlainTextResponse
 from fastapi.middleware.cors import CORSMiddleware
 import os
-from routers import document_routes, elastic_routes, authentication_routes
+from routers import document_routes, elastic_routes, authentication_routes, redirect_routes
 from limiter import limiter
 import requests
 
@@ -44,7 +44,7 @@ app.include_router(elastic_routes.router, tags=["elastic_routes"], prefix="/api"
 app.include_router(
     authentication_routes.router, tags=["authentication_routes"], prefix="/api"
 )
-
+app.include_router(redirect_routes.router, tags=["redirect_routes"], prefix="/viewdoc")
 
 @app.exception_handler(AuthJWTException)
 def authjwt_exception_handler(request: Request, exc: AuthJWTException):

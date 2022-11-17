@@ -9,9 +9,7 @@ User-agent: Baiduspider+
 Disallow: /
 
 User-agent: Googlebot
-Disallow: /
-Disallow: /doc_view/pid*
-Disallow: /pdf*
+Disallow:
 
 User-agent: PetalBot
 Disallow: /
