@@ -17,7 +17,17 @@ export default {
         });
 
     },
+    getPaper ({context}, { pid }) {
+            return this.$axios
+            .$get('/getSummary', { params: {paper_id: pid}})
+            .then(function(response) {
+                return response;
+            })
+            .catch(function(error) {
+                console.log("error {}" + error);
+            });
 
+        },
     async getPaperswithPaperIds (context, {pids}) {
     return await this.$axios.$post(`/bulk_get_paper`, {"paper_id_list": pids})
             .then(function(response) {

@@ -9,7 +9,7 @@ from requests.adapters import HTTPAdapter
 from starlette.responses import FileResponse
 router = APIRouter()
 
-f = open('/api/app/routers/data.json')
+f = open('/home/kzp5555/next-gen-citeseer/server/app/routers/data.json')
 _dict_mappings = json.load(f)
 
 def get_new_csxid(doi):
@@ -25,13 +25,13 @@ def get_document(
     print("received a request for ", doi, " ", type, " ", repid, " ", key)
     pdf_id = get_new_csxid(doi)
     print("pdf id ", pdf_id)
-    new_url = 'https://citeseerx.ist.psu.edu/document?repid=rep1&type=pdf&doi=' + pdf_id
+    new_url = 'https://csxstaging.ist.psu.edu/document?repid=rep1&type=pdf&doi=' + pdf_id
     print("new url ", new_url)
 
-    s = requests.Session()
-    s.mount("https://", HTTPAdapter(max_retries=5))
-    response_content = s.get(new_url).content
-    #response_content = requests.get(new_url).content
+    #s = requests.Session()
+    #s.mount("https://", HTTPAdapter(max_retries=5))
+    #response_content = s.get(new_url).content
+    response_content = requests.get(new_url).content
     with tempfile.NamedTemporaryFile(mode="w+b", suffix=".pdf", delete=False) as FOUT:
         FOUT.write(response_content)
         return FileResponse(FOUT.name, media_type="application/pdf")
