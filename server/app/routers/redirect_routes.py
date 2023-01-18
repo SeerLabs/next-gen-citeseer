@@ -9,7 +9,7 @@ from requests.adapters import HTTPAdapter
 from starlette.responses import FileResponse
 router = APIRouter()
 
-f = open('/api/app/routers/data.json')
+f = open('/home/kzp5555/next-gen-citeseer/server/app/routers/data.json')
 _dict_mappings = json.load(f)
 
 def get_new_csxid(doi):
