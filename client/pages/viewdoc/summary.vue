@@ -1,0 +1,203 @@
+<template>
+    <div v-cloak id="doc-view-layout">
+        <client-only>
+        <div v-if="loading" id="loading">
+            <v-progress-linear rounded indeterminate />
+        </div>
+        <v-container v-else>
+            <div id="doc-view-header-container">
+            <DocumentViewHeader
+                :title="title"
+                :abstract="abstract"
+                :year="year"
+                :authors="authors"
+                :venue="venue"
+                :n-citation="nCitation"
+                :doc-id="docId"
+                :has-pdf="idType === 'pid'"
+            />
+            </div>
+
+            <!-- Citations Row -->
+            <div id="citation-container">
+            <v-row>
+                <v-col cols="9">
+                    <citation-card
+                        id="citations"
+                        class="citation-card"
+                        :doc-id="docId"
+                        :cid="cid"
+                        title="Citations"
+                    />
+                    <!-- <citation-card
+                        id="similar-articles"
+                        class="citation-card"
+                        :doc-id="docId"
+                        :cid="cid"
+                        title="Similar Articles"
+                    /> -->
+                    <!-- <version-history-card
+                        id="version-history"
+                        title="Version History"
+                    /> -->
+                </v-col>
+                <v-col cols="3">
+                    <v-card id="table-of-contents">
+                        <v-card-title>Table of Contents</v-card-title>
+                        <v-card-text>
+                            <a href="#gototop"
+                               @click="scrollToTop()"
+                            >
+                                <h6>Go To Top</h6>
+                            </a>
+                            <a href="#citations">
+                                <h6>Citation</h6>
+                            </a>
+                            <!-- <a
+                                href="#similar-articles"
+                                @click="scroll('similar-article-card')"
+                            >
+                                <h6>Similar Articles</h6>
+                            </a> -->
+                            <!-- <a href="#version-history">
+                                <h6>Version History</h6>
+                            </a> -->
+                        </v-card-text>
+                    </v-card>
+                </v-col>
+            </v-row>
+            </div>
+        </v-container>
+        </client-only>
+    </div>
+</template>
+
+<script>
+import $ from 'jquery';
+
+import { mapActions } from 'vuex';
+import DocumentViewHeader from '~/components/DocView/DocView.vue';
+import CitationCard from '~/components/DocView/CitationCard.vue';
+
+export default {
+    components: {
+        DocumentViewHeader,
+        CitationCard,
+
+    },
+    async fetch() {
+      // const res = await axios.get('https://facebook.com');
+      // console.log(res);
+    },
+    data() {
+        return {
+            loading: false,
+            showAbstract: false,
+            docId: this.$route.query.doi,
+	    cid: '',
+            title: '',
+            year: '',
+            authors: [],
+            venue: '',
+            abstract: '',
+            nCitations: 0,
+
+            totalPageResults: 1000
+        };
+    },
+    computed: {
+        getPDFUrl() {
+       	    return '/doc/' + this.docId;
+	}
+    },
+    async created() {
+        this.loading = true;
+        let data = null;
+        switch (this.idType){
+            case 'pid':
+                data = await this.getPaperWithPaperId({pid: this.docId});
+                break;
+            case 'cid':
+                data = await this.getPaperWithClusterId({cid: this.docId});
+                // set docID from cluster id back to paper id
+                this.docId = data.paper.id
+                break;
+            default:
+                data = await this.getPaper({pid: this.docId});
+		            break;
+        }
+
+        this.cid = data.paper.cluster_id
+        this.title = data.paper.title;
+        this.year = data.paper.year;
+        this.authors = data.paper.authors;
+        this.venue = data.paper.venue;
+        this.abstract = data.paper.abstract;
+        this.nCitation = data.paper.n_citation;
+
+        this.loading = false;
+    },
+    mounted() {
+        $('#table-of-contents a').on('click', function(e) {
+            e.preventDefault();
+            const hash = this.hash;
+
+            // animate
+            $('html, body').animate(
+                {
+                    scrollTop: $(hash).offset().top
+                },
+                300,
+                function() {
+                    window.location.hash = hash;
+                }
+            );
+        });
+    },
+    methods: {
+        ...mapActions(['getPaperWithPaperId', 'getPaperWithClusterId', 'getPaper']),
+
+        toggleReadMore() {
+            this.readMoreFlag = true;
+        },
+        scroll(id) {
+            return null;
+            // document.getElementById(id).scrollIntoView();
+        },
+        scrollToTop() {
+            window.scrollTo({top: 0, left: 0, behavior: 'smooth'})
+        }
+
+    },
+    layout: 'search'
+};
+</script>
+
+<style>
+#loading {
+    text-align: center;
+    padding: 50px 100px;
+}
+
+#doc-view-layout {
+    border-top: 2px solid #e0e0e0;
+}
+
+#citation-container {
+    margin: 0 3em;
+}
+
+#table-of-contents {
+    position: sticky;
+    top: 5em;
+}
+
+#table-of-contents .card-body {
+    padding: 1rem;
+}
+
+[v-cloak] {
+    display: none;
+}
+</style>
+

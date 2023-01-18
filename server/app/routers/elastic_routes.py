@@ -35,7 +35,7 @@ from services.elastic_service import ElasticService
 
 from utils.helpers import getKeyOrDefault
 from elasticsearch_dsl import Q
-
+import json
 
 router = APIRouter()
 elastic_service = ElasticService()
@@ -43,6 +43,14 @@ elastic_service = ElasticService()
 
 rate_limit_string = "5/minute"
 
+f = open('/home/kzp5555/next-gen-citeseer/server/app/routers/data.json')
+_dict_mappings = json.load(f)
+
+def get_new_csxid(doi):
+    if _dict_mappings.get(doi):
+        return _dict_mappings.get(doi)
+    else:
+        return None
 
 @router.post("/search", response_model=SearchQueryResponse)
 # @limiter.limit(rate_limit_string)
@@ -358,6 +366,34 @@ def similar_papers(request: Request, id: str, algo: str):
     return SimilarPapersResponse(
         query_id=str(uuid4()), total_results=total_results, similar_papers=result_list
     )
+
+
+@router.get("/getSummary")
+def paper_info(
+    request: Request, paper_id: Optional[str] = None, cluster_id: Optional[str] = None
+):
+    paper_id = get_new_csxid(paper_id)
+    # if Called with cluster ID
+    if cluster_id is not None:
+        cluster = elastic_models.Cluster.get(
+            id=cluster_id, using=elastic_service.get_connection()
+        )
+        print(cluster.to_dict())
+        paper_entity_response = build_paper_entity(
+            cluster_id=cluster_id, doc=cluster.to_dict()
+        )
+        return PaperDetailResponse(query_id=str(uuid4()), paper=paper_entity_response)
+
+    # if called with paper ID (SHA1)
+    s = elastic_models.Cluster.search(using=elastic_service.get_connection())
+    s = s.filter("term", paper_id=paper_id)
+    response = s.execute()
+    paper_entity_response = build_paper_entity(
+        cluster_id=response["hits"]["hits"][0]["_id"],
+        doc=response["hits"]["hits"][0]["_source"],
+    )
+    return PaperDetailResponse(query_id=str(uuid4()), paper=paper_entity_response)
+
 
 
 @router.post("/searchAuthor", response_model=SearchAuthorResponse)
