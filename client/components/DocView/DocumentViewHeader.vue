@@ -36,6 +36,10 @@
                         View PDF
                     </v-btn>
 
+                     <v-btn :href="source" target="_blank">
+                          Source PDF
+                     </v-btn>
+
                     <v-btn @click="toggleMoniterPaper">
                       {{ monitered ? "Unmoniter Paper" : "Moniter Paper" }}
                     </v-btn>
@@ -48,7 +52,7 @@
                         :collection-names="collectionNames"
                         :button-type="'viewPage'"
                     />
-                    
+
                     <v-dialog
                         v-model="correctErrorDialog"
                         persistent
@@ -77,17 +81,17 @@
                                     required
                                     ></v-text-field>
                                 </v-col>
-                                
+
                                 <v-col cols="12">
                                     Abstract
                                     <v-textarea v-model="tempAbstract">
                                     </v-textarea>
                                 </v-col>
-                                
+
                                 <v-col cols="12">
                                     Authors
                                     <div v-for="(author_name, index) in tempAuthors" :key="index" class="form-row">
-                                            
+
                                             <v-text-field v-model="tempAuthors[index]"></v-text-field>
                                             <button type="button" class="close" aria-label="Close" @click="tempAuthors.splice(index,1)">
                                                 <span aria-hidden="true">×</span>
@@ -101,19 +105,19 @@
                                         Add Author
                                     </v-btn>
                                 </v-col>
-                                
+
                                 <v-col cols="12">
                                     Venue or Conference
                                     <v-text-field v-model="tempMeeting"
                                     ></v-text-field>
                                 </v-col>
-                                
+
                                 <v-col cols="12" >
                                     Year
                                     <v-text-field v-model="tempPubDate"
                                     ></v-text-field>
                                 </v-col>
-                                
+
                                 <v-col cols="12" >
                                     Publisher
                                     <v-text-field v-model="tempPublisher"
@@ -126,9 +130,9 @@
                                     required
                                     ></v-text-field>
                                 </v-col>
-                                
-                            
-                                
+
+
+
                                 </v-row>
                             </v-container>
                             <small>*indicates required field</small>
@@ -192,7 +196,7 @@
                         </v-card-actions>
                     </v-card>
                     </v-dialog>
-                       
+
                 </v-card-text>
             </v-card>
         </v-col>
@@ -240,7 +244,7 @@ export default {
     },
     computed: {
         ...mapState(['auth']),
-        
+
         getPDFUrl() {
             return '/pdf/' + this.docId;
         }
@@ -267,7 +271,7 @@ export default {
       }
     },
     methods: {
-        ...mapActions(['getUserProfile', 'addLikedPaper', 'deleteLikedPaper', 'addMoniteredPaper', 
+        ...mapActions(['getUserProfile', 'addLikedPaper', 'deleteLikedPaper', 'addMoniteredPaper',
         'deleteMoniteredPaper', 'editNew', 'authorClaim']),
         toggleReadMore() {
             this.showAbstract = !this.showAbstract;
@@ -322,14 +326,14 @@ export default {
                 })
             }
             this.editNew({
-                token: this.auth.token, 
-                paperId: this.docId, 
-                reasonOrDetails: this.tempReason, 
-                title: this.tempTitle, 
-                abstract: this.tempAbstract, 
-                authors: correctAuthors,  
-                meeting: this.tempMeeting, 
-                publisher: this.tempPublisher, 
+                token: this.auth.token,
+                paperId: this.docId,
+                reasonOrDetails: this.tempReason,
+                title: this.tempTitle,
+                abstract: this.tempAbstract,
+                authors: correctAuthors,
+                meeting: this.tempMeeting,
+                publisher: this.tempPublisher,
                 publishDate: this.tempPubDate.toString()
             })
             this.correctErrorDialog = false;

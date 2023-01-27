@@ -102,6 +102,7 @@ export default {
             venue: '',
             abstract: '',
             nCitations: 0,
+            source: ''
 
             totalPageResults: 1000
         };
@@ -135,7 +136,7 @@ export default {
         this.venue = data.paper.venue;
         this.abstract = data.paper.abstract;
         this.nCitation = data.paper.n_citation;
-
+        this.source = data.paper.source;
         this.loading = false;
     },
     mounted() {
