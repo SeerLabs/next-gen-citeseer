@@ -45,6 +45,11 @@
                     <v-card id="table-of-contents">
                         <v-card-title>Table of Contents</v-card-title>
                         <v-card-text>
+                            <a :href="source" target="_blank">
+                              <h6>
+                                Source PDF
+                              </h6>
+                            </a>
                             <a href="#gototop"
                                @click="scrollToTop()"
                             >
