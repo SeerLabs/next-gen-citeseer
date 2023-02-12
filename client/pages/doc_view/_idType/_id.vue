@@ -50,14 +50,12 @@
                                 Source PDF
                               </h6>
                             </a>
-                            <a href="#gototop"
-                               @click="scrollToTop()"
-                            >
-                                <h6>Go To Top</h6>
-                            </a>
                             <a href="#citations">
                                 <h6>Citation</h6>
                             </a>
+                            <a href="#gototop" @click="scrollToTop()" >
+                                <h6>Go To Top</h6>
+                             </a>
                             <!-- <a
                                 href="#similar-articles"
                                 @click="scroll('similar-article-card')"
@@ -107,7 +105,7 @@ export default {
             venue: '',
             abstract: '',
             nCitations: 0,
-            source: ''
+            source: '',
 
             totalPageResults: 1000
         };

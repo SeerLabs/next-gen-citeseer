@@ -110,33 +110,40 @@ export default {
        	    return '/doc/' + this.docId;
 	}
     },
-    async created() {
+async created() {
         this.loading = true;
         let data = null;
-        switch (this.idType){
-            case 'pid':
-                data = await this.getPaperWithPaperId({pid: this.docId});
-                break;
-            case 'cid':
-                data = await this.getPaperWithClusterId({cid: this.docId});
-                // set docID from cluster id back to paper id
-                this.docId = data.paper.id
-                break;
-            default:
-                data = await this.getPaper({pid: this.docId});
-		            break;
-        }
+        try {
+            switch (this.idType){
+                case 'pid':
+                    data = await this.getPaperWithPaperId({pid: this.docId});
+                    break;
+                case 'cid':
+                    data = await this.getPaperWithClusterId({cid: this.docId});
+                    // set docID from cluster id back to paper id
+                    this.docId = data.paper.id
+                    break;
+                default:
+                    data = await this.getPaper({pid: this.docId});
+                    break;
+            }
 
-        this.cid = data.paper.cluster_id
-        this.title = data.paper.title;
-        this.year = data.paper.year;
-        this.authors = data.paper.authors;
-        this.venue = data.paper.venue;
-        this.abstract = data.paper.abstract;
-        this.nCitation = data.paper.n_citation;
+            this.cid = data.paper.cluster_id
+            this.title = data.paper.title;
+            this.year = data.paper.year;
+            this.authors = data.paper.authors;
+            this.venue = data.paper.venue;
+            this.abstract = data.paper.abstract;
+            this.nCitation = data.paper.n_citation;
+        } catch (error) {
+            console.error(error);
+            this.loading = false;
+            return;
+        }
 
         this.loading = false;
     },
+
     mounted() {
         $('#table-of-contents a').on('click', function(e) {
             e.preventDefault();

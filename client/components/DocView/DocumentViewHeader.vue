@@ -36,10 +36,6 @@
                         View PDF
                     </v-btn>
 
-                     <v-btn :href="source" target="_blank">
-                          Source PDF
-                     </v-btn>
-
                     <v-btn @click="toggleMoniterPaper">
                       {{ monitered ? "Unmoniter Paper" : "Moniter Paper" }}
                     </v-btn>

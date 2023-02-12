@@ -44,6 +44,3 @@ def get_pdf(doi: str, type: Optional[str] = "pdf", rep_id: Optional[str] = "1"):
 
 if __name__ == "__main__":
     uvicorn.run(app, host="0.0.0.0", port=8115)
-
-
-
