@@ -45,6 +45,11 @@
                     <v-card id="table-of-contents">
                         <v-card-title>Table of Contents</v-card-title>
                         <v-card-text>
+                            <a :href="source" target="_blank">
+                              <h6>
+                                Source PDF
+                              </h6>
+                            </a>
                             <a href="#gototop"
                                @click="scrollToTop()"
                             >
@@ -102,6 +107,7 @@ export default {
             venue: '',
             abstract: '',
             nCitations: 0,
+            source: '',
 
             totalPageResults: 1000
         };
@@ -135,6 +141,7 @@ export default {
         this.venue = data.paper.venue;
         this.abstract = data.paper.abstract;
         this.nCitation = data.paper.n_citation;
+        this.source = data.paper.source;
 
         this.loading = false;
     },
