@@ -1,10 +1,10 @@
-import tempfile
-
 from fastapi import APIRouter
 from starlette.responses import FileResponse
 import requests
 import json
 from requests.adapters import HTTPAdapter
+from io import BytesIO
+from fastapi import Response
 
 from starlette.responses import FileResponse
 router = APIRouter()
@@ -27,11 +27,7 @@ def get_document(
     print("pdf id ", pdf_id)
     new_url = 'https://citeseerx.ist.psu.edu/document?repid=rep1&type=pdf&doi=' + pdf_id
     print("new url ", new_url)
-
-    #s = requests.Session()
-    #s.mount("https://", HTTPAdapter(max_retries=5))
-    #response_content = s.get(new_url).content
     response_content = requests.get(new_url).content
-    with tempfile.NamedTemporaryFile(mode="w+b", suffix=".pdf", delete=False) as FOUT:
-        FOUT.write(response_content)
-        return FileResponse(FOUT.name, media_type="application/pdf")
+    response = Response(content=response_content, media_type="application/pdf")
+    #response.headers["Content-Disposition"] = f"attachment; filename={pdf_id}.pdf"
+    return response
