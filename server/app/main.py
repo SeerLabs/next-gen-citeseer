@@ -29,9 +29,9 @@ origins = [
         "https://csxfe02.ist.psu.edu/",
         "https://citeseerx.ist.psu.edu/",
         "https://csxstaging.ist.psu.edu/",
-        "http://loalhost:3000",
+        "http://localhost:3000",
         "http://localhost:8000",
-        "http://loalhost:8115"
+        "http://localhost:8115"
         ]
 
 app.add_middleware(

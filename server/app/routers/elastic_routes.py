@@ -88,8 +88,7 @@ def perform_search(request: Request, searchQuery: SearchQuery):
     #           fields=['title', 'text'])
     q1 = Q("match", title=searchQuery.queryString)
     q2 = Q("match", text=searchQuery.queryString)
-    q3 = Q("nested", path="pub_info", query=Q(
-            "range", **{'pub_info.year': {'gte': searchQuery.yearStart, 'lte': searchQuery.yearEnd}}))
+    q3 = Q("range", **{'pub_info.year': {'gte': searchQuery.yearStart, 'lte': searchQuery.yearEnd}})
 
     # If the year range in query is the default [1913, CurrentYear], then use general query. Else, that means range slider has been used to filter a specfic year range.
     if (searchQuery.yearStart == 1913 and searchQuery.yearEnd == date.today().year and searchQuery.must_have_pdf):
@@ -100,6 +99,7 @@ def perform_search(request: Request, searchQuery: SearchQuery):
         q = Q("bool", should=[q1, q2])
     
     s = s.query(q)
+    print(s.to_dict())
 
     total_results = s.count()
 
@@ -107,9 +107,8 @@ def perform_search(request: Request, searchQuery: SearchQuery):
     if searchQuery.sortBy == "Citation":
         s = s.sort({"cited_by": {"order": "desc"}})
     elif searchQuery.sortBy == "Year":
-        s = s.sort({"pub_info.year": {"order": "desc", "nested": {"path": "pub_info"}}})
-
-    s.aggs.bucket("all_pub_info1", "nested", path="pub_info").metric(
+        s = s.sort({"pub_info.year": {"order": "desc"}})
+    s.aggs.bucket("all_pub_info1", "terms", field="pub_info.year").metric(
         "pub_info_year_count", "cardinality", field="pub_info.year"
     ).bucket("pub_info_year_list", "terms", field="pub_info.year")
 
@@ -117,12 +116,12 @@ def perform_search(request: Request, searchQuery: SearchQuery):
         "authors_count", "cardinality", field="authors.fullname.keyword"
     ).bucket("authors_fullname_terms", "terms", field="authors.fullname.keyword")
 
-    s.aggs.bucket("all_pub_info2", "nested", path="pub_info").metric(
+    s.aggs.bucket("all_pub_info2", "terms", field="pub_info.year").metric(
         "pub_info_publisher_count", "cardinality", field="pub_info.publisher.keyword"
     ).bucket("pub_info_publisher_list", "terms", field="pub_info.publisher.keyword")
 
     # Aggregate minimum year | response['aggregations']['pub_info']['min_year'] returns {'value': min_year}
-    s.aggs.bucket("pub_info_path", "nested", path="pub_info").metric(
+    s.aggs.bucket("pub_info_path", "terms", field="pub_info.year").metric(
         "min_year", "min", field="pub_info.year"
     )
 
@@ -164,7 +163,7 @@ def perform_aggregations(searchQuery: AggregationQuery):
     q2 = Q("match", text=searchQuery.queryString)
     q = Q("bool", must=q2, should=q1)
     s = s.query(q)
-    s.aggs.bucket("all_pub_info1", "nested", path="pub_info").metric(
+    s.aggs.bucket("all_pub_info1", "terms", field="pub_info.year").metric(
         "pub_info_year_count", "cardinality", field="pub_info.year"
     ).bucket("pub_info_year_list", "terms", field="pub_info.year")
 
@@ -174,12 +173,12 @@ def perform_aggregations(searchQuery: AggregationQuery):
         "authors_fullname_terms", "terms", field="authors.fullname.keyword", size=1000
     )
 
-    s.aggs.bucket("all_pub_info2", "nested", path="pub_info").metric(
+    s.aggs.bucket("all_pub_info2", "terms", field="pub_info.year").metric(
         "pub_info_publisher_count", "cardinality", field="pub_info.publisher.keyword"
     ).bucket("pub_info_publisher_list", "terms", field="pub_info.publisher.keyword")
 
     # Aggregate minimum year | response['aggregations']['pub_info_path']['min_year'] returns {'value': min_year}
-    s.aggs.bucket("pub_info_path", "nested", path="pub_info").metric(
+    s.aggs.bucket("pub_info_path", "terms", field="pub_info.year").metric(
         "min_year", "min", field="pub_info.year"
     )
 
@@ -195,7 +194,6 @@ def perform_aggregations(searchQuery: AggregationQuery):
     }
 
     return AggregationResponse(aggregations=aggregations)
-
 
 @router.get("/paper")
 @limiter.limit(rate_limit_string)
@@ -640,6 +638,8 @@ def build_facets(agg_dict_yr, agg_dict_pub, agg_dict_athr, agg_min_year):
 
 def get_aggregation_list(bucket):
     agg_list = []
+    if bucket is None:
+        return agg_list
     for item in bucket:
         agg_list.append(PublicationInfo(key=item["key"], doc_count=item["doc_count"]))
     return agg_list
