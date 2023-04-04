@@ -2,7 +2,6 @@ from fastapi import FastAPI, HTTPException, Request
 from elasticsearch import Elasticsearch, NotFoundError
 from elasticsearch_dsl import UpdateByQuery
 from fastapi import APIRouter
-from limiter import limiter
 from fastapi.middleware.cors import CORSMiddleware
 from models.api_models import (
     SearchQueryResponse,
@@ -50,7 +49,7 @@ app.add_middleware(
 rate_limit_string = "5/minute"
 
 
-@router.post("/search", response_model=SearchQueryResponse)
+@router.post("/content", response_model=SearchQueryResponse)
 # @limiter.limit(rate_limit_string)
 def perform_search(request: Request, searchQuery: SearchQuery):
     s = elastic_models.Cluster.search(using=elastic_service.get_connection())
@@ -148,9 +147,3 @@ def perform_search(request: Request, searchQuery: SearchQuery):
         response=result_list,
         aggregations=aggregations,
     )
-
-
-if __name__ == "__main__":
-    import uvicorn
-
-    uvicorn.run(app, host="0.0.0.0", port=8080)
