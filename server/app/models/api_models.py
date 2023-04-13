@@ -26,6 +26,7 @@ class Paper(BaseModel):
     source: str
     urls: List[str] = []
     cluster_id: Optional[str]
+    text: str = None
 
 
 class PublicationInfo(BaseModel):

@@ -521,6 +521,7 @@ def build_paper_entity(cluster_id, doc):
         publish_time=getKeyOrDefault(getKeyOrDefault(doc, "pub_info"), "date"),
         source=getKeyOrDefault(doc, "source_url"),
         cluster_id=cluster_id,
+        abstract=getKeyOrDefault(doc, "text"),
     )
 
 
@@ -749,7 +750,8 @@ def perform_search(request: Request, searchQuery: SearchQuery):
 
 
 
-@router.get("/search_content", response_model=SearchQueryResponse)
+@router.get("/v1/search_content", response_model=SearchQueryResponse)
+@limiter.limit(rate_limit_string)
 def perform_search(
     request: Request,
     queryString: str,
@@ -833,7 +835,32 @@ def perform_search(
         aggregations=aggregations,
     )
 
-   
+
+@router.get("/v1/paper")
+@limiter.limit(rate_limit_string)
+def get_paper_info(
+    request: Request, paper_id: Optional[str] = None, cluster_id: Optional[str] = None
+):
+    # if Called with cluster ID
+    if cluster_id is not None:
+        cluster = elastic_models.Cluster.get(
+            id=cluster_id, using=elastic_service.get_connection()
+        )
+        print(cluster.to_dict())
+        paper_entity_response = build_paper_entity(
+            cluster_id=cluster_id, doc=cluster.to_dict()
+        )
+        return PaperDetailResponse(query_id=str(uuid4()), paper=paper_entity_response)
+
+    # if called with paper ID (SHA1)
+    s = elastic_models.Cluster.search(using=elastic_service.get_connection())
+    s = s.filter("term", paper_id=paper_id)
+    response = s.execute()
+    paper_entity_response = build_paper_entity(
+        cluster_id=response["hits"]["hits"][0]["_id"],
+        doc=response["hits"]["hits"][0]["_source"],
+    )
+    return PaperDetailResponse(query_id=str(uuid4()), paper=paper_entity_response)
     
 
 
