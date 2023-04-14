@@ -27,6 +27,8 @@ from models.api_models import (
     SearchFilter,
     AggregationResponse,
     MGetRequest,
+    Paper_Model,
+    PaperDetailFinalResponse,
 )
 
 from models import elastic_models
@@ -521,6 +523,29 @@ def build_paper_entity(cluster_id, doc):
         publish_time=getKeyOrDefault(getKeyOrDefault(doc, "pub_info"), "date"),
         source=str(getKeyOrDefault(doc, "source_url")),
         cluster_id=cluster_id,
+    )
+
+
+def build_paper_entity_for_public_api(cluster_id, doc):
+    paper_id = getKeyOrDefault(doc, "paper_id", [""])[0]
+
+    print("I'm here")
+    print(doc)
+    return Paper_Model(
+        id=paper_id,
+        title=getKeyOrDefault(doc, "title"),
+        venue=getKeyOrDefault(getKeyOrDefault(doc, "pub_info"), "title"),
+        year=getKeyOrDefault(getKeyOrDefault(doc, "pub_info"), "year"),
+        publisher=getKeyOrDefault(getKeyOrDefault(doc, "pub_info"), "publisher"),
+        n_cited_by=len(getKeyOrDefault(doc, "cited_by", default=[])),
+        n_self_cites=getKeyOrDefault(doc, "selfCites", default=0),
+        abstract=getKeyOrDefault(doc, "abstract"),
+        bibtex="test_bibtex",
+        authors=get_authors_in_list(doc, "authors"),
+        journal=getKeyOrDefault(getKeyOrDefault(doc, "pub_info"), "publisher"),
+        publish_time=getKeyOrDefault(getKeyOrDefault(doc, "pub_info"), "date"),
+        source=str(getKeyOrDefault(doc, "source_url")),
+        cluster_id=cluster_id,
         text=getKeyOrDefault(doc, "text"),
     )
 
@@ -847,7 +872,7 @@ def get_paper_info(
             id=cluster_id, using=elastic_service.get_connection()
         )
         print(cluster.to_dict())
-        paper_entity_response = build_paper_entity(
+        paper_entity_response = build_paper_entity_for_public_api(
             cluster_id=cluster_id, doc=cluster.to_dict()
         )
         return PaperDetailResponse(query_id=str(uuid4()), paper=paper_entity_response)
@@ -856,11 +881,11 @@ def get_paper_info(
     s = elastic_models.Cluster.search(using=elastic_service.get_connection())
     s = s.filter("term", paper_id=paper_id)
     response = s.execute()
-    paper_entity_response = build_paper_entity(
+    paper_entity_response = build_paper_entity_for_public_api(
         cluster_id=response["hits"]["hits"][0]["_id"],
         doc=response["hits"]["hits"][0]["_source"],
     )
-    return PaperDetailResponse(query_id=str(uuid4()), paper=paper_entity_response)
+    return PaperDetailFinalResponse(query_id=str(uuid4()), paper=paper_entity_response)
     
 
 
