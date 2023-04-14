@@ -519,9 +519,9 @@ def build_paper_entity(cluster_id, doc):
         authors=get_authors_in_list(doc, "authors"),
         journal=getKeyOrDefault(getKeyOrDefault(doc, "pub_info"), "publisher"),
         publish_time=getKeyOrDefault(getKeyOrDefault(doc, "pub_info"), "date"),
-        source=getKeyOrDefault(doc, "source_url"),
+        source=str(getKeyOrDefault(doc, "source_url")),
         cluster_id=cluster_id,
-        abstract=getKeyOrDefault(doc, "text"),
+        text=getKeyOrDefault(doc, "text"),
     )
 
 
