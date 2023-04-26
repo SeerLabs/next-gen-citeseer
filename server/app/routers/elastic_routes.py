@@ -3,7 +3,7 @@ from uuid import uuid4
 from datetime import date
 
 from elasticsearch_dsl import UpdateByQuery
-from fastapi import APIRouter, Request
+from fastapi import APIRouter, Request, Query
 
 import settings
 from limiter import limiter
@@ -27,6 +27,8 @@ from models.api_models import (
     SearchFilter,
     AggregationResponse,
     MGetRequest,
+    Paper_Model,
+    PaperDetailFinalResponse,
 )
 
 from models import elastic_models
@@ -41,7 +43,7 @@ router = APIRouter()
 elastic_service = ElasticService()
 
 
-rate_limit_string = "5/minute"
+rate_limit_string = "200/minute"
 
 f = open('/home/kzp5555/next-gen-citeseer/server/app/routers/data.json')
 _dict_mappings = json.load(f)
@@ -519,8 +521,32 @@ def build_paper_entity(cluster_id, doc):
         authors=get_authors_in_list(doc, "authors"),
         journal=getKeyOrDefault(getKeyOrDefault(doc, "pub_info"), "publisher"),
         publish_time=getKeyOrDefault(getKeyOrDefault(doc, "pub_info"), "date"),
-        source=getKeyOrDefault(doc, "source_url"),
+        source=str(getKeyOrDefault(doc, "source_url")),
         cluster_id=cluster_id,
+    )
+
+
+def build_paper_entity_for_public_api(cluster_id, doc):
+    paper_id = getKeyOrDefault(doc, "paper_id", [""])[0]
+
+    print("I'm here")
+    print(doc)
+    return Paper_Model(
+        id=paper_id,
+        title=getKeyOrDefault(doc, "title"),
+        venue=getKeyOrDefault(getKeyOrDefault(doc, "pub_info"), "title"),
+        year=getKeyOrDefault(getKeyOrDefault(doc, "pub_info"), "year"),
+        publisher=getKeyOrDefault(getKeyOrDefault(doc, "pub_info"), "publisher"),
+        n_cited_by=len(getKeyOrDefault(doc, "cited_by", default=[])),
+        n_self_cites=getKeyOrDefault(doc, "selfCites", default=0),
+        abstract=getKeyOrDefault(doc, "abstract"),
+        bibtex="test_bibtex",
+        authors=get_authors_in_list(doc, "authors"),
+        journal=getKeyOrDefault(getKeyOrDefault(doc, "pub_info"), "publisher"),
+        publish_time=getKeyOrDefault(getKeyOrDefault(doc, "pub_info"), "date"),
+        source=str(getKeyOrDefault(doc, "source_url")),
+        cluster_id=cluster_id,
+        text=getKeyOrDefault(doc, "text"),
     )
 
 
@@ -643,3 +669,223 @@ def get_aggregation_list(bucket):
     for item in bucket:
         agg_list.append(PublicationInfo(key=item["key"], doc_count=item["doc_count"]))
     return agg_list
+
+
+
+
+@router.post("/search_content", response_model=SearchQueryResponse)
+# @limiter.limit(rate_limit_string)
+def perform_search(request: Request, searchQuery: SearchQuery):
+    s = elastic_models.Cluster.search(using=elastic_service.get_connection())
+
+    start = (searchQuery.page - 1) * searchQuery.pageSize
+    #s = s.filter("term", has_pdf=True)
+    """
+    if searchQuery.yearStart is not None and searchQuery.yearEnd is not None:
+        q = Q("nested", path="pub_info", query=Q(
+            "range", **{'pub_info.year.keyword': {'gte': searchQuery.yearStart, 'lte': searchQuery.yearEnd}}))
+        s = s.query(q)
+
+    if searchQuery.publisher is not None and len(searchQuery.publisher) > 0:
+        publisher_queries = []
+        for pub in searchQuery.publisher:
+            q = Q("nested", path="pub_info", query=Q(
+                "term", **{'pub_info.publisher.keyword': pub}))
+            publisher_queries.append(q)
+        s = s.query('bool', should=publisher_queries)
+
+    if searchQuery.author is not None and len(searchQuery.author) > 0:
+        athr_queries = []
+        for athr in searchQuery.author:
+            q = Q("nested", path="authors", query=Q(
+                "term", **{'authors.fullname.keyword': athr}))
+            athr_queries.append(q)
+        s = s.query('bool', should=athr_queries)
+    """
+    if searchQuery.must_have_pdf:
+        s = s.filter("term", has_pdf=True)
+
+    # s = s.query('match', query=searchQuery.queryString,
+    #           fields=['title', 'text'])
+    q1 = Q("match", title=searchQuery.queryString)
+    q2 = Q("match", text=searchQuery.queryString)
+    q3 = Q("range", **{'pub_info.year': {'gte': searchQuery.yearStart, 'lte': searchQuery.yearEnd}})
+
+    # If the year range in query is the default [1913, CurrentYear], then use general query. Else, that means range slider has been used to filter a specfic year range.
+    if (searchQuery.yearStart == 1913 and searchQuery.yearEnd == date.today().year and searchQuery.must_have_pdf):
+        q = Q("bool", must=q2, should=q1)
+    elif (searchQuery.must_have_pdf):
+        q = Q("bool", must=[q2, q3], should=q1)
+    else:
+        q = Q("bool", should=[q1, q2])
+
+    s = s.query(q)
+    print(s.to_dict())
+
+    total_results = s.count()
+
+    # Apply sorting
+    if searchQuery.sortBy == "Citation":
+        s = s.sort({"cited_by": {"order": "desc"}})
+    elif searchQuery.sortBy == "Year":
+        s = s.sort({"pub_info.year": {"order": "desc"}})
+    s.aggs.bucket("all_pub_info1", "terms", field="pub_info.year").metric(
+        "pub_info_year_count", "cardinality", field="pub_info.year"
+    ).bucket("pub_info_year_list", "terms", field="pub_info.year")
+
+    s.aggs.bucket("all_authors", "nested", path="authors").metric(
+        "authors_count", "cardinality", field="authors.fullname.keyword"
+    ).bucket("authors_fullname_terms", "terms", field="authors.fullname.keyword")
+
+    s.aggs.bucket("all_pub_info2", "terms", field="pub_info.year").metric(
+        "pub_info_publisher_count", "cardinality", field="pub_info.publisher.keyword"
+    ).bucket("pub_info_publisher_list", "terms", field="pub_info.publisher.keyword")
+
+    # Aggregate minimum year | response['aggregations']['pub_info']['min_year'] returns {'value': min_year}
+    s.aggs.bucket("pub_info_path", "terms", field="pub_info.year").metric(
+        "min_year", "min", field="pub_info.year"
+    )
+
+    s = s[start : start + searchQuery.pageSize]
+    # print(str(s.to_dict()).replace("'", '"'))
+    print(s.to_dict())
+    response = s.execute()
+    print(response.to_dict())
+    result_list = []
+    for doc_hit in response["hits"]["hits"]:
+        result_list.append(
+            build_paper_entity(cluster_id=doc_hit["_id"], doc=doc_hit["_source"])
+        )
+    aggregations = {
+        "agg": build_facets(
+            response["aggregations"]["all_pub_info1"],
+            response["aggregations"]["all_pub_info2"],
+            response["aggregations"]["all_authors"],
+            response["aggregations"]["pub_info_path"],
+        )
+    }
+    print(s.to_dict())
+    return SearchQueryResponse(
+        query_id=str(uuid4()),
+        total_results=total_results,
+        response=result_list,
+        aggregations=aggregations,
+    )
+
+
+
+
+@router.get("/v1/search_content", response_model=SearchQueryResponse)
+@limiter.limit(rate_limit_string)
+def perform_search(
+    request: Request,
+    queryString: str,
+    page: int = 1,
+    pageSize: int = 10,
+    yearStart: Optional[int] = None,
+    yearEnd: Optional[int] = None,
+    publisher: Optional[List[str]] = Query(None),
+    author: Optional[List[str]] = Query(None),
+    must_have_pdf: Optional[bool] = False,
+    sortBy: Optional[str] = "Relevance"
+):
+    s = elastic_models.Cluster.search(using=elastic_service.get_connection())
+
+    start = (page - 1) * pageSize
+
+    if must_have_pdf:
+        s = s.filter("term", has_pdf=True)
+
+    q1 = Q("match", title=queryString)
+    q2 = Q("match", text=queryString)
+    q3 = Q("range", **{'pub_info.year': {'gte': yearStart, 'lte': yearEnd}})
+
+    # If the year range in query is the default [1913, CurrentYear], then use general query. Else, that means range slider has been used to filter a specfic year range.
+    if (yearStart == 1913 and yearEnd == date.today().year and must_have_pdf):
+        q = Q("bool", must=q2, should=q1)
+    elif (must_have_pdf):
+        q = Q("bool", must=[q2, q3], should=q1)
+    else:
+        q = Q("bool", should=[q1, q2])
+
+    s = s.query(q)
+
+    total_results = s.count()
+
+    # Apply sorting
+    if sortBy == "Citation":
+        s = s.sort({"cited_by": {"order": "desc"}})
+    elif sortBy == "Year":
+        s = s.sort({"pub_info.year": {"order": "desc"}})
+
+    s.aggs.bucket("all_pub_info1", "terms", field="pub_info.year").metric(
+        "pub_info_year_count", "cardinality", field="pub_info.year"
+    ).bucket("pub_info_year_list", "terms", field="pub_info.year")
+
+    s.aggs.bucket("all_authors", "nested", path="authors").metric(
+        "authors_count", "cardinality", field="authors.fullname.keyword"
+    ).bucket("authors_fullname_terms", "terms", field="authors.fullname.keyword")
+
+    s.aggs.bucket("all_pub_info2", "terms", field="pub_info.year").metric(
+        "pub_info_publisher_count", "cardinality", field="pub_info.publisher.keyword"
+    ).bucket("pub_info_publisher_list", "terms", field="pub_info.publisher.keyword")
+
+    # Aggregate minimum year | response['aggregations']['pub_info']['min_year'] returns {'value': min_year}
+    s.aggs.bucket("pub_info_path", "terms", field="pub_info.year").metric(
+        "min_year", "min", field="pub_info.year"
+    )
+
+    s = s[start : start + pageSize]
+
+    response = s.execute()
+
+    result_list = []
+    for doc_hit in response["hits"]["hits"]:
+        result_list.append(
+            build_paper_entity(cluster_id=doc_hit["_id"], doc=doc_hit["_source"])
+        )
+    aggregations = {
+        "agg": build_facets(
+            response["aggregations"]["all_pub_info1"],
+            response["aggregations"]["all_pub_info2"],
+            response["aggregations"]["all_authors"],
+            response["aggregations"]["pub_info_path"],
+        )
+    }
+    print(s.to_dict())
+    return SearchQueryResponse(
+        query_id=str(uuid4()),
+        total_results=total_results,
+        response=result_list,
+        aggregations=aggregations,
+    )
+
+
+@router.get("/v1/paper")
+@limiter.limit(rate_limit_string)
+def get_paper_info(
+    request: Request, paper_id: Optional[str] = None, cluster_id: Optional[str] = None
+):
+    # if Called with cluster ID
+    if cluster_id is not None:
+        cluster = elastic_models.Cluster.get(
+            id=cluster_id, using=elastic_service.get_connection()
+        )
+        print(cluster.to_dict())
+        paper_entity_response = build_paper_entity_for_public_api(
+            cluster_id=cluster_id, doc=cluster.to_dict()
+        )
+        return PaperDetailResponse(query_id=str(uuid4()), paper=paper_entity_response)
+
+    # if called with paper ID (SHA1)
+    s = elastic_models.Cluster.search(using=elastic_service.get_connection())
+    s = s.filter("term", paper_id=paper_id)
+    response = s.execute()
+    paper_entity_response = build_paper_entity_for_public_api(
+        cluster_id=response["hits"]["hits"][0]["_id"],
+        doc=response["hits"]["hits"][0]["_source"],
+    )
+    return PaperDetailFinalResponse(query_id=str(uuid4()), paper=paper_entity_response)
+    
+
+
