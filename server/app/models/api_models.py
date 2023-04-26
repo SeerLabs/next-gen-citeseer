@@ -23,7 +23,7 @@ class Paper(BaseModel):
     authors: List[str] = []
     journal: str = None
     publish_time: str = None
-    source: str
+    source: Optional[str]
     urls: List[str] = []
     cluster_id: Optional[str]
 
