@@ -43,7 +43,7 @@ router = APIRouter()
 elastic_service = ElasticService()
 
 
-rate_limit_string = "5/minute"
+rate_limit_string = "200/minute"
 
 f = open('/home/kzp5555/next-gen-citeseer/server/app/routers/data.json')
 _dict_mappings = json.load(f)
