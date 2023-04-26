@@ -10,7 +10,7 @@
 export default {
   data () {
     return {
-      pdfURL: `https://csxstaging.ist.psu.edu/document?repid=rep1&type=pdf&doi=`
+      pdfURL: `https://citeseerx.ist.psu.edu/document?repid=rep1&type=pdf&doi=`
     }
   },
   mounted () {

@@ -28,7 +28,7 @@ Hi %s,
 A CiteSeerX account has been automatically generated for you.  To activate this account please visit the following URL:
 
 (If this email is not intented for you, please DO NOT click the link below.)
-https://csxstaging.ist.psu.edu/verify_account/%s
+https://citeseerx.ist.psu.edu/verify_account/%s
 
 Best,
 CiteSeerX
@@ -37,7 +37,7 @@ reset_password_email_message = """
 To reset your password please click the following link:
 
 (If this email is not intented for you, please DO NOT click the link below.)
-https://csxstaging.ist.psu.edu/reset_password/%s
+https://citeseerx.ist.psu.edu/reset_password/%s
 
 Best,
 CiteSeerX
