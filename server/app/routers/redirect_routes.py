@@ -25,7 +25,7 @@ def get_document(
     print("received a request for ", doi, " ", type, " ", repid, " ", key)
     pdf_id = get_new_csxid(doi)
     print("pdf id ", pdf_id)
-    new_url = 'https://csxstaging.ist.psu.edu/document?repid=rep1&type=pdf&doi=' + pdf_id
+    new_url = 'https://citeseerx.ist.psu.edu/document?repid=rep1&type=pdf&doi=' + pdf_id
     print("new url ", new_url)
     response_content = requests.get(new_url).content
     response = Response(content=response_content, media_type="application/pdf")
