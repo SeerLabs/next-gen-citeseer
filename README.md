@@ -55,3 +55,20 @@ or running [uvicorn app.main:app --port=8000]
 ```
 
 `Backend Core Api:` http://localhost:8000/docs
+
+
+### **Setting up docker-less environment using pm2**
+If you wish to run the system using the pm2 tool, make sure that pm2 is installed on your machine, then run the below commands.
+
+
+```Navigate into the client directory [cd client] and start the client application
+$ cd /data/next-gen-citeseer/client && pm2 start npm -- start
+
+
+```Navigate into the server directory [cd server] and start the server application
+$cd /data/next-gen-citeseer/server/app && pm2 start main.py --interpreter=python3
+
+
+```Navigate into the Repository service directory and start the  application
+$cd /data/next-gen-citeseer/server/app/repository && pm2 start repo_server.py --interpreter=python3
+
