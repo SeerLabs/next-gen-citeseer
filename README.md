@@ -67,11 +67,11 @@ $ cd /data/next-gen-citeseer/client && pm2 start npm -- start
 
 
 # Navigate into the server directory [cd server] and start the server application
-$cd /data/next-gen-citeseer/server/app && pm2 start main.py --interpreter=python3
+$ cd /data/next-gen-citeseer/server/app && pm2 start main.py --interpreter=python3
 
 
 # Navigate into the Repository service directory and start the  application
-$cd /data/next-gen-citeseer/server/app/repository && pm2 start repo_server.py --interpreter=python3
+$ cd /data/next-gen-citeseer/server/app/repository && pm2 start repo_server.py --interpreter=python3
 
 ```
 
