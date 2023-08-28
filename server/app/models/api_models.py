@@ -23,9 +23,27 @@ class Paper(BaseModel):
     authors: List[str] = []
     journal: str = None
     publish_time: str = None
-    source: str
+    source: Optional[str]
     urls: List[str] = []
     cluster_id: Optional[str]
+
+class Paper_Model(BaseModel):
+    id: Optional[str]
+    title: Optional[str]
+    venue: Optional[str]
+    year: Optional[str]
+    publisher: Optional[str]
+    n_cited_by: Optional[int]
+    n_self_cites: Optional[int]
+    abstract: str = None
+    bibtex: str
+    authors: List[str] = []
+    journal: str = None
+    publish_time: str = None
+    source: Optional[str]
+    urls: List[str] = []
+    cluster_id: Optional[str]
+    text: str = None
 
 
 class PublicationInfo(BaseModel):
@@ -124,6 +142,10 @@ class SearchAuthorResponse(BaseModel):
 class PaperDetailResponse(BaseModel):
     query_id: str
     paper: Paper
+
+class PaperDetailFinalResponse(BaseModel):
+    query_id: str
+    paper: Paper_Model
 
 
 class CitationsResponse(BaseModel):

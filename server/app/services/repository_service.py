@@ -14,7 +14,7 @@ class RepositoryService:
 
     def get_document(self, doi, file_type, repid):
         file_name = Path(doi)
-        url = "http://localhost:8889/document"
+        url = "http://localhost:8115/document"
         payload = {"doi": doi, "type": file_type, "repid": repid, "key": "c1t3s33r"}
         response = requests.get(url, params=payload)
         return response

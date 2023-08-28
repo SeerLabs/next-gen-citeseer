@@ -12,23 +12,14 @@
           <v-row no-gutters>
               <v-col cols="12">
                   <div class="d-flex">
-                      <h2>What papers cite this paper. . .</h2>
-                      <v-tooltip top>
-                          <template v-slot:activator="{ on, attrs }">
-                              <v-btn id="tooltip" icon v-bind="attrs" v-on="on">
-                                  <v-icon>help</v-icon>
-                              </v-btn>
-                          </template>
-                          <span>You are seeing this page because the summary page is not indexed</span>
-                      </v-tooltip>
+                  <v-toolbar flat dense color="primary"><h2 class="white--text ma-0">What papers cite this paper. . .</h2></v-toolbar>
                   </div>
               </v-col>
           </v-row>
           <v-row id="abstract" no-gutters align-h="center">
               <v-col cols="12">
-                  <h1>{{ title }}</h1>
+               <h2 class="black--text ma-0">{{ title }} {{ venue }} - {{ year }}</h2>
                   <!-- <h5>{{ authors.join(', ')}}</h5> -->
-                  <h5>{{ venue }} - {{ year }}</h5>
                   <br />
               </v-col>
           </v-row>
@@ -139,18 +130,19 @@ export default {
                 this.documents = response.papers;
                 this.totalPageResults = response.total_results;
 
-                if (!this.title) {
-                    this.title = 'Title Not Indexed';
-                }
-                if (!this.year || this.year === 0) {
-                    this.year = 'Year Not Indexed';
-                }
-                if (!this.authors) {
-                    this.authors = 'Authors Not Indexed';
-                }
-                if (!this.venue) {
-                    this.venue = 'Venue Not Indexed';
-                }
+
+                // if (!this.title) {
+                //    this.title = 'Title Not Indexed';
+                // }
+                // if (!this.year || this.year === 0) {
+                //    this.year = 'Year Not Indexed';
+                // }
+                // if (!this.authors) {
+                //    this.authors = 'Authors Not Indexed';
+                // }
+                // if (!this.venue) {
+                //    this.venue = 'Venue Not Indexed';
+                // }
 
                 this.loading = false;
                 this.citationsLoading = false;

@@ -1,10 +1,33 @@
 import qs from 'qs'
 
 export default {
-    getPaperWithPaperId ({context}, { pid }) {
-      return this.$axios.$get('/paper', { params: {paper_id: pid}})
+
+    getTotalCount(context) {
+      return this.$axios.$get('/count')
     },
-    
+
+    getPaperWithPaperId ({context}, { pid }) {
+        return this.$axios
+        .$get('/paper', { params: {paper_id: pid}})
+        .then(function(response) {
+            return response;
+        })
+        .catch(function(error) {
+            console.log("error {}" + error);
+        });
+
+    },
+    getPaper ({context}, { pid }) {
+            return this.$axios
+            .$get('/getSummary', { params: {paper_id: pid}})
+            .then(function(response) {
+                return response;
+            })
+            .catch(function(error) {
+                console.log("error {}" + error);
+            });
+
+        },
     async getPaperswithPaperIds (context, {pids}) {
     return await this.$axios.$post(`/bulk_get_paper`, {"paper_id_list": pids})
             .then(function(response) {
@@ -20,8 +43,8 @@ export default {
       return this.$axios.$get('/paper', {params: {cluster_id: cid}})
     },
 
-    getCitationsEntities (context, { id, page }) {
-      return this.$axios.$get('/citations/' + id, { params: { page, pageSize: 10 } })
+    getCitationsEntities (context, { id, page, sortBy }) {
+      return this.$axios.$get('/citations/' + id, { params: { page, pageSize: 10, sortBy } })
     },
 
     getSimilarPaper (context, { id, algo }) {
@@ -33,7 +56,7 @@ export default {
         if (yearStart === "0") {
             yearStart = null;
         }
-      
+
         return this.$axios
             .$post('/search', {
                 queryString,
@@ -60,7 +83,7 @@ export default {
                 .catch(function(error) {
                     // eslint-disable-next-line
                     console.log(error.response);
-                });    
+                });
     },
 
     searchAuthor(context, { queryString, includePdfs }) {
@@ -85,7 +108,7 @@ export default {
                 // eslint-disable-next-line
                 console.log(error);
             });
-    }, 
+    },
 
     getShowCiting (context, { id, page, pageSize, sortBy }) {
         return this.$axios.$get('/showCiting/' + id, { params: { page, pageSize, sort: sortBy } })
@@ -93,7 +116,7 @@ export default {
 
     /// /////////// Myciteseer ////////////////////////////
     checkRecaptcha(context, {token}) {
-        return this.$axios.$get(`/recaptcha?token=${token}`) 
+        return this.$axios.$get(`/recaptcha?token=${token}`)
         .then(function(response) {
             return response;
         })
@@ -103,7 +126,7 @@ export default {
         })
     },
 
-    
+
 
     editNew(context, {token, paperId, reasonOrDetails = "", title = "", abstract="", authors = [], meeting="", publisher="", publishDate=""}) {
         const config = {
@@ -184,7 +207,7 @@ export default {
         if (!reviewerComment){
             reviewerComment = "deny"
         }
-        
+
 
         return this.$axios.$post('/edit/deny', {"request_id": requestID, "reviewer_comment": reviewerComment}, config)
         .then(function(response) {
@@ -207,7 +230,7 @@ export default {
         .catch(function(error) {
             return error;
         });
- 
+
     },
     updateProfile(context, {email}){
         const config = {headers: {
@@ -243,7 +266,7 @@ export default {
         const config = {headers: {
             'content-type': 'application/x-www-form-urlencoded;charset=utf-8'
         }}
-        
+
         return this.$axios.$post('/admin_login', qs.stringify({username, password}), config)
             .then(function(response) {
                 return response
@@ -256,7 +279,7 @@ export default {
                 "Authorization": `Bearer ${token}`
             }
         }
- 
+
         return this.$axios.$post(`/activate_account`, {}, config)
             .then(function(response) {
                 return response
@@ -353,7 +376,7 @@ export default {
             console.error(error);
         })
     },
-    
+
     addPaperToCollection(context, {token, pid, collectionName=""}) {
         const options = {
             headers: {
@@ -365,7 +388,7 @@ export default {
         .then(function(response) {
             return response
         })
-        
+
     },
 
     deletePaperFromCollection(context, {token, pid, collectionName}) {
@@ -404,7 +427,7 @@ export default {
                 "Authorization": `Bearer ${token}`
             }
         }
-        
+
         return this.$axios.$delete(`/moniter_paper/${pid}`, options)
         .then(function(response) {
             return response
@@ -430,7 +453,7 @@ export default {
                 "Authorization": `Bearer ${token}`
             }
         }
-        
+
         return this.$axios.$delete(`/liked_paper/${pid}`, options)
         .then(function(response) {
             return response

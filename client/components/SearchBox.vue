@@ -12,7 +12,7 @@
           item-text="description"
           placeholder="Search"
           @keydown.enter="submitInput"
-          
+
       >
           <template v-slot:append>
               <div id="search-button" @click="submitInput">
@@ -20,7 +20,7 @@
               </div>
           </template>
       </v-combobox>
-        <v-checkbox 
+        <v-checkbox
           id="pdf-checkbox"
           v-model="includeWithoutPdfs"
           class="pt-0 mt-0"
@@ -67,7 +67,7 @@ export default {
 
             if (this.textInput) {
               this.isLoading = true;
-              
+
               this.getSuggestions({queryString: this.textInput})
                   .then((response) => {
                       this.entries = response.suggestions;

@@ -5,7 +5,7 @@
             <div class="d-flex justify-space-between">
                 <h6>Year</h6>
             </div>
-            
+
             <div>
                 <v-range-slider
                     v-model="yearRange"
@@ -15,7 +15,7 @@
                     class="align-center"
                     thumb-color="#a9a9a9"
                     @change="$emit('year-change', yearRange)"
-                    
+
                 >
                     <template v-slot:prepend>
                         {{ yearRange[0] }}
@@ -35,6 +35,7 @@
                 offset-y
                 transition="scale-transition"
             >
+                <!-- Disabling search author functionality for now
                 <template v-slot:activator="{ on, attrs }">
                     <v-btn
                         color="indigo"
@@ -44,6 +45,7 @@
                         v-on="on"
                     >{{facet.key.toUpperCase()}}</v-btn>
                 </template>
+                -->
                 <v-card>
                     <v-card-title>{{ facet.key.charAt(0).toUpperCase() + facet.key.slice(1) }}</v-card-title>
                     <v-list>
@@ -67,7 +69,7 @@
                                     class="facet-checkbox"
                                     @change="$emit('facet-change', {key: facet.key, filters: facet.filter})"
                                 >
-                                    <v-icon 
+                                    <v-icon
                                       v-if="!item.doc_count"
                                       slot="append"
                                       @click="removeItem(facet, item)"
@@ -100,12 +102,12 @@ export default {
             yearMin: 1913,
             yearMax: 2022,
             yearRange: [1913, 2022],
-   
+
             facets: [],
         };
     },
     computed: {
- 
+
     },
     watch: {
         queryString() {
@@ -138,8 +140,10 @@ export default {
                     }
 
                     if ('minimum_year' in aggregations) {
-                        this.yearMin = aggregations.minimum_year
-                        this.yearRange = [aggregations.minimum_year, 2022]
+                        // console.log("minim year block")
+                        // console.log(aggregations.minimum_year)
+                        this.yearMin = 0
+                        this.yearRange = [0, 2022]
                     }
 
                     this.loadingState = false;

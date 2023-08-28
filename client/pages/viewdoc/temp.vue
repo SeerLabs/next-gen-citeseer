@@ -45,11 +45,6 @@
                     <v-card id="table-of-contents">
                         <v-card-title>Table of Contents</v-card-title>
                         <v-card-text>
-                            <a :href="source" target="_blank">
-                              <h6>
-                                Source PDF
-                              </h6>
-                            </a>
                             <a href="#gototop"
                                @click="scrollToTop()"
                             >
@@ -98,16 +93,14 @@ export default {
         return {
             loading: false,
             showAbstract: false,
-            docId: this.$route.params.id,
-            idType: this.$route.params.idType,
-            cid: '',
+            docId: this.$route.query.doi,
+	    cid: '',
             title: '',
             year: '',
             authors: [],
             venue: '',
             abstract: '',
             nCitations: 0,
-            source: '',
 
             totalPageResults: 1000
         };
@@ -130,8 +123,8 @@ export default {
                 this.docId = data.paper.id
                 break;
             default:
-                this.loading = false;
-                return;
+                data = await this.getPaperWithPaperId({pid: this.docId});
+		break;
         }
 
         this.cid = data.paper.cluster_id
@@ -141,7 +134,6 @@ export default {
         this.venue = data.paper.venue;
         this.abstract = data.paper.abstract;
         this.nCitation = data.paper.n_citation;
-        this.source = data.paper.source;
 
         this.loading = false;
     },
@@ -208,3 +200,4 @@ export default {
     display: none;
 }
 </style>
+

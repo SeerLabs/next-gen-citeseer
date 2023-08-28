@@ -7,9 +7,9 @@
                 </h6>
             </v-col>
         </v-row>
-        <v-row>
+        <!-- <v-row>
             <v-col><h6>Similar Article</h6></v-col>
-        </v-row>
+        </v-row> -->
         <v-row>
             <v-col><h6>Version History</h6></v-col>
         </v-row>

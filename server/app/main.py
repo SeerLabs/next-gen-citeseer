@@ -4,7 +4,7 @@ from fastapi import FastAPI, Request, HTTPException, status
 from fastapi.responses import JSONResponse, PlainTextResponse
 from fastapi.middleware.cors import CORSMiddleware
 import os
-from routers import document_routes, elastic_routes, authentication_routes
+from routers import document_routes, elastic_routes, authentication_routes, redirect_routes
 from limiter import limiter
 import requests
 
@@ -17,12 +17,23 @@ RECAPTCHA_SECRET_KEY = os.environ["RECAPTCHA_SECRET_KEY"]
 RECAPTCHA_API_ENDPOINT = "https://www.google.com/recaptcha/api/siteverify"
 app = FastAPI()
 
+#origins = [
+#    "http://localhost:3000",
+#    "http://0.0.0.0:8080" "http://0.0.0.0:8000",
+#    "http://0.0.0.0:8115",
+#    "http://0.0.0.0:3000/",
+#    "http://istcsxfe01.ist.psu.edu",
+#]
+
 origins = [
-    "http://localhost:3000",
-    "http://0.0.0.0:8080" "http://0.0.0.0:8000",
-    "http://0.0.0.0:3000/",
-    "http://istcsxfe01.ist.psu.edu",
-]
+        "https://csxfe02.ist.psu.edu/",
+        "https://citeseerx.ist.psu.edu/",
+        "https://csxstaging.ist.psu.edu/",
+        "http://localhost:3000",
+        "http://localhost:8000",
+        "http://localhost:8115"
+        ]
+
 app.add_middleware(
     CORSMiddleware,
     allow_origins=origins,
@@ -36,7 +47,7 @@ app.include_router(elastic_routes.router, tags=["elastic_routes"], prefix="/api"
 app.include_router(
     authentication_routes.router, tags=["authentication_routes"], prefix="/api"
 )
-
+app.include_router(redirect_routes.router, tags=["redirect_routes"], prefix="/viewdoc")
 
 @app.exception_handler(AuthJWTException)
 def authjwt_exception_handler(request: Request, exc: AuthJWTException):
